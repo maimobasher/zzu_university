@@ -10,11 +10,13 @@ namespace zzu_university.data.Repository.AboutRepo
 {
     public interface IAboutRepo : IRepo<About, int>
     {
-        Task<About> GetAsync();
+        Task<About> GetAsync();                   // Optional: Get first or default
         Task AddAsync(About about);
-        void Update(About about);
-        void Delete(About about);
+        Task<About> GetByIdAsync(int id);
+        Task UpdateAboutAsync(int id, About about);  // ← متوقعة هنا
+        Task DeleteAboutAsync(int id);               // ← متوقعة هنا
     }
+
 
     public interface IRepo<T1, T2>
     {

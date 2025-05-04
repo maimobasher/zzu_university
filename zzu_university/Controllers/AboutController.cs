@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using zzu_university.data.Data;
-using zzu_university.data.Model.About;
-using zzu_university.data.Repository.UnitOfWork;
+﻿using Microsoft.AspNetCore.Mvc;
 using zzu_university.domain.DTOS;
 using zzu_university.domain.Service.AboutService;
 
@@ -20,45 +15,71 @@ namespace zzu_university.Controllers
             _aboutService = aboutService;
         }
 
+        // GET: api/About
         [HttpGet]
         public async Task<IActionResult> GetAbout()
         {
             var about = await _aboutService.GetAboutAsync();
             if (about == null)
-            {
-                return NotFound();
-            }
+                return NotFound("No about information found.");
+
             return Ok(about);
         }
 
+        // GET: api/About/5
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetAboutById(int id)
+        {
+            var about = await _aboutService.GetByIdAsync(id);
+            if (about == null)
+                return NotFound($"No about found with ID {id}.");
+
+            return Ok(about);
+        }
+
+        // POST: api/About
         [HttpPost]
         public async Task<IActionResult> CreateAbout([FromBody] AboutDto aboutDto)
         {
             if (aboutDto == null)
-            {
-                return BadRequest("Invalid data.");
-            }
+                return BadRequest("Invalid about data.");
+
+            // Check if the model state is valid (includes ContactEmail validation)
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
             await _aboutService.CreateAboutAsync(aboutDto);
-            return CreatedAtAction(nameof(GetAbout), new { }, aboutDto);
+            return CreatedAtAction(nameof(GetAboutById), new { id = aboutDto.Id }, aboutDto);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateAbout([FromBody] AboutDto aboutDto)
+        // PUT: api/About/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAbout(int id, [FromBody] AboutDto aboutDto)
         {
-            if (aboutDto == null)
-            {
-                return BadRequest("Invalid data.");
-            }
+            if (aboutDto == null || id != aboutDto.Id)
+                return BadRequest("Invalid data or ID mismatch.");
+
+            // Check if the model state is valid (includes ContactEmail validation)
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var existing = await _aboutService.GetByIdAsync(id);
+            if (existing == null)
+                return NotFound($"No about found with ID {id}.");
 
             await _aboutService.UpdateAboutAsync(aboutDto);
             return NoContent();
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteAbout()
+        // DELETE: api/About/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAbout(int id)
         {
-            await _aboutService.DeleteAboutAsync();
+            var existing = await _aboutService.GetByIdAsync(id);
+            if (existing == null)
+                return NotFound($"No about found with ID {id}.");
+
+            await _aboutService.DeleteAboutAsync(id);
             return NoContent();
         }
     }

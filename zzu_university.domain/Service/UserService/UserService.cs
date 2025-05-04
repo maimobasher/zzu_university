@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using zzu_university.data.Model;
-using zzu_university.data.Repository.UnitOfWork;
+﻿using zzu_university.data.Model;
 using zzu_university.domain.DTOS;
 
 namespace zzu_university.domain.Service.UserService
@@ -25,7 +19,7 @@ namespace zzu_university.domain.Service.UserService
             {
                 FullName = u.FullName,
                 Email = u.Email,
-                Phone = u.Phone,
+                //Phone = u.Phone,
                 Address = u.Address,
                 UserType = u.UserType,
                 CreatedAt = u.CreatedAt
@@ -41,7 +35,7 @@ namespace zzu_university.domain.Service.UserService
             {
                 FullName = user.FullName,
                 Email = user.Email,
-                Phone = user.Phone,
+                //Phone = user.Phone,
                 Address = user.Address,
                 UserType = user.UserType,
                 CreatedAt = user.CreatedAt
@@ -54,9 +48,9 @@ namespace zzu_university.domain.Service.UserService
             {
                 FullName = userDto.FullName,
                 Email = userDto.Email,
-                Password = userDto.Password, // Ensure password is hashed before saving
-                Phone = (string)userDto.Phone,
-                Address = (string)userDto.Address,
+                //Password = userDto.Password, // Ensure password is hashed before saving
+               // Phone = (string)userDto.Phone,
+               Address = (string)userDto.Address,
                 UserType = (string)userDto.UserType,
                 CreatedAt = userDto.CreatedAt ?? DateTime.Now
             };
@@ -72,7 +66,7 @@ namespace zzu_university.domain.Service.UserService
 
             user.FullName = userDto.FullName;
             user.Email = userDto.Email;
-            user.Phone = (string?)userDto.Phone;
+            //user.Phone = (string?)userDto.Phone;
             user.Address = (string)userDto.Address;
             user.UserType = (string)userDto.UserType;
 

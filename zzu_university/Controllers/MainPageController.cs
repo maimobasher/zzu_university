@@ -1,14 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using zzu_university.data.Data;
 using zzu_university.data.Model.MainPage;
-using zzu_university.data.Repository.UnitOfWork;
 using zzu_university.domain.DTOS;
 
 namespace zzu_university.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Policy = "Admin")]
     [ApiController]
     public class MainPageController : ControllerBase
     {
@@ -19,14 +17,25 @@ namespace zzu_university.Controllers
             _unitOfWork = unitOfWork;
         }
 
+        // GET: api/MainPage
         [HttpGet]
-        public async Task<IActionResult> GetMainPage()
+        public async Task<IActionResult> GetDefaultMainPage()
         {
             var mainPage = await _unitOfWork.MainPage.GetMainPageAsync();
-            if (mainPage == null) return NotFound();
+            if (mainPage == null) return NotFound("No main page found.");
             return Ok(mainPage);
         }
 
+        // GET: api/MainPage/5
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetMainPageById(int id)
+        {
+            var mainPage = await _unitOfWork.MainPage.GetMainPageAsyncById(id);
+            if (mainPage == null) return NotFound($"No main page found with ID {id}.");
+            return Ok(mainPage);
+        }
+
+        // POST: api/MainPage
         [HttpPost]
         public async Task<IActionResult> CreateMainPage([FromBody] MainPageDto mainPageDto)
         {
@@ -41,34 +50,43 @@ namespace zzu_university.Controllers
 
             await _unitOfWork.MainPage.AddMainPageAsync(mainPage);
             _unitOfWork.Save();
-            return CreatedAtAction(nameof(GetMainPage), new { id = mainPage.Id }, mainPage);
+
+            return CreatedAtAction(nameof(GetMainPageById), new { id = mainPage.Id }, mainPage);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateMainPage([FromBody] MainPageDto mainPageDto)
+        // PUT: api/MainPage/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateMainPage(int id, [FromBody] MainPageDto mainPageDto)
         {
-            if (mainPageDto == null) return BadRequest("Invalid data.");
+            if (mainPageDto == null || id != mainPageDto.Id)
+                return BadRequest("Invalid data or ID mismatch.");
 
-            var mainPage = await _unitOfWork.MainPage.GetMainPageAsync();
-            if (mainPage == null) return NotFound();
+            var existing = await _unitOfWork.MainPage.GetMainPageAsyncById(id);
+            if (existing == null) return NotFound($"No main page found with ID {id}.");
 
-            mainPage.Title = mainPageDto.Title;
-            mainPage.Description = mainPageDto.Description;
-            mainPage.ImageUrl = mainPageDto.ImageUrl;
+            var updatedMainPage = new MainPage
+            {
+                Id = id,
+                Title = mainPageDto.Title,
+                Description = mainPageDto.Description,
+                ImageUrl = mainPageDto.ImageUrl
+            };
 
-            _unitOfWork.MainPage.UpdateMainPage(mainPage);
+            await _unitOfWork.MainPage.UpdateMainPageById(id, updatedMainPage);
             _unitOfWork.Save();
+
             return NoContent();
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteMainPage()
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteMainPage(int id)
         {
-            var mainPage = await _unitOfWork.MainPage.GetMainPageAsync();
-            if (mainPage == null) return NotFound();
+            var existing = await _unitOfWork.MainPage.GetMainPageAsyncById(id);
+            if (existing == null) return NotFound($"No main page found with ID {id}.");
 
-            _unitOfWork.MainPage.DeleteMainPage(mainPage);
+            await _unitOfWork.MainPage.DeleteMainPageById(id);
             _unitOfWork.Save();
+
             return NoContent();
         }
     }

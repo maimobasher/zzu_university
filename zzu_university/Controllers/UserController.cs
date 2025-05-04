@@ -7,6 +7,7 @@ using zzu_university.Services;
 namespace zzu_university.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Policy = "Admin")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -16,15 +17,21 @@ namespace zzu_university.Controllers
         {
             _authService = authService;
         }
-
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                              .Select(e => e.ErrorMessage);
+                return BadRequest(new { Errors = errors });
+            }
+
             var result = await _authService.RegisterAsync(dto);
             return Ok(result);
         }
-
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
@@ -33,7 +40,7 @@ namespace zzu_university.Controllers
             return Ok(result);
         }
 
-        [Authorize]
+        [AllowAnonymous]
         [HttpPut("update")]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDto dto)
         {
@@ -41,14 +48,14 @@ namespace zzu_university.Controllers
             var result = await _authService.UpdateUserAsync(dto);
             return Ok(result);
         }
-
+        [AllowAnonymous]
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromQuery] string email)
         {
             await _authService.SendPasswordResetCodeAsync(email);
             return Ok(new { Message = "Reset token sent to email (check logs for demo)." });
         }
-
+        [AllowAnonymous]
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPassword dto)
         {
@@ -56,8 +63,9 @@ namespace zzu_university.Controllers
             return Ok(result);
         }
 
-        [Authorize]
+        [AllowAnonymous]
         [HttpPost("change-password")]
+        
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
         {
             var result = await _authService.ChangePasswordAsync(dto);

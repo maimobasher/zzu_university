@@ -11,7 +11,7 @@ namespace zzu_university.domain.Service.ServicesService
     {
         Task<IEnumerable<ServicesDto>> GetAllServicesAsync();
         Task<ServicesDto?> GetServiceByIdAsync(int id);
-        //Task<Service> CreateServiceAsync(ServicesDto serviceDto);
+        Task<ServicesDto> CreateServiceAsync(ServicesDto serviceDto);
         Task<bool> UpdateServiceAsync(int id, ServicesDto serviceDto);
         Task<bool> DeleteServiceAsync(int id);
     }

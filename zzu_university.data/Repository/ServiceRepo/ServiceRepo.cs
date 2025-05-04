@@ -9,19 +9,14 @@ using zzu_university.data.Model.Services;
 
 namespace zzu_university.data.Repository.ServiceRepo
 {
-    public class ServiceRepo:MainRepo.Repo<Service,int>,IServiceRepo
+    public class ServiceRepo : MainRepo.Repo<Service, int>, IServiceRepo
     {
-        public ServiceRepo(ApplicationDbContext context ):base(context)
-        {
-            _context = context;
-
-        }
         private readonly ApplicationDbContext _context;
 
-        //public ServicesRepo(ApplicationDbContext context)
-        //{
-        //    _context = context;
-        //}
+        public ServiceRepo(ApplicationDbContext context) : base(context)
+        {
+            _context = context;
+        }
 
         public async Task<IEnumerable<Service>> GetAllAsync()
         {
@@ -38,14 +33,26 @@ namespace zzu_university.data.Repository.ServiceRepo
             await _context.Services.AddAsync(service);
         }
 
-        public void Update(Service service)
+        public async Task UpdateAsyncById(int id, Service service)
         {
-            _context.Services.Update(service);
+            var existingService = await _context.Services.FindAsync(id);
+            if (existingService != null)
+            {
+                existingService.Name = service.Name;
+                existingService.Description = service.Description;
+                existingService.IconUrl = service.IconUrl; // Add more properties as required
+
+                _context.Services.Update(existingService);
+            }
         }
 
-        public void Delete(Service service)
+        public async Task DeleteAsyncById(int id)
         {
-            _context.Services.Remove(service);
+            var service = await _context.Services.FindAsync(id);
+            if (service != null)
+            {
+                _context.Services.Remove(service);
+            }
         }
     }
 }

@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using zzu_university.data.Data;
-using zzu_university.data.Model.Services;
 using zzu_university.domain.DTOS;
 using zzu_university.domain.Service.ServicesService;
 
 namespace zzu_university.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Policy = "Admin")]
     [ApiController]
     public class ServicesController : ControllerBase
     {
@@ -35,15 +34,18 @@ namespace zzu_university.Controllers
             return Ok(service);
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> CreateService([FromBody] ServicesDto serviceDto)
-        //{
-        //    if (serviceDto == null)
-        //        return BadRequest("Invalid data.");
+        [HttpPost]
+        public async Task<IActionResult> CreateService([FromBody] ServicesDto serviceDto)
+        {
+            if (serviceDto == null)
+                return BadRequest("Invalid data.");
 
-        //    var createdService = await _servicesService.CreateServiceAsync(serviceDto);
-        //    return CreatedAtAction(nameof(GetServiceById), new { id = createdService.Id }, createdService);
-        //}
+            // Create service using the service service
+            var createdService = await _servicesService.CreateServiceAsync(serviceDto);
+
+            // Return Created status with the service data
+            return CreatedAtAction(nameof(GetServiceById), new { id = createdService.Id }, createdService);
+        }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateService(int id, [FromBody] ServicesDto serviceDto)
@@ -68,5 +70,4 @@ namespace zzu_university.Controllers
             return NoContent();
         }
     }
-
 }

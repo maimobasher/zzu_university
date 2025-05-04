@@ -11,10 +11,12 @@ using zzu_university.data.Model.News;
 using zzu_university.data.Model.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using zzu_university.data.Model.Student;
+using zzu_university.data.Model.Program;
 
 namespace zzu_university.data.Data
 {
-    public class ApplicationDbContext: IdentityDbContext<User, IdentityRole<int>, int>
+    public class ApplicationDbContext : IdentityDbContext<User>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
@@ -23,6 +25,8 @@ namespace zzu_university.data.Data
         public DbSet<Managment> Managments { get; set; }
         public DbSet<News> News { get; set; }
         public DbSet<About> Abouts { get; set; }
+        public DbSet<Student> Students { get; set; }
+        public DbSet<AcadmicProgram> Programs { get; set; }
         //public DbSet<User> Users { get; set; }  
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{

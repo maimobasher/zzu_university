@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using zzu_university.domain.DTOS;
+using zzu_university.data.Model.Services;
+using zzu_university.data.Repository.ServiceRepo;
 using System.Threading.Tasks;
-using zzu_university.data.Repository.UnitOfWork;
-using zzu_university.domain.DTOS;
 
 namespace zzu_university.domain.Service.ServicesService
 {
-    public class ServicesService:IServicesService
+    public class ServicesService : IServicesService
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -41,19 +38,28 @@ namespace zzu_university.domain.Service.ServicesService
             };
         }
 
-        //public async Task<Service> CreateServiceAsync(ServicesDto serviceDto)
-        //{
-        //    var service = new Service
-        //    {
-        //        Name = serviceDto.Name,
-        //        Description = serviceDto.Description,
-        //        IconUrl = serviceDto.IconUrl
-        //    };
+        public async Task<ServicesDto> CreateServiceAsync(ServicesDto serviceDto)
+        {
+            // Convert the DTO to the model
+            var service = new data.Model.Services.Service
+            {
+                Name = serviceDto.Name,
+                Description = serviceDto.Description,
+                IconUrl = serviceDto.IconUrl
+            };
 
-        //    await _unitOfWork.Service.AddAsync(service);
-        //    _unitOfWork.Save();
-        //    return service;
-        //}
+            // Add the service to the database using the UnitOfWork
+            await _unitOfWork.Service.AddAsync(service);
+            _unitOfWork.Save();
+
+            // Return the created DTO with the data from the model
+            return new ServicesDto
+            {
+                Name = service.Name,
+                Description = service.Description,
+                IconUrl = service.IconUrl
+            };
+        }
 
         public async Task<bool> UpdateServiceAsync(int id, ServicesDto serviceDto)
         {
@@ -65,7 +71,7 @@ namespace zzu_university.domain.Service.ServicesService
             service.Description = serviceDto.Description;
             service.IconUrl = serviceDto.IconUrl;
 
-            _unitOfWork.Service.Update(service);
+            _unitOfWork.Service.UpdateAsyncById(id,service);
             _unitOfWork.Save();
             return true;
         }
@@ -76,7 +82,7 @@ namespace zzu_university.domain.Service.ServicesService
             if (service == null)
                 return false;
 
-            _unitOfWork.Service.Delete(service);
+            _unitOfWork.Service.DeleteAsyncById(id);
             _unitOfWork.Save();
             return true;
         }

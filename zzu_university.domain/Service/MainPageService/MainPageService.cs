@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using zzu_university.data.Model.MainPage;
-using zzu_university.data.Repository.UnitOfWork;
+﻿using zzu_university.data.Model.MainPage;
 using zzu_university.domain.DTOS;
 
 namespace zzu_university.domain.Service.MainPageService
@@ -23,6 +17,11 @@ namespace zzu_university.domain.Service.MainPageService
             return await _unitOfWork.MainPage.GetMainPageAsync();
         }
 
+        public async Task<MainPage> GetMainPageByIdAsync(int id)
+        {
+            return await _unitOfWork.MainPage.GetMainPageAsyncById(id);
+        }
+
         public async Task<MainPage> CreateMainPageAsync(MainPageDto mainPageDto)
         {
             var mainPage = new MainPage
@@ -32,7 +31,6 @@ namespace zzu_university.domain.Service.MainPageService
                 ImageUrl = mainPageDto.ImageUrl
             };
 
-            // استخدام الدالة الصحيحة من IMainPageRepo
             await _unitOfWork.MainPage.AddMainPageAsync(mainPage);
             _unitOfWork.Save();
             return mainPage;
@@ -40,31 +38,26 @@ namespace zzu_university.domain.Service.MainPageService
 
         public async Task<bool> UpdateMainPageAsync(MainPageDto mainPageDto)
         {
-            var mainPage = await _unitOfWork.MainPage.GetMainPageAsync();
-            if (mainPage == null) return false;
+            var existing = await _unitOfWork.MainPage.GetMainPageAsyncById(mainPageDto.Id);
+            if (existing == null) return false;
 
-            mainPage.Title = mainPageDto.Title;
-            mainPage.Description = mainPageDto.Description;
-            mainPage.ImageUrl = mainPageDto.ImageUrl;
+            existing.Title = mainPageDto.Title;
+            existing.Description = mainPageDto.Description;
+            existing.ImageUrl = mainPageDto.ImageUrl;
 
-            _unitOfWork.MainPage.UpdateMainPage(mainPage);
+            await _unitOfWork.MainPage.UpdateMainPageById(mainPageDto.Id, existing);
             _unitOfWork.Save();
             return true;
         }
 
-        public async Task<bool> DeleteMainPageAsync()
+        public async Task<bool> DeleteMainPageAsync(int id)
         {
-            var mainPage = await _unitOfWork.MainPage.GetMainPageAsync();
-            if (mainPage == null) return false;
+            var existing = await _unitOfWork.MainPage.GetMainPageAsyncById(id);
+            if (existing == null) return false;
 
-            _unitOfWork.MainPage.DeleteMainPage(mainPage);
+            await _unitOfWork.MainPage.DeleteMainPageById(id);
             _unitOfWork.Save();
             return true;
         }
-
-        //public Task<MainPage> GetMainPageAsync()
-        //{
-        //    throw new NotImplementedException();
-        //}
     }
 }

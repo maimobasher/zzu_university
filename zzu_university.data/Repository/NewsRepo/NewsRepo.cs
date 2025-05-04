@@ -9,18 +9,14 @@ using zzu_university.data.Model.News;
 
 namespace zzu_university.data.Repository.NewsRepo
 {
-    public class NewsRepo:MainRepo.Repo<News,int>,INewsRepo
+    public class NewsRepo : MainRepo.Repo<News, int>, INewsRepo
     {
-        public NewsRepo(ApplicationDbContext context):base(context) 
-        { 
-            _context = context;
-        }
         private readonly ApplicationDbContext _context;
 
-        //public NewsRepo(ApplicationDbContext context)
-        //{
-        //    _context = context;
-        //}
+        public NewsRepo(ApplicationDbContext context) : base(context)
+        {
+            _context = context;
+        }
 
         public async Task<IEnumerable<News>> GetAllAsync()
         {
@@ -37,15 +33,27 @@ namespace zzu_university.data.Repository.NewsRepo
             await _context.News.AddAsync(news);
         }
 
-        public void Update(News news)
+        public async Task UpdateAsyncById(int id, News news)
         {
-            _context.News.Update(news);
+            var existingNews = await _context.News.FindAsync(id);
+            if (existingNews != null)
+            {
+                existingNews.Title = news.Title;
+                existingNews.Content = news.Content;
+                existingNews.PublishedDate = news.PublishedDate;
+                existingNews.ImageUrl = news.ImageUrl;
+
+                _context.News.Update(existingNews);
+            }
         }
 
-        public void Delete(News news)
+        public async Task DeleteAsyncById(int id)
         {
-            _context.News.Remove(news);
+            var existingNews = await _context.News.FindAsync(id);
+            if (existingNews != null)
+            {
+                _context.News.Remove(existingNews);
+            }
         }
-
     }
 }

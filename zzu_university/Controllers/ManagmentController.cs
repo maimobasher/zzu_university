@@ -1,15 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using zzu_university.data.Data;
 using zzu_university.data.Model;
-using zzu_university.data.Repository.UnitOfWork;
 using zzu_university.domain.DTOS;
-using zzu_university.domain.Service.ManagmentService;
 
 namespace zzu_university.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Policy = "Admin")]
     [ApiController]
     public class ManagmentController : ControllerBase
     {
@@ -19,11 +16,18 @@ namespace zzu_university.Controllers
         {
             _unitOfWork = unitOfWork;
         }
-
         [HttpGet]
         public async Task<IActionResult> GetManagment()
         {
             var managment = await _unitOfWork.Managment.GetAsync();
+            if (managment == null) return NotFound();
+            return Ok(managment);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetManagment(int id)
+        {
+            var managment = await _unitOfWork.Managment.GetAsyncById(id);
             if (managment == null) return NotFound();
             return Ok(managment);
         }
@@ -47,32 +51,32 @@ namespace zzu_university.Controllers
             return CreatedAtAction(nameof(GetManagment), new { id = managment.Id }, managment);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateManagment([FromBody] ManagmentDto managmentDto)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateManagment(int id, [FromBody] ManagmentDto managmentDto)
         {
             if (managmentDto == null) return BadRequest("Invalid data.");
 
-            var managment = await _unitOfWork.Managment.GetAsync();
-            if (managment == null) return NotFound();
+            var existingManagment = await _unitOfWork.Managment.GetAsyncById(id);
+            if (existingManagment == null) return NotFound();
 
-            managment.Name = managmentDto.Name;
-            managment.Description = managmentDto.Description;
-            managment.ContactEmail = managmentDto.ContactEmail;
-            managment.PhoneNumber = managmentDto.PhoneNumber;
+            existingManagment.Name = managmentDto.Name;
+            existingManagment.Description = managmentDto.Description;
+            existingManagment.ContactEmail = managmentDto.ContactEmail;
+            existingManagment.PhoneNumber = managmentDto.PhoneNumber;
 
-            _unitOfWork.Managment.Update(managment);
+            await _unitOfWork.Managment.UpdateAsyncById(id, existingManagment);
             _unitOfWork.Save();
 
             return NoContent();
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteManagment()
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteManagment(int id)
         {
-            var managment = await _unitOfWork.Managment.GetAsync();
-            if (managment == null) return NotFound();
+            var existingManagment = await _unitOfWork.Managment.GetAsyncById(id);
+            if (existingManagment == null) return NotFound();
 
-            _unitOfWork.Managment.Delete(managment);
+            await _unitOfWork.Managment.DeleteAsyncById(id);
             _unitOfWork.Save();
 
             return NoContent();

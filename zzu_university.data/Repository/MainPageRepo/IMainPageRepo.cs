@@ -8,12 +8,12 @@ using zzu_university.data.Repository.AboutRepo;
 
 namespace zzu_university.data.Repository.MainPageRepo
 {
-    public interface IMainPageRepo : IRepo<MainPage,int>
+    public interface IMainPageRepo : IRepo<MainPage, int>
     {
-        Task<MainPage> GetMainPageAsync();
-        Task AddMainPageAsync(MainPage mainPage);
-        void UpdateMainPage(MainPage mainPage);
-        void DeleteMainPage(MainPage mainPage);
-        //Task GetAsync();
+        Task<MainPage> GetMainPageAsync();                      // Gets default or primary main page
+        Task<MainPage> GetMainPageAsyncById(int id);            // Gets main page by specific ID
+        Task AddMainPageAsync(MainPage mainPage);               // Adds a new main page
+        Task UpdateMainPageById(int id, MainPage mainPage);     // Updates main page by ID
+        Task DeleteMainPageById(int id);                        // Deletes main page by ID
     }
 }

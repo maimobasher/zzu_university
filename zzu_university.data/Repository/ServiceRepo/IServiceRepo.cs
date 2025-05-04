@@ -8,12 +8,13 @@ using zzu_university.data.Repository.AboutRepo;
 
 namespace zzu_university.data.Repository.ServiceRepo
 {
-    public interface IServiceRepo:IRepo<Service,int>
+    public interface IServiceRepo : IRepo<Service, int>
     {
         Task<IEnumerable<Service>> GetAllAsync();
         Task<Service?> GetByIdAsync(int id);
         Task AddAsync(Service service);
-        void Update(Service service);
-        void Delete(Service service);
+        Task UpdateAsyncById(int id, Service service);  // Updated to asynchronous method
+        Task DeleteAsyncById(int id);  // Updated to asynchronous method
     }
+
 }

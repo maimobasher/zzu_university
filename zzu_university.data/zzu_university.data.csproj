@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Folder Include="migrations\" />
+    <Folder Include="Model\Payment\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -13,6 +13,6 @@ namespace zzu_university.domain.Service.MainPageService
         Task<MainPage> GetMainPageAsync();
         Task<MainPage> CreateMainPageAsync(MainPageDto mainPageDto);
         Task<bool> UpdateMainPageAsync(MainPageDto mainPageDto);
-        Task<bool> DeleteMainPageAsync();
+        Task<bool> DeleteMainPageAsync(int id);
     }
 }

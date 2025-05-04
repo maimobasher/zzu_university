@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using zzu_university.data.Data;
 using zzu_university.data.Model.About;
@@ -12,38 +8,53 @@ namespace zzu_university.data.Repository.AboutRepo
 {
     public class AboutRepo : Repo<About, int>, IAboutRepo
     {
-
         private readonly ApplicationDbContext _context;
 
-        //public AboutRepo(ApplicationDbContext context)
-        //{
-        //    _context = context;
-        //}
+        public AboutRepo(ApplicationDbContext context) : base(context)
+        {
+            _context = context;
+        }
 
         public async Task<About> GetAsync()
         {
             return await _context.Abouts.FirstOrDefaultAsync();
         }
 
-        public async Task? AddAsync(About about)
+        public async Task AddAsync(About about)
         {
             await _context.Abouts.AddAsync(about);
         }
 
-        public void Update(About about)
+        public async Task<About> GetByIdAsync(int id)
         {
-            _context.Abouts.Update(about);
+            return await _context.Abouts.FindAsync(id);
         }
 
-        public void Delete(About about)
+        public async Task UpdateAboutAsync(int id, About about)
         {
-            _context.Abouts.Remove(about);
+            var existing = await GetByIdAsync(id);
+            if (existing == null) return;
+
+            existing.Title = about.Title;
+            existing.Description = about.Description;
+            existing.Vision = about.Vision;
+            existing.Mission = about.Mission;
+            existing.History = about.History;
+            existing.ContactEmail = about.ContactEmail;
+            existing.PhoneNumber = about.PhoneNumber;
+            existing.Address = about.Address;
+
+            _context.Abouts.Update(existing);
         }
-        public AboutRepo(ApplicationDbContext context) : base(context)
+
+        public async Task DeleteAboutAsync(int id)
         {
-            _context = context;
+            var about = await GetByIdAsync(id);
+            if (about != null)
+            {
+                _context.Abouts.Remove(about);
+            }
         }
     }
 
-   
 }

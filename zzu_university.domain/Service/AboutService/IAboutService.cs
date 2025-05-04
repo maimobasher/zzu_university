@@ -10,8 +10,9 @@ namespace zzu_university.domain.Service.AboutService
     public interface IAboutService
     {
         Task<AboutDto> GetAboutAsync();
+        Task<AboutDto> GetByIdAsync(int id);
         Task CreateAboutAsync(AboutDto aboutDto);
         Task UpdateAboutAsync(AboutDto aboutDto);
-        Task DeleteAboutAsync();
+        Task DeleteAboutAsync(int id); // ← لازم يكون فيها id
     }
 }
