@@ -11,13 +11,13 @@ namespace zzu_university.data.Model.Program
     public class AcadmicProgram
     {
         [Key]
-        public int ProgramId { get; set; }
+        public int programId { get; set; }
 
         [Required]
         [MaxLength(150)]
-        public string Name { get; set; }
+        public string name { get; set; }
 
-        [MaxLength(1000)]
+        [MaxLength(1000)] 
         public string Description { get; set; }
 
         [Required]

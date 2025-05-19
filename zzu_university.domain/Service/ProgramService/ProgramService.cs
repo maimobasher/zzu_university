@@ -22,8 +22,8 @@ namespace zzu_university.domain.Service.ProgramService
             // تحويل يدوي من Program إلى ProgramReadDto
             var programDtos = programs.Select(p => new ProgramReadDto
             {
-                ProgramId = p.ProgramId,
-                Name = p.Name,
+                ProgramId = p.programId,
+                Name = p.name,
                 Description = p.Description,
                 TuitionFees = p.TuitionFees,
                 DurationInYears = p.DurationInYears
@@ -39,8 +39,8 @@ namespace zzu_university.domain.Service.ProgramService
             // تحويل يدوي من Program إلى ProgramReadDto
             var programDto = new ProgramReadDto
             {
-                ProgramId = program.ProgramId,
-                Name = program.Name,
+                ProgramId = program.programId,
+                Name = program.name,
                 Description = program.Description,
                 TuitionFees = program.TuitionFees,
                 DurationInYears = program.DurationInYears
@@ -54,7 +54,7 @@ namespace zzu_university.domain.Service.ProgramService
             // تحويل يدوي من ProgramCreateDto إلى AcadmicProgram
             var program = new AcadmicProgram
             {
-                Name = programCreateDto.Name,
+                name = programCreateDto.Name,
                 Description = programCreateDto.Description,
                 TuitionFees = programCreateDto.TuitionFees,
                 DurationInYears = programCreateDto.DurationInYears
@@ -69,8 +69,8 @@ namespace zzu_university.domain.Service.ProgramService
             // تحويل يدوي من ProgramUpdateDto إلى AcadmicProgram
             var program = new AcadmicProgram
             {
-                ProgramId = programUpdateDto.ProgramId,
-                Name = programUpdateDto.Name,
+                programId = programUpdateDto.ProgramId,
+                name = programUpdateDto.Name,
                 Description = programUpdateDto.Description,
                 TuitionFees = programUpdateDto.TuitionFees,
                 DurationInYears = programUpdateDto.DurationInYears

@@ -280,11 +280,11 @@ namespace zzu_university.data.Migrations
 
             modelBuilder.Entity("zzu_university.data.Model.Program.AcadmicProgram", b =>
                 {
-                    b.Property<int>("ProgramId")
+                    b.Property<int>("programId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProgramId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("programId"));
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -294,15 +294,15 @@ namespace zzu_university.data.Migrations
                     b.Property<int>("DurationInYears")
                         .HasColumnType("int");
 
-                    b.Property<string>("Name")
+                    b.Property<decimal>("TuitionFees")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("name")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<decimal>("TuitionFees")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("ProgramId");
+                    b.HasKey("programId");
 
                     b.ToTable("Programs");
                 });
@@ -337,29 +337,86 @@ namespace zzu_university.data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentId"));
 
-                    b.Property<string>("Email")
+                    b.Property<bool>("IsPaymentCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SelectedProgramId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("address")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FullName")
+                    b.Property<string>("city")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("dateOfBirth")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("faculty")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("firstName")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<bool>("IsPaymentCompleted")
-                        .HasColumnType("bit");
+                    b.Property<int>("gender")
+                        .HasColumnType("int");
 
-                    b.Property<string>("NationalId")
+                    b.Property<string>("gpa")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("graduationYear")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("highSchool")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("lastName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("middleName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("nationalId")
                         .IsRequired()
                         .HasMaxLength(14)
                         .HasColumnType("nvarchar(14)");
 
-                    b.Property<string>("PhoneNumber")
+                    b.Property<string>("nationality")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SelectedProgramId")
-                        .HasColumnType("int");
+                    b.Property<string>("phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("postalCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("program")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("semester")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("StudentId");
 

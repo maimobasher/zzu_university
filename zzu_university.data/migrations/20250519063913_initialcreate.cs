@@ -52,16 +52,14 @@ namespace zzu_university.data.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Role = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserType = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -108,6 +106,22 @@ namespace zzu_university.data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_News", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Programs",
+                columns: table => new
+                {
+                    programId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    TuitionFees = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DurationInYears = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Programs", x => x.programId);
                 });
 
             migrationBuilder.CreateTable(
@@ -254,6 +268,44 @@ namespace zzu_university.data.Migrations
                         onDelete: ReferentialAction.SetNull);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Students",
+                columns: table => new
+                {
+                    StudentId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    firstName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    middleName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    lastName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    nationalId = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: false),
+                    phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    dateOfBirth = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    gender = table.Column<int>(type: "int", nullable: false),
+                    nationality = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    city = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    postalCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    highSchool = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    graduationYear = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    gpa = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    faculty = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    semester = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    program = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SelectedProgramId = table.Column<int>(type: "int", nullable: false),
+                    IsPaymentCompleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Students", x => x.StudentId);
+                    table.ForeignKey(
+                        name: "FK_Students_Programs_SelectedProgramId",
+                        column: x => x.SelectedProgramId,
+                        principalTable: "Programs",
+                        principalColumn: "programId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -297,6 +349,11 @@ namespace zzu_university.data.Migrations
                 name: "IX_Managments_UserId",
                 table: "Managments",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Students_SelectedProgramId",
+                table: "Students",
+                column: "SelectedProgramId");
         }
 
         /// <inheritdoc />
@@ -333,10 +390,16 @@ namespace zzu_university.data.Migrations
                 name: "Services");
 
             migrationBuilder.DropTable(
+                name: "Students");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Programs");
         }
     }
 }

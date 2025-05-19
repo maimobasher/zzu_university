@@ -11,19 +11,37 @@ namespace zzu_university.domain.StudentDto
     {
         [Required]
         [MaxLength(150)]
-        public string FullName { get; set; }
+        public string firstName { get; set; }
+        [Required]
+        [MaxLength(150)]
+        public string middleName { get; set; }
+        [Required]
+        [MaxLength(150)]
+        public string lastName { get; set; }
 
         [Required]
         [MaxLength(14)]
-        public string NationalId { get; set; }
+        public string nationalId { get; set; }
 
         [Required]
         [Phone]
-        public string PhoneNumber { get; set; }
+        public string phone { get; set; }
 
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
+        public string email { get; set; }
+        public string dateOfBirth { get; set; }
+        public int gender { get; set; }
+        public string nationality { get; set; }
+        public string address { get; set; }
+        public string city { get; set; }
+        public string postalCode { get; set; }
+        public string highSchool { get; set; }
+        public string graduationYear { get; set; }
+        public string gpa { get; set; }
+        public string faculty { get; set; }
+        public string semester { get; set; }
+        public string program { get; set; }
 
         [Required]
         public int SelectedProgramId { get; set; }

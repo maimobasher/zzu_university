@@ -18,11 +18,24 @@ namespace zzu_university.domain.Service.StudentService
             return students.Select(s => new StudentReadDto
             {
                 StudentId = s.StudentId,
-                FullName = s.FullName,
-                NationalId = s.NationalId,
-                PhoneNumber = s.PhoneNumber,
-                Email = s.Email,
-                ProgramName = s.Program?.Name,
+                firstName = s.firstName,
+                lastName = s.lastName,
+                middleName = s.middleName,
+                nationalId = s.nationalId,
+                nationality = s.nationality,
+                phone = s.phone,
+                dateOfBirth = s.dateOfBirth,
+                address = s.address,
+                email = s.email,
+                gender = s.gender,
+                city = s.city,
+                postalCode = s.postalCode,
+                gpa = s.gpa,
+                highSchool = s.highSchool,
+                graduationYear = s.graduationYear,
+                faculty = s.faculty,
+                semester = s.semester,
+                program = s.Program?.name,
                 IsPaymentCompleted = s.IsPaymentCompleted
             });
         }
@@ -35,11 +48,24 @@ namespace zzu_university.domain.Service.StudentService
             return new StudentReadDto
             {
                 StudentId = student.StudentId,
-                FullName = student.FullName,
-                NationalId = student.NationalId,
-                PhoneNumber = student.PhoneNumber,
-                Email = student.Email,
-                ProgramName = student.Program?.Name,
+                firstName = student.firstName,
+                lastName = student.lastName,
+                middleName = student.middleName,
+                nationality = student.nationality,
+                dateOfBirth = student.dateOfBirth,
+                address = student.address,
+                city = student.city,
+                nationalId = student.nationalId,
+                graduationYear = student.graduationYear,
+                gender= student.gender,
+                gpa = student.gpa,
+                highSchool = student.highSchool,
+                faculty = student.faculty,
+                semester = student.semester,
+                phone = student.phone,
+                email = student.email,
+                postalCode = student.postalCode,
+                program = student.Program?.name,
                 IsPaymentCompleted = student.IsPaymentCompleted
             };
         }
@@ -48,10 +74,24 @@ namespace zzu_university.domain.Service.StudentService
         {
             var student = new Student
             {
-                FullName = studentCreateDto.FullName,
-                NationalId = studentCreateDto.NationalId,
-                PhoneNumber = studentCreateDto.PhoneNumber,
-                Email = studentCreateDto.Email,
+                firstName= studentCreateDto.firstName,
+                middleName = studentCreateDto.middleName,
+                lastName = studentCreateDto.lastName,
+                nationality= studentCreateDto.nationality,
+                dateOfBirth = studentCreateDto.dateOfBirth,
+                address = studentCreateDto.address,
+                city = studentCreateDto.city,
+                postalCode = studentCreateDto.postalCode,
+                program = studentCreateDto.program,
+                gender = studentCreateDto.gender,
+                graduationYear = studentCreateDto.graduationYear,
+                gpa = studentCreateDto.gpa,
+                highSchool = studentCreateDto.highSchool,
+                faculty = studentCreateDto.faculty,
+                semester = studentCreateDto.semester,
+                nationalId = studentCreateDto.nationalId,
+                phone = studentCreateDto.phone,
+                email = studentCreateDto.email,
                 SelectedProgramId = studentCreateDto.SelectedProgramId,
                 IsPaymentCompleted = false
             };
@@ -62,11 +102,24 @@ namespace zzu_university.domain.Service.StudentService
             return new StudentReadDto
             {
                 StudentId = student.StudentId,
-                FullName = student.FullName,
-                NationalId = student.NationalId,
-                PhoneNumber = student.PhoneNumber,
-                Email = student.Email,
-                ProgramName = "", // تقدر تجيب اسم البرنامج لو احتجت
+                firstName = student.firstName,
+                lastName = student.lastName,
+                middleName = student.middleName,
+                nationality = student.nationality,
+                dateOfBirth = student.dateOfBirth,
+                address = student.address,
+                city = student.city,
+                postalCode = student.postalCode,
+                gender=student.gender,
+                gpa = student.gpa,
+                highSchool = student.highSchool,
+                graduationYear = student.graduationYear,
+                faculty = student.faculty,
+                semester = student.semester,
+                nationalId = student.nationalId,
+                phone = student.phone,
+                email = student.email,
+                program = "", // تقدر تجيب اسم البرنامج لو احتجت
                 IsPaymentCompleted = student.IsPaymentCompleted
             };
         }
@@ -76,10 +129,24 @@ namespace zzu_university.domain.Service.StudentService
             var student = await _unitOfWork.Student.GetStudentByIdAsync(studentUpdateDto.StudentId);
             if (student == null) return null;
 
-            student.FullName = studentUpdateDto.FullName;
-            student.NationalId = studentUpdateDto.NationalId;
-            student.PhoneNumber = studentUpdateDto.PhoneNumber;
-            student.Email = studentUpdateDto.Email;
+            student.firstName = studentUpdateDto.firstName;
+            student.middleName = studentUpdateDto.middleName;
+            student.lastName = studentUpdateDto.lastName;
+            student.nationality = studentUpdateDto.nationality;
+            student.nationalId = studentUpdateDto.nationalId;
+            student.phone = studentUpdateDto.phone;
+            student.dateOfBirth = studentUpdateDto.dateOfBirth;
+            student.address = studentUpdateDto.address;
+            student.city = studentUpdateDto.city;
+            student.postalCode = studentUpdateDto.postalCode;
+            student.highSchool = studentUpdateDto.highSchool;
+            student.graduationYear = studentUpdateDto.graduationYear;
+            student.gpa = studentUpdateDto.gpa;
+            student.faculty = studentUpdateDto.faculty;
+            student.gender = studentUpdateDto.gender;
+            student.semester = studentUpdateDto.semester;
+            student.program = studentUpdateDto.program;
+            student.email = studentUpdateDto.email;
             student.SelectedProgramId = studentUpdateDto.SelectedProgramId;
             student.IsPaymentCompleted = studentUpdateDto.IsPaymentCompleted;
 
@@ -89,11 +156,24 @@ namespace zzu_university.domain.Service.StudentService
             return new StudentReadDto
             {
                 StudentId = student.StudentId,
-                FullName = student.FullName,
-                NationalId = student.NationalId,
-                PhoneNumber = student.PhoneNumber,
-                Email = student.Email,
-                ProgramName = "", // تقدر تجيب اسم البرنامج لو احتجت
+                firstName = student.firstName,
+                lastName = student.lastName,
+                middleName = student.middleName,
+                nationality = student.nationality,
+                nationalId = student.nationalId,
+                phone = student.phone,
+                dateOfBirth = student.dateOfBirth,
+                address = student.address,
+                city = student.city,
+                postalCode = student.postalCode,
+                gender = student.gender,
+                gpa = student.gpa,
+                highSchool = student.highSchool,
+                graduationYear = student.graduationYear,
+                faculty = student.faculty,
+                semester = student.semester,
+                email = student.email,
+                program= "", // تقدر تجيب اسم البرنامج لو احتجت
                 IsPaymentCompleted = student.IsPaymentCompleted
             };
         }

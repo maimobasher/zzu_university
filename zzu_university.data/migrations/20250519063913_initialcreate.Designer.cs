@@ -12,7 +12,7 @@ using zzu_university.data.Data;
 namespace zzu_university.data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250416151132_initialcreate")]
+    [Migration("20250519063913_initialcreate")]
     partial class initialcreate
     {
         /// <inheritdoc />
@@ -281,6 +281,35 @@ namespace zzu_university.data.Migrations
                     b.ToTable("News");
                 });
 
+            modelBuilder.Entity("zzu_university.data.Model.Program.AcadmicProgram", b =>
+                {
+                    b.Property<int>("programId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("programId"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("DurationInYears")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TuitionFees")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.HasKey("programId");
+
+                    b.ToTable("Programs");
+                });
+
             modelBuilder.Entity("zzu_university.data.Model.Services.Service", b =>
                 {
                     b.Property<int>("Id")
@@ -303,6 +332,102 @@ namespace zzu_university.data.Migrations
                     b.ToTable("Services");
                 });
 
+            modelBuilder.Entity("zzu_university.data.Model.Student.Student", b =>
+                {
+                    b.Property<int>("StudentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentId"));
+
+                    b.Property<bool>("IsPaymentCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SelectedProgramId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("city")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("dateOfBirth")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("faculty")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("firstName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("gender")
+                        .HasColumnType("int");
+
+                    b.Property<string>("gpa")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("graduationYear")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("highSchool")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("lastName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("middleName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("nationalId")
+                        .IsRequired()
+                        .HasMaxLength(14)
+                        .HasColumnType("nvarchar(14)");
+
+                    b.Property<string>("nationality")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("postalCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("program")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("semester")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("StudentId");
+
+                    b.HasIndex("SelectedProgramId");
+
+                    b.ToTable("Students");
+                });
+
             modelBuilder.Entity("zzu_university.data.Model.User", b =>
                 {
                     b.Property<string>("Id")
@@ -312,7 +437,6 @@ namespace zzu_university.data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -349,13 +473,7 @@ namespace zzu_university.data.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Phone")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
@@ -381,7 +499,6 @@ namespace zzu_university.data.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("UserType")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -456,6 +573,22 @@ namespace zzu_university.data.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("zzu_university.data.Model.Student.Student", b =>
+                {
+                    b.HasOne("zzu_university.data.Model.Program.AcadmicProgram", "Program")
+                        .WithMany("Students")
+                        .HasForeignKey("SelectedProgramId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Program");
+                });
+
+            modelBuilder.Entity("zzu_university.data.Model.Program.AcadmicProgram", b =>
+                {
+                    b.Navigation("Students");
                 });
 
             modelBuilder.Entity("zzu_university.data.Model.User", b =>
