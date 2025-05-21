@@ -65,5 +65,13 @@ namespace zzu_university.api.Controllers
             await _programService.DeleteProgramAsync(id);
             return Ok(new { message = "Program deleted successfully." });
         }
+        // GET: api/program/faculty/5
+        [HttpGet("faculty/{facultyId}")]
+        public async Task<ActionResult<IEnumerable<ProgramReadDto>>> GetProgramsByFacultyId(int facultyId)
+        {
+            var programs = await _programService.GetProgramsByFacultyIdAsync(facultyId);
+            return Ok(programs);
+        }
+
     }
 }

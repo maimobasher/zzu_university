@@ -78,6 +78,19 @@ namespace zzu_university.data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Faculties",
+                columns: table => new
+                {
+                    FacultyId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Faculties", x => x.FacultyId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MainPages",
                 columns: table => new
                 {
@@ -109,22 +122,6 @@ namespace zzu_university.data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Programs",
-                columns: table => new
-                {
-                    programId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
-                    TuitionFees = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    DurationInYears = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Programs", x => x.programId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Services",
                 columns: table => new
                 {
@@ -137,6 +134,23 @@ namespace zzu_university.data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Services", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StudentPayments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StudentId = table.Column<int>(type: "int", nullable: false),
+                    ProgramId = table.Column<int>(type: "int", nullable: false),
+                    ReferenceCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsPaid = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StudentPayments", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -269,6 +283,30 @@ namespace zzu_university.data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Programs",
+                columns: table => new
+                {
+                    ProgramId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    TuitionFees = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DurationInYears = table.Column<int>(type: "int", nullable: false),
+                    FacultyId = table.Column<int>(type: "int", nullable: false),
+                    ProgramCode = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Programs", x => x.ProgramId);
+                    table.ForeignKey(
+                        name: "FK_Programs_Faculties_FacultyId",
+                        column: x => x.FacultyId,
+                        principalTable: "Faculties",
+                        principalColumn: "FacultyId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Students",
                 columns: table => new
                 {
@@ -302,8 +340,33 @@ namespace zzu_university.data.Migrations
                         name: "FK_Students_Programs_SelectedProgramId",
                         column: x => x.SelectedProgramId,
                         principalTable: "Programs",
-                        principalColumn: "programId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "ProgramId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StudentRegisterPrograms",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StudentId = table.Column<int>(type: "int", nullable: false),
+                    ProgramId = table.Column<int>(type: "int", nullable: false),
+                    RegistrationCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RegisterDate = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StudentRegisterPrograms", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StudentRegisterPrograms_Programs_ProgramId",
+                        column: x => x.ProgramId,
+                        principalTable: "Programs",
+                        principalColumn: "ProgramId");
+                    table.ForeignKey(
+                        name: "FK_StudentRegisterPrograms_Students_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Students",
+                        principalColumn: "StudentId");
                 });
 
             migrationBuilder.CreateIndex(
@@ -351,6 +414,21 @@ namespace zzu_university.data.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Programs_FacultyId",
+                table: "Programs",
+                column: "FacultyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudentRegisterPrograms_ProgramId",
+                table: "StudentRegisterPrograms",
+                column: "ProgramId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudentRegisterPrograms_StudentId",
+                table: "StudentRegisterPrograms",
+                column: "StudentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Students_SelectedProgramId",
                 table: "Students",
                 column: "SelectedProgramId");
@@ -390,7 +468,10 @@ namespace zzu_university.data.Migrations
                 name: "Services");
 
             migrationBuilder.DropTable(
-                name: "Students");
+                name: "StudentPayments");
+
+            migrationBuilder.DropTable(
+                name: "StudentRegisterPrograms");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -399,7 +480,13 @@ namespace zzu_university.data.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
+                name: "Students");
+
+            migrationBuilder.DropTable(
                 name: "Programs");
+
+            migrationBuilder.DropTable(
+                name: "Faculties");
         }
     }
 }

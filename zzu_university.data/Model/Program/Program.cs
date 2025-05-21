@@ -1,32 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using zzu_university.data.Model.Student;
+﻿using System.ComponentModel.DataAnnotations;
+using zzu_university.data.Model.Faculty;
+using zzu_university.data.Model.StudentRegisterProgram;
+using zzu_university.data.Model.StudentRegisterProgram;
 
-namespace zzu_university.data.Model.Program
+public class AcadmicProgram
 {
-    public class AcadmicProgram
-    {
-        [Key]
-        public int programId { get; set; }
+    [Key]
+    public int ProgramId { get; set; }
 
-        [Required]
-        [MaxLength(150)]
-        public string name { get; set; }
+    [Required]
+    [MaxLength(150)]
+    public string Name { get; set; }
 
-        [MaxLength(1000)] 
-        public string Description { get; set; }
+    [MaxLength(1000)]
+    public string Description { get; set; }
 
-        [Required]
-        public decimal TuitionFees { get; set; } // المصاريف الدراسية
+    [Required]
+    public decimal TuitionFees { get; set; }
 
-        [Required]
-        public int DurationInYears { get; set; } // مدة البرنامج بالسنوات
+    [Required]
+    public int DurationInYears { get; set; }
 
-        public ICollection<zzu_university.data.Model.Student.Student> Students { get; set; }
-    }
+    public int FacultyId { get; set; }
+    public Faculty Faculty { get; set; }
+
+    public string ProgramCode { get; set; }
+
+    // العلاقة مع الطلبة
+    public ICollection<Student> Students { get; set; }
+
+    // العلاقة مع جدول التسجيل
+    public ICollection<StudentRegisterProgram> StudentRegistrations { get; set; }
 }
-

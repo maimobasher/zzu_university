@@ -45,5 +45,6 @@ namespace zzu_university.domain.StudentDto
         public string program { get; set; }
 
         public bool IsPaymentCompleted { get; set; }
+        public int SelectedProgramId { get; set; }
     }
 }

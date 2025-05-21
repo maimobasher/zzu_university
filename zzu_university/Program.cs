@@ -77,6 +77,8 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IProgramService, ProgramService>();
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddLogging();  // Ensure logging service is added
+builder.Services.AddHttpClient<zzu_university.services.Payment.FawryPaymentService>();
+builder.Services.AddScoped<zzu_university.services.Payment.FawryPaymentService>();
 
 // Controllers and Swagger
 //builder.Services.AddCors(options =>

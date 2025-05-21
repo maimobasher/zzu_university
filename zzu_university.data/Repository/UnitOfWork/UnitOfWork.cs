@@ -1,4 +1,5 @@
 ﻿using zzu_university.data.Data;
+using zzu_university.data.Repository;
 using zzu_university.data.Repository.AboutRepo;
 using zzu_university.data.Repository.MainPageRepo;
 using zzu_university.data.Repository.ManagmentRepo;
@@ -19,6 +20,7 @@ public class UnitOfWork : IUnitOfWork
     public IUserRepo User { get; private set; }
     public IStudentRepo Student { get; private set; }
     public IProgramRepo Program { get; private set; }
+    public IFacultyRepo Faculty { get; private set; }
 
     public UnitOfWork(ApplicationDbContext context)
     {
@@ -30,6 +32,8 @@ public class UnitOfWork : IUnitOfWork
         Service = new ServiceRepo(_context);
         Student = new StudentRepo(_context);
         Program = new ProgramRepo(_context);
+        Faculty = new FacultyRepository(_context);
+
     }
 
     public int Save()

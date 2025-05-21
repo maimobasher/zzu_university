@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using zzu_university.data.Model.About;
 using zzu_university.data.Model.MainPage;
 using zzu_university.data.Model;
 using zzu_university.data.Model.News;
 using zzu_university.data.Model.Services;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using zzu_university.data.Model.Student;
-using zzu_university.data.Model.Program;
+using zzu_university.data.Model.Payment;
+using zzu_university.data.Model.Faculty;
+using zzu_university.data.Model.StudentRegisterProgram;
 
 namespace zzu_university.data.Data
 {
@@ -27,6 +22,9 @@ namespace zzu_university.data.Data
         public DbSet<About> Abouts { get; set; }
         public DbSet<Student> Students { get; set; }
         public DbSet<AcadmicProgram> Programs { get; set; }
+        public DbSet<StudentPayment> StudentPayments { get; set; }
+        public DbSet<StudentRegisterProgram> StudentRegisterPrograms { get; set; }
+        public DbSet<Faculty> Faculties { get; set; }
         //public DbSet<User> Users { get; set; }  
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
@@ -35,8 +33,11 @@ namespace zzu_university.data.Data
         //}
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder); // تأكد من أن هذه تأتي مرة واحدة فقط
+
+            // إعداد خصائص About
             modelBuilder.Entity<About>()
-              .HasKey(a => a.Id);
+                .HasKey(a => a.Id);
 
             modelBuilder.Entity<About>()
                 .Property(a => a.Title)
@@ -70,12 +71,33 @@ namespace zzu_university.data.Data
             modelBuilder.Entity<About>()
                 .Property(a => a.Address)
                 .HasMaxLength(500);
+
+            // علاقة Managment مع User
             modelBuilder.Entity<Managment>()
-    .HasOne(m => m.Users)
-    .WithMany(u => u.Managments)
-    .HasForeignKey(m => m.UserId)
-    .OnDelete(DeleteBehavior.SetNull);
-            base.OnModelCreating(modelBuilder);
+                .HasOne(m => m.Users)
+                .WithMany(u => u.Managments)
+                .HasForeignKey(m => m.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<StudentRegisterProgram>()
+        .HasOne(srp => srp.Student)
+        .WithMany(s => s.ProgramRegistrations)
+        .HasForeignKey(srp => srp.StudentId)
+        .OnDelete(DeleteBehavior.NoAction);  // هنا منع الحذف التلقائي
+
+            modelBuilder.Entity<StudentRegisterProgram>()
+                .HasOne(srp => srp.Program)
+                .WithMany(p => p.StudentRegistrations)
+                .HasForeignKey(srp => srp.ProgramId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Student>()
+                .HasOne(s => s.Program)
+                .WithMany(p => p.Students)
+                .HasForeignKey(s => s.SelectedProgramId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using zzu_university.data.Repository;
 using zzu_university.data.Repository.AboutRepo;
 using zzu_university.data.Repository.MainPageRepo;
 using zzu_university.data.Repository.ManagmentRepo;
@@ -18,6 +19,7 @@ public interface IUnitOfWork : IDisposable
     IUserRepo User { get; }
     IStudentRepo Student { get; }
     IProgramRepo Program { get; }
+    IFacultyRepo Faculty { get; }
     Task SaveAsync();
     Task CompleteAsync();
     int Save(); // ← خليها بحرف S كبير زي الكلاس

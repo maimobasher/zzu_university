@@ -14,5 +14,7 @@ namespace zzu_university.domain.Service.ProgramService
         Task CreateProgramAsync(ProgramCreateDto programCreateDto);
         Task UpdateProgramAsync(ProgramUpdateDto programUpdateDto);
         Task DeleteProgramAsync(int id);
+        Task<IEnumerable<ProgramReadDto>> GetProgramsByFacultyIdAsync(int facultyId);
+
     }
 }

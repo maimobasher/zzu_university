@@ -1,15 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using zzu_university.data.Data;
-using zzu_university.data.Model.Program;
 
 namespace zzu_university.data.Repository.ProgramRepo
 {
-    public class ProgramRepo:IProgramRepo
+    public class ProgramRepo : IProgramRepo
     {
         private readonly ApplicationDbContext _context;
 
@@ -49,6 +43,13 @@ namespace zzu_university.data.Repository.ProgramRepo
                 await _context.SaveChangesAsync();
             }
         }
+
+        // هذا التنفيذ يستدعي تحميل كل البرامج للذاكرة ثم يطبق الفلتر
+        // انتبه: هذا قد يكون غير فعال إذا عدد البرامج كبير جداً
+        public async Task<IEnumerable<AcadmicProgram>> FindAsync(Func<AcadmicProgram, bool> predicate)
+        {
+            var allPrograms = await _context.Programs.ToListAsync(); // جلب كل البرامج
+            return allPrograms.Where(predicate); // تطبيق الفلتر في الذاكرة
+        }
     }
 }
-

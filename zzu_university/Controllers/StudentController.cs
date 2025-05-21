@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using zzu_university.domain.Service.StudentService;
 using zzu_university.domain.StudentDto;
+using zzu_university.domain.DTOS;
+using zzu_university.services.Payment;
 
 namespace zzu_university.api.Controllers
 {
@@ -11,10 +11,12 @@ namespace zzu_university.api.Controllers
     public class StudentController : ControllerBase
     {
         private readonly IStudentService _studentService;
+        private readonly FawryPaymentService _fawryPaymentService;
 
-        public StudentController(IStudentService studentService)
+        public StudentController(IStudentService studentService, FawryPaymentService fawryPaymentService)
         {
             _studentService = studentService;
+            _fawryPaymentService = fawryPaymentService;
         }
 
         // GET: api/student
@@ -79,6 +81,27 @@ namespace zzu_university.api.Controllers
             }
 
             return NoContent();
+        }
+
+        // ✅ POST: api/student/5/generate-fawry-code
+        [HttpPost("{id}/generate-fawry-code")]
+        public async Task<ActionResult<PaymentResponseDto>> GenerateFawryPaymentCode(int id)
+        {
+            var studentDto = await _studentService.GetStudentByIdAsync(id);
+
+            if (studentDto == null)
+            {
+                return NotFound("الطالب غير موجود.");
+            }
+
+            var paymentResult = await _fawryPaymentService.CreateFawryCodeAsync(studentDto);
+
+            if (paymentResult == null || string.IsNullOrEmpty(paymentResult.ReferenceCode))
+            {
+                return BadRequest("فشل إنشاء كود فوري.");
+            }
+
+            return Ok(paymentResult);
         }
     }
 }

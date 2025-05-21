@@ -1,11 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using zzu_university.data.Data;
-using zzu_university.data.Model.Student;
 
 namespace zzu_university.data.Repository.StudentRepo
 {

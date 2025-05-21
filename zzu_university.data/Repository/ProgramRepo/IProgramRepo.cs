@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using zzu_university.data.Model.Program;
 
 namespace zzu_university.data.Repository.ProgramRepo
 {
@@ -14,5 +11,8 @@ namespace zzu_university.data.Repository.ProgramRepo
         Task AddProgramAsync(AcadmicProgram program);
         Task UpdateProgramAsync(AcadmicProgram program);
         Task DeleteProgramAsync(int id);
+
+        // التعديل هنا: استخدم النوع AcadmicProgram بدلاً من object
+        Task<IEnumerable<AcadmicProgram>> FindAsync(Func<AcadmicProgram, bool> predicate);
     }
 }

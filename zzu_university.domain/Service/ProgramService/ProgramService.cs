@@ -1,8 +1,4 @@
-﻿using zzu_university.data.Model.Program;
-using zzu_university.domain.DTOS.ProgramDto;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using zzu_university.domain.DTOS.ProgramDto;
 
 namespace zzu_university.domain.Service.ProgramService
 {
@@ -22,8 +18,8 @@ namespace zzu_university.domain.Service.ProgramService
             // تحويل يدوي من Program إلى ProgramReadDto
             var programDtos = programs.Select(p => new ProgramReadDto
             {
-                ProgramId = p.programId,
-                Name = p.name,
+                ProgramId = p.ProgramId,
+                Name = p.Name,
                 Description = p.Description,
                 TuitionFees = p.TuitionFees,
                 DurationInYears = p.DurationInYears
@@ -31,6 +27,20 @@ namespace zzu_university.domain.Service.ProgramService
 
             return programDtos;
         }
+        public async Task<IEnumerable<ProgramReadDto>> GetProgramsByFacultyIdAsync(int facultyId)
+        {
+            var programs = await _unitOfWork.Program.FindAsync(p => p.FacultyId == facultyId);
+            return programs.Select(p => new ProgramReadDto
+            {
+                ProgramId = p.ProgramId,
+                Name = p.Name,
+                Description = p.Description,
+                TuitionFees = p.TuitionFees,
+                DurationInYears = p.DurationInYears,
+                FacultyId = p.FacultyId
+            });
+        }
+
 
         public async Task<ProgramReadDto> GetProgramByIdAsync(int id)
         {
@@ -39,8 +49,8 @@ namespace zzu_university.domain.Service.ProgramService
             // تحويل يدوي من Program إلى ProgramReadDto
             var programDto = new ProgramReadDto
             {
-                ProgramId = program.programId,
-                Name = program.name,
+                ProgramId = program.ProgramId,
+                Name = program.Name,
                 Description = program.Description,
                 TuitionFees = program.TuitionFees,
                 DurationInYears = program.DurationInYears
@@ -54,7 +64,7 @@ namespace zzu_university.domain.Service.ProgramService
             // تحويل يدوي من ProgramCreateDto إلى AcadmicProgram
             var program = new AcadmicProgram
             {
-                name = programCreateDto.Name,
+                Name = programCreateDto.Name,
                 Description = programCreateDto.Description,
                 TuitionFees = programCreateDto.TuitionFees,
                 DurationInYears = programCreateDto.DurationInYears
@@ -69,8 +79,8 @@ namespace zzu_university.domain.Service.ProgramService
             // تحويل يدوي من ProgramUpdateDto إلى AcadmicProgram
             var program = new AcadmicProgram
             {
-                programId = programUpdateDto.ProgramId,
-                name = programUpdateDto.Name,
+                ProgramId = programUpdateDto.ProgramId,
+                Name = programUpdateDto.Name,
                 Description = programUpdateDto.Description,
                 TuitionFees = programUpdateDto.TuitionFees,
                 DurationInYears = programUpdateDto.DurationInYears

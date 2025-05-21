@@ -21,6 +21,7 @@ namespace zzu_university.domain.DTOS.ProgramDto
 
         [Required]
         public int DurationInYears { get; set; }
+        public int FacultyId { get; set; }
     }
 }
 

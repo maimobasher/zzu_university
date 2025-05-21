@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using zzu_university.data.Model.Student;
-
-namespace zzu_university.data.Repository.StudentRepo
+﻿namespace zzu_university.data.Repository.StudentRepo
 {
     public interface IStudentRepo
     {

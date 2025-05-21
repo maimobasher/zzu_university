@@ -1,5 +1,4 @@
-﻿using zzu_university.data.Model.Student;
-using zzu_university.domain.StudentDto;
+﻿using zzu_university.domain.StudentDto;
 
 namespace zzu_university.domain.Service.StudentService
 {
@@ -35,7 +34,7 @@ namespace zzu_university.domain.Service.StudentService
                 graduationYear = s.graduationYear,
                 faculty = s.faculty,
                 semester = s.semester,
-                program = s.Program?.name,
+                program = s.Program?.Name,
                 IsPaymentCompleted = s.IsPaymentCompleted
             });
         }
@@ -65,7 +64,7 @@ namespace zzu_university.domain.Service.StudentService
                 phone = student.phone,
                 email = student.email,
                 postalCode = student.postalCode,
-                program = student.Program?.name,
+                program = student.Program?.Name,
                 IsPaymentCompleted = student.IsPaymentCompleted
             };
         }
