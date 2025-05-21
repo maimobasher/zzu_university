@@ -21,6 +21,7 @@ public class UnitOfWork : IUnitOfWork
     public IStudentRepo Student { get; private set; }
     public IProgramRepo Program { get; private set; }
     public IFacultyRepo Faculty { get; private set; }
+    public IStudentRegisterProgramRepo StudentRegister { get; private set; }
 
     public UnitOfWork(ApplicationDbContext context)
     {
@@ -33,6 +34,7 @@ public class UnitOfWork : IUnitOfWork
         Student = new StudentRepo(_context);
         Program = new ProgramRepo(_context);
         Faculty = new FacultyRepository(_context);
+        StudentRegister=new StudentRegisterProgramRepository(_context);
 
     }
 
@@ -40,10 +42,11 @@ public class UnitOfWork : IUnitOfWork
     {
         return _context.SaveChanges();
     }
-    public async Task CompleteAsync()
+    public async Task<int> CompleteAsync()
     {
-        await _context.SaveChangesAsync();
+        return await _context.SaveChangesAsync();
     }
+    
     public async Task SaveAsync()
     {
         await _context.SaveChangesAsync();

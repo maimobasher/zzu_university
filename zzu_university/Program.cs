@@ -15,6 +15,7 @@ using System.Security.Claims;
 using zzu_university.Servicess;
 using zzu_university.domain.Service.ProgramService;
 using zzu_university.domain.Service.StudentService;
+using zzu_university.data.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

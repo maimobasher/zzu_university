@@ -20,7 +20,8 @@ public interface IUnitOfWork : IDisposable
     IStudentRepo Student { get; }
     IProgramRepo Program { get; }
     IFacultyRepo Faculty { get; }
+    IStudentRegisterProgramRepo StudentRegister { get; }
     Task SaveAsync();
-    Task CompleteAsync();
+    Task<int> CompleteAsync();
     int Save(); // ← خليها بحرف S كبير زي الكلاس
 }
