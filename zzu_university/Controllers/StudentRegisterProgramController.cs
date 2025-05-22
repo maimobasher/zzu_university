@@ -68,7 +68,7 @@ public class StudentRegisterProgramsController : ControllerBase
         if (!studentExists)
             return BadRequest($"Student with Id {dto.StudentId} does not exist.");
 
-        var programExists = await _unitOfWork.Program.ExistsAsync(dto.ProgramId);
+        var programExists = await _unitOfWork.Student.ExistsAsync(dto.ProgramId);
         if (!programExists)
             return BadRequest($"Program with Id {dto.ProgramId} does not exist.");
 

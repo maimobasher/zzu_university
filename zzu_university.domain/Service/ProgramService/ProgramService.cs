@@ -1,4 +1,5 @@
-﻿using zzu_university.domain.DTOS.ProgramDto;
+﻿using Microsoft.EntityFrameworkCore;
+using zzu_university.domain.DTOS.ProgramDto;
 
 namespace zzu_university.domain.Service.ProgramService
 {
@@ -37,10 +38,12 @@ namespace zzu_university.domain.Service.ProgramService
                 Description = p.Description,
                 TuitionFees = p.TuitionFees,
                 DurationInYears = p.DurationInYears,
-                FacultyId = p.FacultyId
+                FacultyId = p.FacultyId,
+                ProgramCode = p.ProgramCode 
             });
         }
 
+       
 
         public async Task<ProgramReadDto> GetProgramByIdAsync(int id)
         {
