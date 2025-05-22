@@ -8,7 +8,7 @@ using zzu_university.domain.DTOS;
 
 namespace zzu_university.data.Services
 {
-    public class StudentRegisterProgramService
+    public class StudentRegisterProgramService:IStudentRegisterProgramService
     {
         private readonly ApplicationDbContext _context;
 
@@ -29,7 +29,9 @@ namespace zzu_university.data.Services
                     ProgramId = srp.ProgramId,
                     RegistrationCode = srp.RegistrationCode,
                     RegisterDate = srp.RegisterDate,
-                    ProgramCode = srp.Program != null ? srp.Program.ProgramCode : null
+                    ProgramCode = srp.Program != null ? srp.Program.ProgramCode : null,
+                    status = srp.status
+
 
 
 
@@ -53,7 +55,8 @@ namespace zzu_university.data.Services
                 ProgramId = srp.ProgramId,
                 RegistrationCode = srp.RegistrationCode,
                 RegisterDate = srp.RegisterDate,
-                ProgramCode = srp.Program != null ? srp.Program.ProgramCode : null
+                ProgramCode = srp.Program != null ? srp.Program.ProgramCode : null,
+                status = srp.status
             };
         }
 
@@ -67,7 +70,8 @@ namespace zzu_university.data.Services
                 ProgramId = dto.ProgramId,
                 RegistrationCode = dto.RegistrationCode,
                 RegisterDate = dto.RegisterDate,
-                ProgramCode = dto.ProgramCode
+                ProgramCode = dto.ProgramCode,
+                status = dto.status
             };
 
             _context.StudentRegisterPrograms.Add(entity);
@@ -88,6 +92,7 @@ namespace zzu_university.data.Services
             entity.RegistrationCode = dto.RegistrationCode;
             entity.RegisterDate = dto.RegisterDate;
             entity.ProgramCode = dto.ProgramCode;
+            entity.status = dto.status;
 
             await _context.SaveChangesAsync();
             return true;

@@ -80,7 +80,8 @@ builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddLogging();  // Ensure logging service is added
 builder.Services.AddHttpClient<zzu_university.services.Payment.FawryPaymentService>();
 builder.Services.AddScoped<zzu_university.services.Payment.FawryPaymentService>();
-
+builder.Services.AddScoped<IFacultyService, FacultyService>();
+builder.Services.AddScoped<IStudentRegisterProgramService, StudentRegisterProgramService>();
 // Controllers and Swagger
 //builder.Services.AddCors(options =>
 //{

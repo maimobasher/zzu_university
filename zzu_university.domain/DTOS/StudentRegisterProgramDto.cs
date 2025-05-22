@@ -17,7 +17,7 @@ namespace zzu_university.domain.DTOS
 
         public string RegistrationCode { get; set; }
         public string ProgramAndReferenceCode { get; set; }//=> $"{ProgramCode}{RegistrationCode}";
-
+        public string status { get; set; } //=> "Pending" or "Accepted" or "Rejected"
         public string RegisterDate { get; set; }
     }
 }

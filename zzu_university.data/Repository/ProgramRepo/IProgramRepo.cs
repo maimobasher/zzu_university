@@ -14,5 +14,6 @@ namespace zzu_university.data.Repository.ProgramRepo
 
         // التعديل هنا: استخدم النوع AcadmicProgram بدلاً من object
         Task<IEnumerable<AcadmicProgram>> FindAsync(Func<AcadmicProgram, bool> predicate);
+        Task<bool> ExistsAsync(int id);
     }
 }

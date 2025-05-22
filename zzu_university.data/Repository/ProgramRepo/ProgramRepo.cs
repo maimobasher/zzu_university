@@ -43,7 +43,10 @@ namespace zzu_university.data.Repository.ProgramRepo
                 await _context.SaveChangesAsync();
             }
         }
-
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _context.Students.AnyAsync(s => s.StudentId == id);
+        }
         // هذا التنفيذ يستدعي تحميل كل البرامج للذاكرة ثم يطبق الفلتر
         // انتبه: هذا قد يكون غير فعال إذا عدد البرامج كبير جداً
         public async Task<IEnumerable<AcadmicProgram>> FindAsync(Func<AcadmicProgram, bool> predicate)

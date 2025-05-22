@@ -33,7 +33,10 @@ namespace zzu_university.data.Repository.StudentRepo
             _context.Students.Update(student);
             await _context.SaveChangesAsync();
         }
-
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _context.Students.AnyAsync(s => s.StudentId == id);
+        }
         public async Task DeleteStudentAsync(int id)
         {
             var student = await _context.Students.FindAsync(id);

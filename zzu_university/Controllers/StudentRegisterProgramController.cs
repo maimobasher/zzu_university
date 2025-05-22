@@ -25,7 +25,8 @@ public class StudentRegisterProgramsController : ControllerBase
             ProgramId = item.ProgramId,
             RegistrationCode = item.RegistrationCode,
             RegisterDate = item.RegisterDate,
-            ProgramCode = item.Program?.ProgramCode
+            ProgramCode = item.Program?.ProgramCode,
+            status = item.status
         });
 
         return Ok(result);
@@ -46,7 +47,8 @@ public class StudentRegisterProgramsController : ControllerBase
             RegistrationCode = item.RegistrationCode,
             RegisterDate = item.RegisterDate,
             ProgramCode = item.Program?.ProgramCode,
-            ProgramAndReferenceCode=item.ProgramAndReferenceCode
+            ProgramAndReferenceCode=item.ProgramAndReferenceCode,
+            status = item.status
         };
 
         return Ok(result);
@@ -59,6 +61,16 @@ public class StudentRegisterProgramsController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
+        // Check if student exists
+        var studentExists = await _unitOfWork.Student.ExistsAsync(dto.StudentId);
+        if (!studentExists)
+            return BadRequest($"Student with Id {dto.StudentId} does not exist.");
+
+        // Check if program exists
+        var programExists = await _unitOfWork.Program.ExistsAsync(dto.ProgramId);
+        if (!programExists)
+            return BadRequest($"Program with Id {dto.ProgramId} does not exist.");
+
         var entity = new StudentRegisterProgram
         {
             StudentId = dto.StudentId,
@@ -66,7 +78,8 @@ public class StudentRegisterProgramsController : ControllerBase
             RegistrationCode = dto.RegistrationCode,
             RegisterDate = dto.RegisterDate,
             ProgramCode = dto.ProgramCode,
-            ProgramAndReferenceCode = dto.ProgramCode + "-" + dto.RegistrationCode
+            ProgramAndReferenceCode = dto.ProgramCode + "-" + dto.RegistrationCode,
+            status = dto.status
         };
 
         await _unitOfWork.StudentRegister.AddAsync(entity);
@@ -76,10 +89,11 @@ public class StudentRegisterProgramsController : ControllerBase
             return BadRequest("Failed to save the student register program.");
 
         dto.Id = entity.Id;
-        dto.ProgramAndReferenceCode = entity.ProgramAndReferenceCode; // Include it in the returned DTO
+        dto.ProgramAndReferenceCode = entity.ProgramAndReferenceCode;
 
         return CreatedAtAction(nameof(GetById), new { id = entity.Id }, dto);
     }
+
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, StudentRegisterProgramDto dto)
@@ -100,6 +114,7 @@ public class StudentRegisterProgramsController : ControllerBase
         existing.RegisterDate = dto.RegisterDate;
         existing.ProgramCode = dto.ProgramCode;
         existing.ProgramAndReferenceCode = dto.ProgramCode + "-" + dto.RegistrationCode;
+        existing.status = dto.status;
         _unitOfWork.StudentRegister.Update(existing);
         var saved = await _unitOfWork.CompleteAsync();
 

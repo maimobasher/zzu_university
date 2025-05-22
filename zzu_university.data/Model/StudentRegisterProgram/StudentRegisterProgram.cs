@@ -17,7 +17,7 @@ namespace zzu_university.data.Model.StudentRegisterProgram
         public string RegisterDate { get; set; }
         public string  ProgramCode { get; set; }
         public string ProgramAndReferenceCode { get; set; } //=> $"{ProgramCode}{RegistrationCode}";
-
+        public string status { get; set; } //=> "Pending" or "Accepted" or "Rejected"   
         // العلاقات - بدون [ForeignKey] إذا كان اسم الـ FK واضح
         public Student Student { get; set; }
         public AcadmicProgram Program { get; set; }
