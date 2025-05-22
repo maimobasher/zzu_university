@@ -13,8 +13,10 @@ namespace zzu_university.domain.DTOS
         public int StudentId { get; set; }
 
         public int ProgramId { get; set; }
+        public String  ProgramCode { get; set; }
 
         public string RegistrationCode { get; set; }
+        public string ProgramAndReferenceCode { get; set; }//=> $"{ProgramCode}{RegistrationCode}";
 
         public string RegisterDate { get; set; }
     }

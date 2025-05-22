@@ -22,13 +22,17 @@ namespace zzu_university.data.Services
         {
             return await _context.StudentRegisterPrograms
                 .AsNoTracking()
-                .Select(srp => new StudentRegisterProgramDto
+                .Select(static srp => new StudentRegisterProgramDto
                 {
                     Id = srp.Id,
                     StudentId = srp.StudentId,
                     ProgramId = srp.ProgramId,
                     RegistrationCode = srp.RegistrationCode,
-                    RegisterDate = srp.RegisterDate
+                    RegisterDate = srp.RegisterDate,
+                    ProgramCode = srp.Program != null ? srp.Program.ProgramCode : null
+
+
+
                 })
                 .ToListAsync();
         }
@@ -36,7 +40,10 @@ namespace zzu_university.data.Services
         // جلب تسجيل حسب Id
         public async Task<StudentRegisterProgramDto> GetByIdAsync(int id)
         {
-            var srp = await _context.StudentRegisterPrograms.FindAsync(id);
+            var srp = await _context.StudentRegisterPrograms
+                .Include(srp => srp.Program)
+                .FirstOrDefaultAsync(srp => srp.Id == id);
+
             if (srp == null) return null;
 
             return new StudentRegisterProgramDto
@@ -45,10 +52,12 @@ namespace zzu_university.data.Services
                 StudentId = srp.StudentId,
                 ProgramId = srp.ProgramId,
                 RegistrationCode = srp.RegistrationCode,
-                RegisterDate = srp.RegisterDate
+                RegisterDate = srp.RegisterDate,
+                ProgramCode = srp.Program != null ? srp.Program.ProgramCode : null
             };
         }
 
+        
         // إضافة تسجيل جديد
         public async Task<StudentRegisterProgramDto> CreateAsync(StudentRegisterProgramDto dto)
         {
@@ -57,7 +66,8 @@ namespace zzu_university.data.Services
                 StudentId = dto.StudentId,
                 ProgramId = dto.ProgramId,
                 RegistrationCode = dto.RegistrationCode,
-                RegisterDate = dto.RegisterDate
+                RegisterDate = dto.RegisterDate,
+                ProgramCode = dto.ProgramCode
             };
 
             _context.StudentRegisterPrograms.Add(entity);
@@ -77,6 +87,7 @@ namespace zzu_university.data.Services
             entity.ProgramId = dto.ProgramId;
             entity.RegistrationCode = dto.RegistrationCode;
             entity.RegisterDate = dto.RegisterDate;
+            entity.ProgramCode = dto.ProgramCode;
 
             await _context.SaveChangesAsync();
             return true;

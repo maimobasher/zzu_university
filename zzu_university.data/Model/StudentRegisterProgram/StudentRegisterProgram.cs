@@ -15,6 +15,8 @@ namespace zzu_university.data.Model.StudentRegisterProgram
 
         public string RegistrationCode { get; set; }
         public string RegisterDate { get; set; }
+        public string  ProgramCode { get; set; }
+        public string ProgramAndReferenceCode { get; set; } //=> $"{ProgramCode}{RegistrationCode}";
 
         // العلاقات - بدون [ForeignKey] إذا كان اسم الـ FK واضح
         public Student Student { get; set; }
