@@ -14,5 +14,6 @@ namespace zzu_university.domain.DTOS.ProgramDto
         public decimal TuitionFees { get; set; }
         public int DurationInYears { get; set; }
         public int FacultyId { get; set; }
+        public string ProgramCode { get; set; }
     }
 }

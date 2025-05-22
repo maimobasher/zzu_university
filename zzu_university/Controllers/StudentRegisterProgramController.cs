@@ -1,16 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using zzu_university.data.Model.StudentRegisterProgram;
 using zzu_university.domain.DTOS;
+using zzu_university.domain.Service.StudentRegisterService;
 
 [Route("api/[controller]")]
 [ApiController]
 public class StudentRegisterProgramsController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
-
-    public StudentRegisterProgramsController(IUnitOfWork unitOfWork)
+    private readonly IStudentRegisterService _studentRegisterService;
+    public StudentRegisterProgramsController(IUnitOfWork unitOfWork,
+    IStudentRegisterService studentRegisterService)
     {
         _unitOfWork = unitOfWork;
+        _studentRegisterService = studentRegisterService;
     }
 
     [HttpGet]
@@ -61,15 +64,16 @@ public class StudentRegisterProgramsController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        // Check if student exists
         var studentExists = await _unitOfWork.Student.ExistsAsync(dto.StudentId);
         if (!studentExists)
             return BadRequest($"Student with Id {dto.StudentId} does not exist.");
 
-        // Check if program exists
         var programExists = await _unitOfWork.Program.ExistsAsync(dto.ProgramId);
         if (!programExists)
             return BadRequest($"Program with Id {dto.ProgramId} does not exist.");
+
+        // 👇 Call the service to get the next registration code
+        dto.RegistrationCode = await _studentRegisterService.GenerateNextRegistrationCodeAsync();
 
         var entity = new StudentRegisterProgram
         {
@@ -93,6 +97,33 @@ public class StudentRegisterProgramsController : ControllerBase
 
         return CreatedAtAction(nameof(GetById), new { id = entity.Id }, dto);
     }
+
+    [HttpGet("last-registration-code")]
+    public async Task<ActionResult<string>> GetNextRegistrationCode()
+    {
+        var allRecords = await _unitOfWork.StudentRegister.GetAllAsync();
+
+        var lastCode = allRecords
+                        .OrderByDescending(x => x.Id)
+                        .Select(x => x.RegistrationCode)
+                        .FirstOrDefault();
+
+        if (string.IsNullOrEmpty(lastCode))
+        {
+            return Ok("0001");
+        }
+
+        if (!int.TryParse(lastCode, out int lastNumber))
+        {
+            return BadRequest("Last RegistrationCode is invalid format.");
+        }
+
+        int nextNumber = lastNumber + 1;
+        string nextCode = nextNumber.ToString("D4");
+
+        return Ok(nextCode);
+    }
+
 
 
     [HttpPut("{id}")]

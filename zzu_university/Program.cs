@@ -16,6 +16,7 @@ using zzu_university.Servicess;
 using zzu_university.domain.Service.ProgramService;
 using zzu_university.domain.Service.StudentService;
 using zzu_university.data.Services;
+using zzu_university.domain.Service.StudentRegisterService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -82,6 +83,7 @@ builder.Services.AddHttpClient<zzu_university.services.Payment.FawryPaymentServi
 builder.Services.AddScoped<zzu_university.services.Payment.FawryPaymentService>();
 builder.Services.AddScoped<IFacultyService, FacultyService>();
 builder.Services.AddScoped<IStudentRegisterProgramService, StudentRegisterProgramService>();
+builder.Services.AddScoped<IStudentRegisterService, StudentRegisterService>();
 // Controllers and Swagger
 //builder.Services.AddCors(options =>
 //{
