@@ -43,7 +43,8 @@ namespace zzu_university.domain.StudentDto
         public string faculty { get; set; }
         public string semester { get; set; }
         public string program { get; set; }
-
+        public string UserName { get; set; }
+        public string Password { get; set; }
         public bool IsPaymentCompleted { get; set; }
         public int SelectedProgramId { get; set; }
     }

@@ -35,7 +35,9 @@ namespace zzu_university.domain.Service.StudentService
                 faculty = s.faculty,
                 semester = s.semester,
                 program = s.Program?.Name,
-                IsPaymentCompleted = s.IsPaymentCompleted
+                IsPaymentCompleted = s.IsPaymentCompleted,
+                UserName = s.UserName,
+                Password = s.Password
             });
         }
 
@@ -65,7 +67,9 @@ namespace zzu_university.domain.Service.StudentService
                 email = student.email,
                 postalCode = student.postalCode,
                 program = student.Program?.Name,
-                IsPaymentCompleted = student.IsPaymentCompleted
+                IsPaymentCompleted = student.IsPaymentCompleted,
+                UserName = student.UserName,
+                Password = student.Password
             };
         }
 
@@ -92,7 +96,9 @@ namespace zzu_university.domain.Service.StudentService
                 phone = studentCreateDto.phone,
                 email = studentCreateDto.email,
                 SelectedProgramId = studentCreateDto.SelectedProgramId,
-                IsPaymentCompleted = false
+                IsPaymentCompleted = false,
+                UserName = studentCreateDto.UserName,
+                Password = studentCreateDto.Password
             };
 
             await _unitOfWork.Student.AddStudentAsync(student);
@@ -119,7 +125,9 @@ namespace zzu_university.domain.Service.StudentService
                 phone = student.phone,
                 email = student.email,
                 program = "", // تقدر تجيب اسم البرنامج لو احتجت
-                IsPaymentCompleted = student.IsPaymentCompleted
+                IsPaymentCompleted = student.IsPaymentCompleted,
+                UserName=student.UserName,  
+                Password = student.Password
             };
         }
 
@@ -148,7 +156,8 @@ namespace zzu_university.domain.Service.StudentService
             student.email = studentUpdateDto.email;
             student.SelectedProgramId = studentUpdateDto.SelectedProgramId;
             student.IsPaymentCompleted = studentUpdateDto.IsPaymentCompleted;
-
+            student.UserName = studentUpdateDto.UserName;
+            student.Password = studentUpdateDto.Password;   
             await _unitOfWork.Student.UpdateStudentAsync(student);
             await _unitOfWork.SaveAsync();
 
@@ -173,7 +182,9 @@ namespace zzu_university.domain.Service.StudentService
                 semester = student.semester,
                 email = student.email,
                 program= "", // تقدر تجيب اسم البرنامج لو احتجت
-                IsPaymentCompleted = student.IsPaymentCompleted
+                IsPaymentCompleted = student.IsPaymentCompleted,
+                UserName = student.UserName,
+                Password = student.Password
             };
         }
 
