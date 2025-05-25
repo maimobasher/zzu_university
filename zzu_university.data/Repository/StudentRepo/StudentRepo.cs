@@ -46,6 +46,15 @@ namespace zzu_university.data.Repository.StudentRepo
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task<Student> GetStudentWithProgramAndRegistrationsAsync(int id)
+        {
+            return await _context.Students
+                .Include(s => s.Program)
+                .Include(s => s.ProgramRegistrations)
+                    .ThenInclude(pr => pr.Program)
+                .FirstOrDefaultAsync(s => s.StudentId == id);
+        }
+
     }
 }
 

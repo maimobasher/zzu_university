@@ -8,5 +8,7 @@
         Task UpdateStudentAsync(Student student);
         Task DeleteStudentAsync(int id);
         Task<bool> ExistsAsync(int id);
+        Task<Student> GetStudentWithProgramAndRegistrationsAsync(int id);
+
     }
 }
