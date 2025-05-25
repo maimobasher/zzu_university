@@ -5,8 +5,10 @@ using zzu_university.data.Repository.StudentRepo;
 [Route("api/[controller]")]
 public class StudentReportController : ControllerBase
 {
-    private readonly IStudentRepo _studentRepo;
+    //private readonly StudentRepo _studentRepo;
     private readonly StudentPdfReportService _pdfService;
+
+    private readonly IStudentRepo _studentRepo;
 
     public StudentReportController(IStudentRepo studentRepo, StudentPdfReportService pdfService)
     {

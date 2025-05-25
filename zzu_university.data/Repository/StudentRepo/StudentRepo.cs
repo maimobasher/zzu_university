@@ -3,7 +3,7 @@ using zzu_university.data.Data;
 
 namespace zzu_university.data.Repository.StudentRepo
 {
-    internal class StudentRepo:IStudentRepo
+    public class StudentRepo:IStudentRepo
     {
         private readonly ApplicationDbContext _context;
 
