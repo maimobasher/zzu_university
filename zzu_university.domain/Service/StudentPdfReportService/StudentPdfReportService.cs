@@ -7,19 +7,19 @@ public class StudentPdfReportService
 {
     public byte[] GenerateStudentReport(Student student)
     {
-        var selectedRegistration = student.ProgramRegistrations?.FirstOrDefault();
+        var registration = student.ProgramRegistrations?.FirstOrDefault();
 
         var document = Document.Create(container =>
         {
             container.Page(page =>
             {
-                // Apply RTL and Arabic-capable font to everything on this page
+                // RTL + Arabic font
                 page.DefaultTextStyle(x => x
                     .FontFamily("Arial")
                     .FontSize(12)
                     .DirectionFromRightToLeft());
 
-                page.Margin(50);
+                page.Margin(40);
 
                 // Header
                 page.Header()
@@ -28,84 +28,107 @@ public class StudentPdfReportService
                     .FontSize(20)
                     .Bold();
 
-                // Content
                 page.Content().PaddingVertical(10).Column(col =>
                 {
-                    // البيانات الشخصية
-                    col.Item().Text("👤 البيانات الشخصية").FontSize(14).Bold();
-                    col.Item().Text($"الاسم الكامل: {student.firstName} {student.middleName} {student.lastName}");
-                    col.Item().Text($"الرقم القومي: {student.nationalId}");
-                    col.Item().Text($"الهاتف: {student.phone}");
-                    col.Item().Text($"البريد الإلكتروني: {student.email}");
-                    col.Item().Text($"تاريخ الميلاد: {student.dateOfBirth:yyyy-MM-dd}");
-                    col.Item().Text($"النوع: {(student.gender == 1 ? "ذكر" : "أنثى")}");
-                    col.Item().Text($"الجنسية: {student.nationality}");
-                    col.Item().Text($"العنوان: {student.address}, {student.city}, {student.postalCode}");
+                    // Helper to draw a two‐column row
+                    void DrawRow(string label, string? value)
+                    {
+                        col.Item().Row(r =>
+                        {
+                            r.ConstantColumn(120)
+                             .BorderBottom(1).BorderColor(Colors.Grey.Lighten2)
+                             .Padding(5)
+                             .Text(label)
+                             .FontColor(Colors.Green.Darken2)
+                             .SemiBold();
 
-                    col.Item()
-                        .PaddingTop(10)
-                        .PaddingBottom(10)
-                        .BorderBottom(1)
-                        .BorderColor(Colors.Grey.Lighten2);
+                            r.RelativeColumn()
+                             .BorderBottom(1).BorderColor(Colors.Grey.Lighten2)
+                             .Padding(5)
+                             .Text(value ?? "—");
+                        });
+                    }
 
-                    // البيانات التعليمية
-                    col.Item().Text("🎓 البيانات التعليمية").FontSize(14).Bold();
-                    col.Item().Text($"المدرسة الثانوية: {student.highSchool}");
-                    col.Item().Text($"سنة التخرج: {student.graduationYear}");
-                    col.Item().Text($"المعدل التراكمي: {student.gpa}");
-                    col.Item().Text($"الكلية: {student.faculty}");
-                    col.Item().Text($"الفصل الدراسي: {student.semester}");
+                    // ── Personal Info ──
+                    col.Item().PaddingBottom(5)
+                        .Text("👤 البيانات الشخصية")
+                        .FontSize(14)
+                        .Bold();
 
-                    col.Item()
-                        .PaddingTop(10)
-                        .PaddingBottom(10)
-                        .BorderBottom(1)
-                        .BorderColor(Colors.Grey.Lighten2);
+                    DrawRow("الاسم الكامل:", $"{student.firstName} {student.middleName} {student.lastName}");
+                    DrawRow("البريد الإلكتروني:", student.email);
+                    DrawRow("رقم الهاتف:", student.phone);
+                    DrawRow("الرقم القومي:", student.nationalId);
+                    DrawRow("تاريخ الميلاد:", student.dateOfBirth);
+                    DrawRow("النوع:", student.gender == 1 ? "ذكر" : "أنثى");
+                    DrawRow("الجنسية:", student.nationality);
+                    DrawRow("العنوان:", $"{student.address}, {student.city}, {student.postalCode}");
 
-                    // البرنامج الأكاديمي
+                    col.Item().PaddingVertical(10);
+
+                    // ── Education Details ──
+                    col.Item().PaddingBottom(5)
+                        .Text("🎓 البيانات التعليمية")
+                        .FontSize(14)
+                        .Bold();
+
+                    DrawRow("المدرسة الثانوية:", student.highSchool);
+                    DrawRow("سنة التخرج:", student.graduationYear);
+                    DrawRow("المعدل التراكمي:", student.gpa);
+                    DrawRow("الكلية:", student.faculty);
+                    DrawRow("الفصل الدراسي:", student.semester);
+
+                    col.Item().PaddingVertical(10);
+
+                    // ── Academic Program ──
                     if (student.Program != null)
                     {
-                        col.Item().Text("📘 البرنامج الأكاديمي").FontSize(14).Bold();
-                        col.Item().Text($"اسم البرنامج: {student.Program.Name}");
-                        col.Item().Text($"كود البرنامج: {student.Program.ProgramCode}");
-                        col.Item().Text($"الوصف: {student.Program.Description}");
-                        col.Item().Text($"المدة: {student.Program.DurationInYears} سنوات");
-                        col.Item().Text($"الرسوم الدراسية: {student.Program.TuitionFees:N2} جنيه");
+                        col.Item().PaddingBottom(5)
+                            .Text("📘 البرنامج الأكاديمي")
+                            .FontSize(14)
+                            .Bold();
+
+                        DrawRow("اسم البرنامج:", student.Program.Name);
+                        DrawRow("كود البرنامج:", student.Program.ProgramCode);
+                        DrawRow("الوصف:", student.Program.Description);
+                        DrawRow("المدة:", $"{student.Program.DurationInYears} سنوات");
+                        DrawRow("الرسوم الدراسية:", $"{student.Program.TuitionFees:N2} جنيه");
+
+                        col.Item().PaddingVertical(10);
                     }
 
-                    col.Item()
-                        .PaddingTop(10)
-                        .PaddingBottom(10)
-                        .BorderBottom(1)
-                        .BorderColor(Colors.Grey.Lighten2);
-
-                    // بيانات التسجيل
-                    if (selectedRegistration != null)
+                    // ── Registration Details ──
+                    if (registration != null)
                     {
-                        col.Item().Text("📝 بيانات التسجيل").FontSize(14).Bold();
-                        col.Item().Text($"كود التسجيل: {selectedRegistration.RegistrationCode}");
-                        col.Item().Text($"تاريخ التسجيل: {selectedRegistration.RegisterDate:yyyy-MM-dd}");
-                        col.Item().Text($"كود البرنامج: {selectedRegistration.ProgramCode}");
-                        col.Item().Text($"كود المرجع: {selectedRegistration.ProgramAndReferenceCode}");
-                        col.Item().Text($"الحالة: {selectedRegistration.status}");
+                        col.Item().PaddingBottom(5)
+                            .Text("📝 بيانات التسجيل")
+                            .FontSize(14)
+                            .Bold();
+
+                        DrawRow("كود التسجيل:", registration.RegistrationCode);
+                        DrawRow("تاريخ التسجيل:", registration.RegisterDate);
+                        DrawRow("كود المرجع:", registration.ProgramAndReferenceCode);
+                        DrawRow("الحالة:", registration.status);
+
+                        col.Item().PaddingVertical(10);
                     }
 
-                    col.Item()
-                        .PaddingTop(10)
-                        .PaddingBottom(10)
-                        .BorderBottom(1)
-                        .BorderColor(Colors.Grey.Lighten2);
+                    // ── System Info ──
+                    col.Item().PaddingBottom(5)
+                        .Text("🔐 معلومات النظام")
+                        .FontSize(14)
+                        .Bold();
 
-                    // معلومات النظام
-                    col.Item().Text("🔐 معلومات النظام").FontSize(14).Bold();
-                    col.Item().Text($"اسم المستخدم: {student.UserName}");
-                    col.Item().Text($"تم الدفع: {(student.IsPaymentCompleted ? "نعم" : "لا")}");
+                    DrawRow("اسم المستخدم:", student.UserName);
+                    DrawRow("تم الدفع:", student.IsPaymentCompleted ? "نعم" : "لا");
                 });
 
                 // Footer
                 page.Footer()
                     .AlignCenter()
-                    .Text($"تم الإنشاء بتاريخ: {DateTime.Now:yyyy-MM-dd HH:mm}");
+                    .Text($"تم الإنشاء بتاريخ: {DateTime.Now:yyyy-MM-dd HH:mm}")
+                    .FontSize(10)
+                    .SemiBold();
             });
         });
 
