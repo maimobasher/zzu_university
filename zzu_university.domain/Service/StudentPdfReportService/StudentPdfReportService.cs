@@ -13,6 +13,8 @@ public class StudentPdfReportService
         {
             container.Page(page =>
             {
+                page.Size(PageSizes.A4);
+               
                 // 1) RTL + Arabic font
                 page.DefaultTextStyle(x => x
                     .FontFamily("Arial")

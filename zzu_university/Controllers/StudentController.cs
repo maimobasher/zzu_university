@@ -3,6 +3,9 @@ using zzu_university.domain.Service.StudentService;
 using zzu_university.domain.StudentDto;
 using zzu_university.domain.DTOS;
 using zzu_university.services.Payment;
+using Optivem.Framework.Core.Domain;
+using Microsoft.EntityFrameworkCore;
+using zzu_university.data.Data;
 
 namespace zzu_university.api.Controllers
 {
@@ -12,12 +15,18 @@ namespace zzu_university.api.Controllers
     {
         private readonly IStudentService _studentService;
         private readonly FawryPaymentService _fawryPaymentService;
+        private readonly ApplicationDbContext _context;
 
-        public StudentController(IStudentService studentService, FawryPaymentService fawryPaymentService)
-        {
+        public StudentController(
+          ApplicationDbContext context,
+         IStudentService studentService,
+          FawryPaymentService fawryPaymentService)
+         {
+            _context = context;
             _studentService = studentService;
             _fawryPaymentService = fawryPaymentService;
         }
+
 
         // GET: api/student
         [HttpGet]
@@ -82,6 +91,41 @@ namespace zzu_university.api.Controllers
 
             return NoContent();
         }
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] StudentLoginDto dto)
+        {
+            // Check if username exists
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.UserName == dto.Username);
+
+            if (student == null)
+                return NotFound("Username not found.");
+
+            // Validate password
+            if (student.Password != dto.Password)
+                return Unauthorized("Invalid password.");
+
+            // Get latest registration for the student
+            var latestRegister = await _context.StudentRegisterPrograms
+                .Where(r => r.StudentId == student.StudentId)
+                .OrderByDescending(r => r.Id)
+                .FirstOrDefaultAsync();
+
+            // Combine full name
+            var fullName = $"{student.firstName} {student.middleName ?? ""} {student.lastName}".Trim();
+
+            // Return result
+            return Ok(new
+            {
+                student.StudentId,
+                StudentName = fullName,
+                student.nationalId,
+                ProgramCode = latestRegister?.ProgramCode ?? "N/A",
+                RegistrationCode = latestRegister?.RegistrationCode ?? "N/A"
+            });
+        }
+
+
 
         // ✅ POST: api/student/5/generate-fawry-code
         [HttpPost("{id}/generate-fawry-code")]

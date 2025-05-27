@@ -98,28 +98,30 @@ public class StudentRegisterProgramsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = entity.Id }, dto);
     }
 
-    [HttpGet("last-registration-code")]
-    public async Task<ActionResult<string>> GetNextRegistrationCode()
+    [HttpGet("last-registration-code/{programId}")]
+    public async Task<ActionResult<string>> GetNextRegistrationCode(int programId)
     {
         var allRecords = await _unitOfWork.StudentRegister.GetAllAsync();
 
+        // Filter by ProgramId
         var lastCode = allRecords
+                        .Where(x => x.ProgramId == programId)
                         .OrderByDescending(x => x.Id)
                         .Select(x => x.RegistrationCode)
                         .FirstOrDefault();
 
         if (string.IsNullOrEmpty(lastCode))
         {
-            return Ok("0001");
+            return Ok("0001"); // First code for this program
         }
 
         if (!int.TryParse(lastCode, out int lastNumber))
         {
-            return BadRequest("Last RegistrationCode is invalid format.");
+            return BadRequest("Last RegistrationCode is in invalid format.");
         }
 
         int nextNumber = lastNumber + 1;
-        string nextCode = nextNumber.ToString("D4");
+        string nextCode = nextNumber.ToString("D4"); // 4 digits padded
 
         return Ok(nextCode);
     }
