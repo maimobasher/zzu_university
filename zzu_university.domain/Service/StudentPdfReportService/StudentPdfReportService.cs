@@ -119,9 +119,9 @@ public class StudentPdfReportService
                             .FontSize(14)
                             .Bold();
 
-                        DrawRow("كود التسجيل", registration.RegistrationCode);
+                        //DrawRow("كود التسجيل", registration.RegistrationCode);
                         DrawRow("تاريخ التسجيل", registration.RegisterDate);
-                        DrawRow("كود المرجع", registration.ProgramAndReferenceCode);
+                        DrawRow("كود التقديم", registration.ProgramAndReferenceCode);
                         DrawRow("الحالة", registration.status);
 
                         col.Item().PaddingVertical(10);
