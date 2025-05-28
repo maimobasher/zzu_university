@@ -30,8 +30,8 @@ namespace zzu_university.data.Services
                     RegistrationCode = srp.RegistrationCode,
                     RegisterDate = srp.RegisterDate,
                     ProgramCode = srp.Program != null ? srp.Program.ProgramCode : null,
-                    status = srp.status
-
+                    status = srp.status,
+                    ProgramAndReferenceCode=srp.ProgramAndReferenceCode
 
 
 
@@ -56,7 +56,8 @@ namespace zzu_university.data.Services
                 RegistrationCode = srp.RegistrationCode,
                 RegisterDate = srp.RegisterDate,
                 ProgramCode = srp.Program != null ? srp.Program.ProgramCode : null,
-                status = srp.status
+                status = srp.status,
+                ProgramAndReferenceCode = srp.ProgramAndReferenceCode
             };
         }
 
@@ -71,7 +72,9 @@ namespace zzu_university.data.Services
                 RegistrationCode = dto.RegistrationCode,
                 RegisterDate = dto.RegisterDate,
                 ProgramCode = dto.ProgramCode,
-                status = dto.status
+                status = dto.status,
+                ProgramAndReferenceCode= dto.ProgramAndReferenceCode
+                
             };
 
             _context.StudentRegisterPrograms.Add(entity);
@@ -93,6 +96,7 @@ namespace zzu_university.data.Services
             entity.RegisterDate = dto.RegisterDate;
             entity.ProgramCode = dto.ProgramCode;
             entity.status = dto.status;
+            entity.ProgramAndReferenceCode = dto.ProgramAndReferenceCode;
 
             await _context.SaveChangesAsync();
             return true;

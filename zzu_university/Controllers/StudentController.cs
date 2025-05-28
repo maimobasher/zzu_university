@@ -121,7 +121,7 @@ namespace zzu_university.api.Controllers
                 StudentName = fullName,
                 student.nationalId,
                 ProgramCode = latestRegister?.ProgramCode ?? "N/A",
-                RegistrationCode = latestRegister?.RegistrationCode ?? "N/A"
+                ProgramAndReferenceCode = latestRegister?.ProgramAndReferenceCode ?? "N/A"
             });
         }
 
