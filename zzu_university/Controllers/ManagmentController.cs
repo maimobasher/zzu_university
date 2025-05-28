@@ -42,7 +42,9 @@ namespace zzu_university.Controllers
                 Name = managmentDto.Name,
                 Description = managmentDto.Description,
                 ContactEmail = managmentDto.ContactEmail,
-                PhoneNumber = managmentDto.PhoneNumber
+                PhoneNumber = managmentDto.PhoneNumber,
+                Type = managmentDto.Type ,
+                ImageUrl = managmentDto.ImageUrl
             };
 
             await _unitOfWork.Managment.AddAsync(managment);
@@ -63,6 +65,8 @@ namespace zzu_university.Controllers
             existingManagment.Description = managmentDto.Description;
             existingManagment.ContactEmail = managmentDto.ContactEmail;
             existingManagment.PhoneNumber = managmentDto.PhoneNumber;
+            existingManagment.Type = managmentDto.Type;
+            existingManagment.ImageUrl = managmentDto.ImageUrl; 
 
             await _unitOfWork.Managment.UpdateAsyncById(id, existingManagment);
             _unitOfWork.Save();

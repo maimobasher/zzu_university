@@ -22,7 +22,9 @@ namespace zzu_university.domain.Service.ManagmentService
                 Name = managment.Name,
                 Description = managment.Description,
                 ContactEmail = managment.ContactEmail,
-                PhoneNumber = managment.PhoneNumber
+                PhoneNumber = managment.PhoneNumber,
+                Type = managment.Type,
+                ImageUrl = managment.ImageUrl
             };
         }
 
@@ -35,6 +37,8 @@ namespace zzu_university.domain.Service.ManagmentService
             managment.Description = managmentDto.Description;
             managment.ContactEmail = managmentDto.ContactEmail;
             managment.PhoneNumber = managmentDto.PhoneNumber;
+            managment.Type = managmentDto.Type;
+            managment.ImageUrl = managmentDto.ImageUrl;
 
             await _unitOfWork.Managment.UpdateAsyncById(id, managment);
             _unitOfWork.Save();

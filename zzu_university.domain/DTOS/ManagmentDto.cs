@@ -13,5 +13,7 @@ namespace zzu_university.domain.DTOS
         public string? Description { get; set; }
         public string? ContactEmail { get; set; }
         public string? PhoneNumber { get; set; }
+        public int Type { get; set; }
+        public string ImageUrl { get; set; }
     }
 }

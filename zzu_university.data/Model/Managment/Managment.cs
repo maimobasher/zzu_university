@@ -13,6 +13,8 @@ namespace zzu_university.data.Model
         public string? Description { get; set; }
         public string? ContactEmail { get; set; }
         public string? PhoneNumber { get; set; }
+        public int Type { get; set; }
+        public string ImageUrl { get; set; }
         public string? UserId { get; set; }
         public User? Users { get; set; }
     }
