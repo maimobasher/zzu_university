@@ -35,12 +35,14 @@ namespace zzu_university.domain.StudentDto
         public string nationality { get; set; }
         public string address { get; set; }
         public string city { get; set; }
-        public string postalCode { get; set; }
+        // public string postalCode { get; set; }
+        public string LiscenceType { get; set; }
+        public string Religion { get; set; }
         public string highSchool { get; set; }
         public string graduationYear { get; set; }
         public string gpa { get; set; }
         public string faculty { get; set; }
-        public string semester { get; set; }
+        //public string semester { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
         public string program { get; set; }

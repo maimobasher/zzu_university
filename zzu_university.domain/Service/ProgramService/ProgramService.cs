@@ -23,7 +23,9 @@ namespace zzu_university.domain.Service.ProgramService
                 Name = p.Name,
                 Description = p.Description,
                 TuitionFees = p.TuitionFees,
-                DurationInYears = p.DurationInYears
+                DurationInYears = p.DurationInYears,
+                ProgramCode = p.ProgramCode,
+                FacultyId = p.FacultyId
             });
 
             return programDtos;
@@ -56,7 +58,9 @@ namespace zzu_university.domain.Service.ProgramService
                 Name = program.Name,
                 Description = program.Description,
                 TuitionFees = program.TuitionFees,
-                DurationInYears = program.DurationInYears
+                DurationInYears = program.DurationInYears,
+                ProgramCode = program.ProgramCode,
+                FacultyId = program.FacultyId
             };
 
             return programDto;
@@ -70,7 +74,9 @@ namespace zzu_university.domain.Service.ProgramService
                 Name = programCreateDto.Name,
                 Description = programCreateDto.Description,
                 TuitionFees = programCreateDto.TuitionFees,
-                DurationInYears = programCreateDto.DurationInYears
+                DurationInYears = programCreateDto.DurationInYears,
+                ProgramCode = programCreateDto.ProgramCode,
+                FacultyId = programCreateDto.FacultyId
             };
 
             await _unitOfWork.Program.AddProgramAsync(program);
@@ -86,7 +92,10 @@ namespace zzu_university.domain.Service.ProgramService
                 Name = programUpdateDto.Name,
                 Description = programUpdateDto.Description,
                 TuitionFees = programUpdateDto.TuitionFees,
-                DurationInYears = programUpdateDto.DurationInYears
+                DurationInYears = programUpdateDto.DurationInYears,
+                ProgramCode = programUpdateDto.ProgramCode,
+                FacultyId = programUpdateDto.FacultyId
+
             };
 
             await _unitOfWork.Program.UpdateProgramAsync(program);

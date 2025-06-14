@@ -4,6 +4,7 @@ using zzu_university.data.Repository.AboutRepo;
 using zzu_university.data.Repository.MainPageRepo;
 using zzu_university.data.Repository.ManagmentRepo;
 using zzu_university.data.Repository.NewsRepo;
+using zzu_university.data.Repository.PaymentRepo;
 using zzu_university.data.Repository.ProgramRepo;
 using zzu_university.data.Repository.ServiceRepo;
 using zzu_university.data.Repository.StudentRepo;
@@ -21,6 +22,7 @@ public interface IUnitOfWork : IDisposable
     IProgramRepo Program { get; }
     IFacultyRepo Faculty { get; }
     IStudentRegisterProgramRepo StudentRegister { get; }
+    IStudentPaymentRepo StudentPayment { get; }
     Task SaveAsync();
     Task<int> CompleteAsync();
     int Save(); // ← خليها بحرف S كبير زي الكلاس

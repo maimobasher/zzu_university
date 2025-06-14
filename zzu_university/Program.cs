@@ -18,6 +18,7 @@ using zzu_university.domain.Service.StudentService;
 using zzu_university.data.Services;
 using zzu_university.domain.Service.StudentRegisterService;
 using zzu_university.data.Repository.StudentRepo;
+using zzu_university.domain.Service.PaymentService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -87,6 +88,7 @@ builder.Services.AddScoped<IStudentRegisterProgramService, StudentRegisterProgra
 builder.Services.AddScoped<IStudentRegisterService, StudentRegisterService>();
 builder.Services.AddScoped<IStudentRepo, StudentRepo>();
 builder.Services.AddScoped<StudentPdfReportService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 // Controllers and Swagger
 //builder.Services.AddCors(options =>

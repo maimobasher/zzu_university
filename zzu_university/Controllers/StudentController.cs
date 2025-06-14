@@ -94,34 +94,45 @@ namespace zzu_university.api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] StudentLoginDto dto)
         {
-            // Check if username exists
+            // 1. التأكد من وجود اسم المستخدم
             var student = await _context.Students
                 .FirstOrDefaultAsync(s => s.UserName == dto.Username);
 
             if (student == null)
                 return NotFound("Username not found.");
 
-            // Validate password
+            // 2. التحقق من كلمة المرور
             if (student.Password != dto.Password)
                 return Unauthorized("Invalid password.");
 
-            // Get latest registration for the student
+            // 3. الحصول على أحدث تسجيل للبرنامج
             var latestRegister = await _context.StudentRegisterPrograms
                 .Where(r => r.StudentId == student.StudentId)
                 .OrderByDescending(r => r.Id)
                 .FirstOrDefaultAsync();
 
-            // Combine full name
+            // 4. محاولة الحصول على سجل الدفع بناءً على ProgramId و StudentId
+            bool? isPaid = null;
+            if (latestRegister != null)
+            {
+                var payment = await _context.StudentPayments
+                    .FirstOrDefaultAsync(p => p.StudentId == student.StudentId && p.ProgramId == latestRegister.ProgramId);
+
+                isPaid = payment?.IsPaid;
+            }
+
+            // 5. تجميع الاسم الكامل
             var fullName = $"{student.firstName} {student.middleName ?? ""} {student.lastName}".Trim();
 
-            // Return result
+            // 6. إرجاع البيانات
             return Ok(new
             {
                 student.StudentId,
                 StudentName = fullName,
                 student.nationalId,
                 ProgramCode = latestRegister?.ProgramCode ?? "N/A",
-                ProgramAndReferenceCode = latestRegister?.ProgramAndReferenceCode ?? "N/A"
+                ProgramAndReferenceCode = latestRegister?.ProgramAndReferenceCode ?? "N/A",
+                IsPaid = isPaid ?? false
             });
         }
 

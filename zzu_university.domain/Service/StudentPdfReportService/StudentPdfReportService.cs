@@ -70,7 +70,7 @@ public class StudentPdfReportService
                     DrawRow("تاريخ الميلاد", student.dateOfBirth);
                     DrawRow("النوع", student.gender == 1 ? "ذكر" : "أنثى");
                     DrawRow("الجنسية", student.nationality);
-                    DrawRow("العنوان", $"{student.address}, {student.city}, {student.postalCode}");
+                    DrawRow("العنوان", $"{student.address}, {student.city}");
 
                     col.Item().PaddingVertical(10); // spacing
 
@@ -86,7 +86,7 @@ public class StudentPdfReportService
                     DrawRow("سنة التخرج", student.graduationYear);
                     DrawRow("المعدل التراكمي", student.gpa);
                     DrawRow("الكلية", student.faculty);
-                    DrawRow("الفصل الدراسي", student.semester);
+                   // DrawRow("الفصل الدراسي", student.semester);
 
                     col.Item().PaddingVertical(10);
 
@@ -101,10 +101,10 @@ public class StudentPdfReportService
                             .Bold();
 
                         DrawRow("اسم البرنامج", student.Program.Name);
-                        DrawRow("كود البرنامج", student.Program.ProgramCode);
-                        DrawRow("الوصف", student.Program.Description);
+                        //DrawRow("كود البرنامج", student.Program.ProgramCode);
+                       // DrawRow("الوصف", student.Program.Description);
                         DrawRow("المدة", $"{student.Program.DurationInYears} سنوات");
-                        DrawRow("الرسوم الدراسية", $"{student.Program.TuitionFees:N2} جنيه");
+                        //DrawRow("الرسوم الدراسية", $"{student.Program.TuitionFees:N2} جنيه");
 
                         col.Item().PaddingVertical(10);
                     }
