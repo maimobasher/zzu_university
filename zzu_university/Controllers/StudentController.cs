@@ -136,6 +136,46 @@ namespace zzu_university.api.Controllers
             });
         }
 
+        [HttpGet("program-info/{nationalId}")]
+        public async Task<IActionResult> GetProgramPaymentInfo(string nationalId)
+        {
+            var result = await (
+                from s in _context.Students
+                where s.nationalId == nationalId
+                join r in _context.StudentRegisterPrograms on s.StudentId equals r.StudentId into regJoin
+                from reg in regJoin.OrderByDescending(x => x.Id).Take(1).DefaultIfEmpty()
+
+                join p in _context.Programs on reg.ProgramId equals p.ProgramId into progJoin
+                from prog in progJoin.DefaultIfEmpty()
+
+                join pay in _context.StudentPayments
+                    on new { s.StudentId, ProgramId = reg.ProgramId } equals new { pay.StudentId, pay.ProgramId }
+                    into payJoin
+                from payment in payJoin.DefaultIfEmpty()
+
+                select new StudentProgramPaymentInfoDto
+                {
+                    StudentName = s.firstName + " " + (s.middleName ?? "") + " " + s.lastName,
+                    ProgramName = prog != null && prog.Name != null ? prog.Name : "ProgramName has no data",
+                    ProgramCode = prog != null && prog.ProgramCode != null ? prog.ProgramCode : "ProgramCode has no data",
+                    Status = reg.status ?? "Status has no data",
+                    IsPaid = payment != null && payment.IsPaid,
+                    PaymentDate = payment.PaymentDate,
+                    nationalId=s.nationalId,
+                    TuitionFees = prog != null ? prog.TuitionFees : 0
+
+                }
+            ).FirstOrDefaultAsync();
+
+            if (result == null)
+                return NotFound("No data found for this national ID.");
+
+            return Ok(result);
+        }
+
+
+
+
 
 
         // ✅ POST: api/student/5/generate-fawry-code

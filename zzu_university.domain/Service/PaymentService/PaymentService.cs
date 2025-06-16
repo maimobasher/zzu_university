@@ -27,7 +27,7 @@ namespace zzu_university.domain.Service.PaymentService
                 ProgramId = dto.ProgramId,
                 ReferenceCode = dto.ReferenceCode,
                 IsPaid = dto.IsPaid,
-                CreatedAt = DateTime.UtcNow
+                PaymentDate = DateTime.UtcNow
             };
 
             await _context.StudentPayments.AddAsync(payment);
@@ -38,7 +38,7 @@ namespace zzu_university.domain.Service.PaymentService
         {
             var payment = await _context.StudentPayments
                 .Where(p => p.StudentId == studentId && p.ProgramId == programId)
-                .OrderByDescending(p => p.CreatedAt)
+                .OrderByDescending(p => p.PaymentDate)
                 .FirstOrDefaultAsync();
 
             if (payment == null)
@@ -51,7 +51,7 @@ namespace zzu_university.domain.Service.PaymentService
                 ProgramId = payment.ProgramId,
                 ReferenceCode = payment.ReferenceCode,
                 IsPaid = payment.IsPaid,
-                CreatedAt = payment.CreatedAt
+                PaymentDate = payment.PaymentDate   
             };
         }
 
@@ -66,7 +66,7 @@ namespace zzu_university.domain.Service.PaymentService
                     ProgramId = p.ProgramId,
                     ReferenceCode = p.ReferenceCode,
                     IsPaid = p.IsPaid,
-                    CreatedAt = p.CreatedAt
+                    PaymentDate = p.PaymentDate 
                 })
                 .ToListAsync();
         }

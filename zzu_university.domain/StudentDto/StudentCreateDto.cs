@@ -38,7 +38,8 @@ namespace zzu_university.domain.StudentDto
         // public string postalCode { get; set; }
         public string LiscenceType { get; set; }
         public string Religion { get; set; }
-        public string highSchool { get; set; }
+        // public string highSchool { get; set; }
+        public string percent { get; set; }
         public string graduationYear { get; set; }
         public string gpa { get; set; }
         public string faculty { get; set; }

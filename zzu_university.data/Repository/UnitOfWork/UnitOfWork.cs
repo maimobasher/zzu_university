@@ -1,6 +1,10 @@
 ﻿using zzu_university.data.Data;
 using zzu_university.data.Repository;
 using zzu_university.data.Repository.AboutRepo;
+using zzu_university.data.Repository.CertificateRepo;
+using zzu_university.data.Repository.ComplaintsRepo;
+using zzu_university.data.Repository.ContactRepo;
+using zzu_university.data.Repository.FacultyContactRepo;
 using zzu_university.data.Repository.MainPageRepo;
 using zzu_university.data.Repository.ManagmentRepo;
 using zzu_university.data.Repository.NewsRepo;
@@ -9,6 +13,9 @@ using zzu_university.data.Repository.ProgramRepo;
 using zzu_university.data.Repository.ServiceRepo;
 using zzu_university.data.Repository.StudentRepo;
 using zzu_university.data.Repository.UserRepo;
+using zzu_university.data.Repository.ZnuSectorDepartmentRepo;
+using zzu_university.data.Repository.ZnuSectorDetailsRepo;
+using zzu_university.data.Repository.ZnuSectorRepo;
 
 public class UnitOfWork : IUnitOfWork
 {
@@ -24,7 +31,13 @@ public class UnitOfWork : IUnitOfWork
     public IFacultyRepo Faculty { get; private set; }
     public IStudentRegisterProgramRepo StudentRegister { get; private set; }
     public IStudentPaymentRepo StudentPayment { get; private set; }
-
+    public ICertificateRepo Certificate { get; private set; }
+    public IComplaintRepo Complaint { get; private set; }
+    public IZnuSectorRepo ZnuSector { get; private set; }
+    public IZnuSectorDepartmentRepo ZnuSectorDepartment { get; private set; }
+    public IZnuSectorDetailRepo ZnuSectorDetail { get; private set; }
+    public IZnuContactRepo ZnuContact { get; private set; }
+    public IFacultyContactRepo FacultyContact { get; private set; }
     public UnitOfWork(ApplicationDbContext context)
     {
         _context = context;
@@ -38,6 +51,13 @@ public class UnitOfWork : IUnitOfWork
         Faculty = new FacultyRepository(_context);
         StudentRegister=new StudentRegisterProgramRepository(_context);
         StudentPayment = new StudentPaymentRepository(_context);
+        Certificate = new CertificateRepo(_context);
+        Complaint = new ComplaintRepository(_context);
+        ZnuSector = new ZnuSectorRepo(_context);
+        ZnuSectorDepartment = new ZnuSectorDepartmentRepo(_context);
+        ZnuSectorDetail = new ZnuSectorDetailRepo(_context);
+        ZnuContact = new ZnuContactRepo(_context);
+        FacultyContact = new FacultyContactRepo(_context);
 
     }
 

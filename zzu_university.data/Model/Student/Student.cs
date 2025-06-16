@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using zzu_university.data.Model.Certificate;
+using zzu_university.data.Model.Complaints;
 using zzu_university.data.Model.StudentRegisterProgram;
 
 public class Student
@@ -40,7 +42,8 @@ public class Student
     //public string postalCode { get; set; }
     public   string LiscenceType { get; set; }
     public string  Religion { get; set; }
-    public string highSchool { get; set; }
+    //public string highSchool { get; set; }
+    public string percent { get; set; }
     public string graduationYear { get; set; }
     public string gpa { get; set; }
     public string faculty { get; set; }
@@ -54,6 +57,7 @@ public class Student
     public AcadmicProgram Program { get; set; }
 
     public ICollection<StudentRegisterProgram> ProgramRegistrations { get; set; } = new List<StudentRegisterProgram>();
-
+    public ICollection<Certificate> Certificates { get; set; }
+    public ICollection<Complaint> complaints { get; set; } 
     public bool IsPaymentCompleted { get; set; } = false;
 }

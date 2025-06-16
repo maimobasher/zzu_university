@@ -20,6 +20,6 @@ namespace zzu_university.data.Model.Payment
 
         public bool IsPaid { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime PaymentDate { get; set; } = DateTime.UtcNow;
     }
 }

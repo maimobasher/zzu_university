@@ -32,7 +32,8 @@ namespace zzu_university.domain.Service.StudentService
                 LiscenceType = s.LiscenceType,
                 Religion = s.Religion,
                 gpa = s.gpa,
-                highSchool = s.highSchool,
+                // highSchool = s.highSchool,
+                percent = s.percent,
                 graduationYear = s.graduationYear,
                 faculty = s.faculty,
                 //semester = s.semester,
@@ -62,7 +63,8 @@ namespace zzu_university.domain.Service.StudentService
                 graduationYear = student.graduationYear,
                 gender= student.gender,
                 gpa = student.gpa,
-                highSchool = student.highSchool,
+               // highSchool = student.highSchool,
+               percent = student.percent,
                 faculty = student.faculty,
                 //semester = student.semester,
                 Religion =student.Religion,
@@ -95,7 +97,8 @@ namespace zzu_university.domain.Service.StudentService
                 gender = studentCreateDto.gender,
                 graduationYear = studentCreateDto.graduationYear,
                 gpa = studentCreateDto.gpa,
-                highSchool = studentCreateDto.highSchool,
+                // highSchool = studentCreateDto.highSchool,
+                percent = studentCreateDto.percent,
                 faculty = studentCreateDto.faculty,
                // semester = studentCreateDto.semester,
                 nationalId = studentCreateDto.nationalId,
@@ -125,7 +128,8 @@ namespace zzu_university.domain.Service.StudentService
                 Religion = student.Religion,
                 gender =student.gender,
                 gpa = student.gpa,
-                highSchool = student.highSchool,
+                // highSchool = student.highSchool,
+                percent = student.percent,
                 graduationYear = student.graduationYear,
                 faculty = student.faculty,
                // semester = student.semester,
@@ -156,7 +160,8 @@ namespace zzu_university.domain.Service.StudentService
             // student.postalCode = studentUpdateDto.postalCode;
             student.LiscenceType = studentUpdateDto.LiscenceType;
             student.Religion = studentUpdateDto.Religion;
-            student.highSchool = studentUpdateDto.highSchool;
+            //student.highSchool = studentUpdateDto.highSchool;
+            student.percent = studentUpdateDto.percent;
             student.graduationYear = studentUpdateDto.graduationYear;
             student.gpa = studentUpdateDto.gpa;
             student.faculty = studentUpdateDto.faculty;
@@ -188,7 +193,8 @@ namespace zzu_university.domain.Service.StudentService
                 Religion = student.Religion,
                 gender = student.gender,
                 gpa = student.gpa,
-                highSchool = student.highSchool,
+                //  highSchool = student.highSchool,
+                percent = student.percent,
                 graduationYear = student.graduationYear,
                 faculty = student.faculty,
                // semester = student.semester,

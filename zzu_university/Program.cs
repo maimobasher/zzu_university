@@ -19,6 +19,20 @@ using zzu_university.data.Services;
 using zzu_university.domain.Service.StudentRegisterService;
 using zzu_university.data.Repository.StudentRepo;
 using zzu_university.domain.Service.PaymentService;
+using zzu_university.domain.Service.CertificateService;
+using zzu_university.data.Repository.CertificateRepo;
+using zzu_university.data.Repository.ComplaintsRepo;
+using zzu_university.domain.Service.ComplaintService;
+using zzu_university.domain.Service.ZnuSectorService;
+using zzu_university.data.Repository.ZnuSectorRepo;
+using zzu_university.data.Repository.ZnuSectorDepartmentRepo;
+using zzu_university.data.Repository.ZnuSectorDetailsRepo;
+using zzu_university.domain.Service.ZnuSectorDepartmentService;
+using zzu_university.domain.Service.ZnuSectorDetailService;
+using zzu_university.data.Repository.ContactRepo;
+using zzu_university.domain.Service.ContactService;
+using zzu_university.data.Repository.FacultyContactRepo;
+using zzu_university.domain.Service.FacultyContactService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -89,6 +103,21 @@ builder.Services.AddScoped<IStudentRegisterService, StudentRegisterService>();
 builder.Services.AddScoped<IStudentRepo, StudentRepo>();
 builder.Services.AddScoped<StudentPdfReportService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<ICertificateService, CertificateService>();
+builder.Services.AddScoped<ICertificateRepo, CertificateRepo>();
+builder.Services.AddScoped<IComplaintRepo, ComplaintRepository>();
+builder.Services.AddScoped<IComplaintService, ComplaintService>();
+builder.Services.AddScoped<IZnuSectorService, ZnuSectorService>();
+builder.Services.AddScoped<IZnuSectorRepo, ZnuSectorRepo>();
+builder.Services.AddScoped<IZnuSectorDepartmentRepo, ZnuSectorDepartmentRepo>();
+builder.Services.AddScoped<IZnuSectorDepartmentService, ZnuSectorDepartmentService>();
+builder.Services.AddScoped<IZnuSectorDetailRepo, ZnuSectorDetailRepo>();
+builder.Services.AddScoped<IZnuSectorDetailService, ZnuSectorDetailService>();
+builder.Services.AddScoped<IZnuContactRepo, ZnuContactRepo>();
+builder.Services.AddScoped<IZnuContactService, ZnuContactService>();
+builder.Services.AddScoped<IFacultyContactRepo, FacultyContactRepo>();
+builder.Services.AddScoped<IFacultyContactService, FacultyContactService>();
+
 QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 // Controllers and Swagger
 //builder.Services.AddCors(options =>

@@ -27,7 +27,7 @@ namespace zzu_university.data.Repository.PaymentRepo
         {
             return await _context.StudentPayments
                 .Where(p => p.StudentId == studentId && p.ProgramId == programId)
-                .OrderByDescending(p => p.CreatedAt)
+                .OrderByDescending(p => p.PaymentDate)
                 .FirstOrDefaultAsync();
         }
 

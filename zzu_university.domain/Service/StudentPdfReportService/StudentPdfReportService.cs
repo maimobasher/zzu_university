@@ -82,9 +82,10 @@ public class StudentPdfReportService
                         .FontSize(14)
                         .Bold();
 
-                    DrawRow("المدرسة الثانوية", student.highSchool);
+                    //DrawRow("المدرسة الثانوية", student.highSchool);
                     DrawRow("سنة التخرج", student.graduationYear);
                     DrawRow("المعدل التراكمي", student.gpa);
+                    DrawRow("النسبة المئوية", student.percent);
                     DrawRow("الكلية", student.faculty);
                    // DrawRow("الفصل الدراسي", student.semester);
 
