@@ -40,7 +40,7 @@ namespace zzu_university.domain.Service.CertificateService
         {
             var certificate = new Certificate
             {
-                StudentId = dto.StudentId,
+                //StudentId = dto.StudentId,
                 CertificateName = dto.CertificateName,
                 IssueDate = dto.IssueDate,
                 Description = dto.Description
@@ -55,7 +55,7 @@ namespace zzu_university.domain.Service.CertificateService
             var certificate = new Certificate
             {
                 Id = dto.Id,
-                StudentId = dto.StudentId,
+                //StudentId = dto.StudentId,
                 CertificateName = dto.CertificateName,
                 IssueDate = dto.IssueDate,
                 Description = dto.Description

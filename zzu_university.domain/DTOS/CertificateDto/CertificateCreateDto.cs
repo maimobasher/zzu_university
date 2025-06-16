@@ -9,9 +9,7 @@ namespace zzu_university.domain.DTOS.CertificateDto
 {
     public class CertificateCreateDto
     {
-        [Required]
-        public int StudentId { get; set; }
-
+       
         [Required]
         [StringLength(100)]
         public string CertificateName { get; set; }

@@ -20,14 +20,12 @@ namespace zzu_university.data.Model.Certificate
         [StringLength(100)]
         public string CertificateName { get; set; }
 
-        [Required]
+       
         public DateTime IssueDate { get; set; }
 
         [StringLength(255)]
         public string Description { get; set; }
 
-        // Navigation property
-        [ForeignKey("StudentId")]
-        public Student Student { get; set; }
+       
     }
 }

@@ -9,9 +9,8 @@ namespace zzu_university.domain.StudentDto
 {
     public class StudentUpdateDto
     {
-        [Required]
-        public int StudentId { get; set; }
 
+        public int StudentId { get; set; }
         [Required]
         [MaxLength(150)]
         public string firstName { get; set; }
@@ -51,6 +50,7 @@ namespace zzu_university.domain.StudentDto
         public string Password { get; set; }
         public string program { get; set; }
         public int SelectedProgramId { get; set; }
+        public int? CertificateId { get; set; }
         public bool IsPaymentCompleted { get; set; }
 
     }

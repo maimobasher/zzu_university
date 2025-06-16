@@ -1,4 +1,5 @@
-﻿using zzu_university.domain.StudentDto;
+﻿using zzu_university.data.Model.Certificate;
+using zzu_university.domain.StudentDto;
 
 namespace zzu_university.domain.Service.StudentService
 {
@@ -40,7 +41,10 @@ namespace zzu_university.domain.Service.StudentService
                 program = s.Program?.Name,
                 IsPaymentCompleted = s.IsPaymentCompleted,
                 UserName = s.UserName,
-                Password = s.Password
+                Password = s.Password,
+               // CertificateId = s.Certificate?.CertificateId ?? 0
+
+
             });
         }
 

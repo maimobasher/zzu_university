@@ -58,6 +58,10 @@ public class Student
 
     public ICollection<StudentRegisterProgram> ProgramRegistrations { get; set; } = new List<StudentRegisterProgram>();
     public ICollection<Certificate> Certificates { get; set; }
-    public ICollection<Complaint> complaints { get; set; } 
+    public ICollection<Complaint> complaints { get; set; }
+    public int? CertificateId { get; set; }  // Nullable in case not every student has a certificate
+
+    [ForeignKey("CertificateId")]
+    public Certificate Certificate { get; set; }
     public bool IsPaymentCompleted { get; set; } = false;
 }
