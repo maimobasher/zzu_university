@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using zzu_university.data.Model.Faculty;
+using zzu_university.data.Model.ProgramDetails.zzu_university.data.Model.Program;
 using zzu_university.data.Model.StudentRegisterProgram;
 using zzu_university.data.Model.StudentRegisterProgram;
 
@@ -31,4 +32,6 @@ public class AcadmicProgram
 
     // العلاقة مع جدول التسجيل
     public ICollection<StudentRegisterProgram> StudentRegistrations { get; set; }
+    public ProgramDetails ProgramDetails { get; set; }
+
 }

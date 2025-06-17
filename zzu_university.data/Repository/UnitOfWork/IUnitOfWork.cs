@@ -6,6 +6,7 @@ using zzu_university.data.Repository.CertificateRepo;
 using zzu_university.data.Repository.ComplaintsRepo;
 using zzu_university.data.Repository.ContactRepo;
 using zzu_university.data.Repository.FacultyContactRepo;
+using zzu_university.data.Repository.FaqRepo;
 using zzu_university.data.Repository.MainPageRepo;
 using zzu_university.data.Repository.ManagmentRepo;
 using zzu_university.data.Repository.NewsRepo;
@@ -38,6 +39,7 @@ public interface IUnitOfWork : IDisposable
     IZnuSectorDetailRepo ZnuSectorDetail { get; }
     IZnuContactRepo ZnuContact { get; }
     IFacultyContactRepo FacultyContact { get; }
+    IFaqRepo Faq { get; }
     Task SaveAsync();
     Task<int> CompleteAsync();
     int Save(); // ← خليها بحرف S كبير زي الكلاس

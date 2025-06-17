@@ -12,5 +12,6 @@ namespace zzu_university.data.Services
         Task<StudentRegisterProgramDto> CreateAsync(StudentRegisterProgramDto dto);
         Task<bool> UpdateAsync(int id, StudentRegisterProgramDto dto);
         Task<bool> DeleteAsync(int id);
+        Task<string> GenerateNextRegistrationCodeAsync(int programId);
     }
 }

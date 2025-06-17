@@ -1,57 +1,90 @@
 ﻿using zzu_university.data.Model;
+using zzu_university.data.Repository.ManagmentRepo;
 using zzu_university.domain.DTOS;
 
 namespace zzu_university.domain.Service.ManagmentService
 {
     public class ManagmentService : IManagmentService
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IManagmentRepo _repo;
 
-        public ManagmentService(IUnitOfWork unitOfWork)
+        public ManagmentService(IManagmentRepo repo)
         {
-            _unitOfWork = unitOfWork;
+            _repo = repo;
+        }
+
+        public async Task<IEnumerable<ManagmentDto>> GetAllManagmentsAsync()
+        {
+            var result = await _repo.GetAllWithTypeAsync();
+            return result.Select(m => new ManagmentDto
+            {
+                Id = m.Id,
+                Name = m.Name,
+                Description = m.Description,
+                ContactEmail = m.ContactEmail,
+                PhoneNumber = m.PhoneNumber,
+                Type = m.Type,
+                ImageUrl = m.ImageUrl
+            });
         }
 
         public async Task<ManagmentDto> GetManagmentAsync(int id)
         {
-            var managment = await _unitOfWork.Managment.GetAsyncById(id);
-            if (managment == null) return null;
+            var m = await _repo.GetWithTypeByIdAsync(id);
+            if (m == null) return null;
 
             return new ManagmentDto
             {
-                Name = managment.Name,
-                Description = managment.Description,
-                ContactEmail = managment.ContactEmail,
-                PhoneNumber = managment.PhoneNumber,
-                Type = managment.Type,
-                ImageUrl = managment.ImageUrl
+                Id = m.Id,
+                Name = m.Name,
+                Description = m.Description,
+                ContactEmail = m.ContactEmail,
+                PhoneNumber = m.PhoneNumber,
+                Type = m.Type,
+                ImageUrl = m.ImageUrl
             };
         }
 
-        public async Task<bool> UpdateManagmentAsync(int id, ManagmentDto managmentDto)
+        public async Task<ManagmentDto> AddManagmentAsync(ManagmentDto dto)
         {
-            var managment = await _unitOfWork.Managment.GetAsyncById(id);
-            if (managment == null) return false;
+            var newM = new Management
+            {
+                Name = dto.Name,
+                Description = dto.Description,
+                ContactEmail = dto.ContactEmail,
+                PhoneNumber = dto.PhoneNumber,
+                Type = dto.Type,
+                ImageUrl = dto.ImageUrl
+            };
 
-            managment.Name = managmentDto.Name;
-            managment.Description = managmentDto.Description;
-            managment.ContactEmail = managmentDto.ContactEmail;
-            managment.PhoneNumber = managmentDto.PhoneNumber;
-            managment.Type = managmentDto.Type;
-            managment.ImageUrl = managmentDto.ImageUrl;
+            await _repo.AddAsync(newM);
 
-            await _unitOfWork.Managment.UpdateAsyncById(id, managment);
-            _unitOfWork.Save();
+            dto.Id = newM.Id;
+            return dto;
+        }
+
+        public async Task<bool> UpdateManagmentAsync(int id, ManagmentDto dto)
+        {
+            var existing = await _repo.GetWithTypeByIdAsync(id);
+            if (existing == null) return false;
+
+            existing.Name = dto.Name;
+            existing.Description = dto.Description;
+            existing.ContactEmail = dto.ContactEmail;
+            existing.PhoneNumber = dto.PhoneNumber;
+            existing.Type = dto.Type;
+            existing.ImageUrl = dto.ImageUrl;
+
+            await _repo.UpdateAsyncById(id, existing);
             return true;
         }
 
         public async Task<bool> DeleteManagmentAsync(int id)
         {
-            var managment = await _unitOfWork.Managment.GetAsyncById(id);
-            if (managment == null) return false;
+            var existing = await _repo.GetWithTypeByIdAsync(id);
+            if (existing == null) return false;
 
-            await _unitOfWork.Managment.DeleteAsyncById(id);
-            _unitOfWork.Save();
+            await _repo.DeleteAsyncById(id);
             return true;
         }
     }

@@ -5,6 +5,7 @@ using zzu_university.data.Repository.CertificateRepo;
 using zzu_university.data.Repository.ComplaintsRepo;
 using zzu_university.data.Repository.ContactRepo;
 using zzu_university.data.Repository.FacultyContactRepo;
+using zzu_university.data.Repository.FaqRepo;
 using zzu_university.data.Repository.MainPageRepo;
 using zzu_university.data.Repository.ManagmentRepo;
 using zzu_university.data.Repository.NewsRepo;
@@ -38,6 +39,7 @@ public class UnitOfWork : IUnitOfWork
     public IZnuSectorDetailRepo ZnuSectorDetail { get; private set; }
     public IZnuContactRepo ZnuContact { get; private set; }
     public IFacultyContactRepo FacultyContact { get; private set; }
+    public IFaqRepo Faq { get; private set; }
     public UnitOfWork(ApplicationDbContext context)
     {
         _context = context;
@@ -58,6 +60,7 @@ public class UnitOfWork : IUnitOfWork
         ZnuSectorDetail = new ZnuSectorDetailRepo(_context);
         ZnuContact = new ZnuContactRepo(_context);
         FacultyContact = new FacultyContactRepo(_context);
+        Faq = new FaqRepo(_context);
 
     }
 

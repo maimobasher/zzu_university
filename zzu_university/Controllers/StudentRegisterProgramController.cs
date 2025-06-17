@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using zzu_university.data.Model.StudentRegisterProgram;
+using zzu_university.data.Services;
 using zzu_university.domain.DTOS;
 using zzu_university.domain.Service.StudentRegisterService;
 
@@ -8,12 +10,14 @@ using zzu_university.domain.Service.StudentRegisterService;
 public class StudentRegisterProgramsController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IStudentRegisterService _studentRegisterService;
-    public StudentRegisterProgramsController(IUnitOfWork unitOfWork,
-    IStudentRegisterService studentRegisterService)
+    private readonly IStudentRegisterProgramService _studentRegisterProgramService;
+
+    public StudentRegisterProgramsController(
+        IUnitOfWork unitOfWork,
+        IStudentRegisterProgramService studentRegisterService) // ✅ هذا هو الصح
     {
         _unitOfWork = unitOfWork;
-        _studentRegisterService = studentRegisterService;
+        _studentRegisterProgramService = studentRegisterService;
     }
 
     [HttpGet]
@@ -28,7 +32,10 @@ public class StudentRegisterProgramsController : ControllerBase
             ProgramId = item.ProgramId,
             RegistrationCode = item.RegistrationCode,
             RegisterDate = item.RegisterDate,
-            ProgramCode = item.Program?.ProgramCode,
+            ProgramCode = item.ProgramCode,
+            ProgramAndReferenceCode = string.IsNullOrEmpty(item.ProgramCode)
+                ? item.RegistrationCode
+                : $"{item.ProgramCode}-{item.RegistrationCode}",
             status = item.status
         });
 
@@ -49,14 +56,15 @@ public class StudentRegisterProgramsController : ControllerBase
             ProgramId = item.ProgramId,
             RegistrationCode = item.RegistrationCode,
             RegisterDate = item.RegisterDate,
-            ProgramCode = item.Program?.ProgramCode,
-            ProgramAndReferenceCode=item.ProgramAndReferenceCode,
+            ProgramCode = item.ProgramCode,
+            ProgramAndReferenceCode = string.IsNullOrEmpty(item.ProgramCode)
+                ? item.RegistrationCode
+                : $"{item.ProgramCode}-{item.RegistrationCode}",
             status = item.status
         };
 
         return Ok(result);
     }
-
 
     [HttpPost]
     public async Task<ActionResult<StudentRegisterProgramDto>> Create(StudentRegisterProgramDto dto)
@@ -68,12 +76,17 @@ public class StudentRegisterProgramsController : ControllerBase
         if (!studentExists)
             return BadRequest($"Student with Id {dto.StudentId} does not exist.");
 
-        //var programExists = await _unitOfWork.Student.ExistsAsync(dto.ProgramId);
-        //if (!programExists)
-        //    return BadRequest($"Program with Id {dto.ProgramId} does not exist.");
+        // تعيين الكود تلقائيًا
+        dto.RegistrationCode = await _studentRegisterProgramService.GenerateNextRegistrationCodeAsync(dto.ProgramId);
 
-        // 👇 Call the service to get the next registration code
-        dto.RegistrationCode = await _studentRegisterService.GenerateNextRegistrationCodeAsync();
+        // تعيين التاريخ إذا لم يُرسل
+        if (string.IsNullOrWhiteSpace(dto.RegisterDate))
+            dto.RegisterDate = DateTime.Now.ToString("yyyy-MM-dd");
+
+        // بناء الكود النهائي
+        dto.ProgramAndReferenceCode = string.IsNullOrEmpty(dto.ProgramCode)
+            ? dto.RegistrationCode
+            : $"{dto.ProgramCode}-{dto.RegistrationCode}";
 
         var entity = new StudentRegisterProgram
         {
@@ -82,7 +95,7 @@ public class StudentRegisterProgramsController : ControllerBase
             RegistrationCode = dto.RegistrationCode,
             RegisterDate = dto.RegisterDate,
             ProgramCode = dto.ProgramCode,
-            ProgramAndReferenceCode = dto.ProgramCode + "-" + dto.RegistrationCode,
+            ProgramAndReferenceCode = dto.ProgramAndReferenceCode,
             status = dto.status
         };
 
@@ -90,40 +103,10 @@ public class StudentRegisterProgramsController : ControllerBase
         var saved = await _unitOfWork.CompleteAsync();
 
         if (saved == 0)
-            return BadRequest("Failed to save the student register program.");
+            return StatusCode(500, "حدث خطأ أثناء حفظ التسجيل.");
 
         dto.Id = entity.Id;
-        dto.ProgramAndReferenceCode = entity.ProgramAndReferenceCode;
-
         return CreatedAtAction(nameof(GetById), new { id = entity.Id }, dto);
-    }
-
-    [HttpGet("last-registration-code/{programId}")]
-    public async Task<ActionResult<string>> GetNextRegistrationCode(int programId)
-    {
-        var allRecords = await _unitOfWork.StudentRegister.GetAllAsync();
-
-        // Filter by ProgramId
-        var lastCode = allRecords
-                        .Where(x => x.ProgramId == programId)
-                        .OrderByDescending(x => x.Id)
-                        .Select(x => x.RegistrationCode)
-                        .FirstOrDefault();
-
-        if (string.IsNullOrEmpty(lastCode))
-        {
-            return Ok("0001"); // First code for this program
-        }
-
-        if (!int.TryParse(lastCode, out int lastNumber))
-        {
-            return BadRequest("Last RegistrationCode is in invalid format.");
-        }
-
-        int nextNumber = lastNumber + 1;
-        string nextCode = nextNumber.ToString("D4"); // 4 digits padded
-
-        return Ok(nextCode);
     }
 
 
@@ -135,7 +118,7 @@ public class StudentRegisterProgramsController : ControllerBase
             return BadRequest(ModelState);
 
         if (id != dto.Id)
-            return BadRequest("Id mismatch.");
+            return BadRequest("عدم تطابق المعرفات.");
 
         var existing = await _unitOfWork.StudentRegister.GetByIdAsync(id);
         if (existing == null)
@@ -146,13 +129,16 @@ public class StudentRegisterProgramsController : ControllerBase
         existing.RegistrationCode = dto.RegistrationCode;
         existing.RegisterDate = dto.RegisterDate;
         existing.ProgramCode = dto.ProgramCode;
-        existing.ProgramAndReferenceCode = dto.ProgramCode + "-" + dto.RegistrationCode;
+        existing.ProgramAndReferenceCode = string.IsNullOrEmpty(dto.ProgramCode)
+            ? dto.RegistrationCode
+            : $"{dto.ProgramCode}-{dto.RegistrationCode}";
         existing.status = dto.status;
+
         _unitOfWork.StudentRegister.Update(existing);
         var saved = await _unitOfWork.CompleteAsync();
 
         if (saved == 0)
-            return BadRequest("Failed to update the student register program.");
+            return StatusCode(500, "فشل في تحديث بيانات التسجيل.");
 
         return NoContent();
     }
@@ -167,9 +153,14 @@ public class StudentRegisterProgramsController : ControllerBase
         _unitOfWork.StudentRegister.Delete(existing);
         var saved = await _unitOfWork.CompleteAsync();
 
-        if (saved==0)
-            return BadRequest("Failed to delete the student register program.");
+        if (saved == 0)
+            return StatusCode(500, "فشل في حذف التسجيل.");
 
         return NoContent();
     }
+
+   
+
+
+
 }

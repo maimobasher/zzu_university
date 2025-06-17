@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using zzu_university.data.Data;
 using zzu_university.data.Model;
@@ -6,7 +7,7 @@ using zzu_university.data.Repository.MainRepo;
 
 namespace zzu_university.data.Repository.ManagmentRepo
 {
-    public class ManagmentRepo : Repo<Managment, int>, IManagmentRepo
+    public class ManagmentRepo : Repo<Management, int>, IManagmentRepo
     {
         private readonly ApplicationDbContext _context;
 
@@ -15,43 +16,69 @@ namespace zzu_university.data.Repository.ManagmentRepo
             _context = context;
         }
 
-        // Returns the first Managment entity
-        public async Task<Managment> GetAsync()
+        // Get all with included ManagementType
+        public async Task<IEnumerable<Management>> GetAllWithTypeAsync()
         {
-            return await _context.Managments.FirstOrDefaultAsync();
+            return await _context.Managments
+                .Include(m => m.ManagementType)
+                .ToListAsync();
         }
 
-        // Returns a Managment entity by ID
-        public async Task<Managment> GetAsyncById(int id)
+        // Get one by ID with ManagementType
+        public async Task<Management?> GetWithTypeByIdAsync(int id)
         {
-            return await _context.Managments.FindAsync(id);
+            return await _context.Managments
+                .Include(m => m.ManagementType)
+                .FirstOrDefaultAsync(m => m.Id == id);
         }
 
-        // Adds a new Managment entity
-        public async Task AddAsync(Managment managment)
+        // Get first/default (optional use-case)
+        public async Task<Management?> GetDefaultAsync()
         {
-            await _context.Managments.AddAsync(managment);
+            return await _context.Managments
+                .Include(m => m.ManagementType)
+                .FirstOrDefaultAsync();
         }
 
-        // Updates a Managment entity by ID
-        public async Task UpdateAsyncById(int id, Managment managment)
+        // Add new Management
+        public async Task AddAsync(Management management)
+        {
+            await _context.Managments.AddAsync(management);
+            await _context.SaveChangesAsync();
+        }
+
+        // Update by ID
+        public async Task UpdateAsyncById(int id, Management updatedManagement)
         {
             var existing = await _context.Managments.FindAsync(id);
             if (existing != null)
             {
-                // Optionally: copy updated properties from parameter to existing
-                _context.Entry(existing).CurrentValues.SetValues(managment);
+                _context.Entry(existing).CurrentValues.SetValues(updatedManagement);
+                await _context.SaveChangesAsync();
             }
         }
 
-        // Deletes a Managment entity by ID
+        // Delete by ID
         public async Task DeleteAsyncById(int id)
         {
-            var managment = await _context.Managments.FindAsync(id);
-            if (managment != null)
+            var entity = await _context.Managments.FindAsync(id);
+            if (entity != null)
             {
-                _context.Managments.Remove(managment);
+                _context.Managments.Remove(entity);
+                await _context.SaveChangesAsync();
             }
+        }
+
+        // Legacy method for GetById
+        public async Task<Management?> GetAsyncById(int id)
+        {
+            return await _context.Managments.FindAsync(id);
+        }
+
+        // Legacy method for first item
+        public async Task<Management?> GetAsync()
+        {
+            return await _context.Managments.FirstOrDefaultAsync();
         }
     }
 }

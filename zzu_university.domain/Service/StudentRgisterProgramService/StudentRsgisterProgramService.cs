@@ -17,24 +17,25 @@ namespace zzu_university.data.Services
             _context = context;
         }
 
+
         // جلب كل التسجيلات
         public async Task<List<StudentRegisterProgramDto>> GetAllAsync()
         {
             return await _context.StudentRegisterPrograms
+                .Include(srp => srp.Program)
                 .AsNoTracking()
-                .Select(static srp => new StudentRegisterProgramDto
+                .Select(srp => new StudentRegisterProgramDto
                 {
                     Id = srp.Id,
                     StudentId = srp.StudentId,
                     ProgramId = srp.ProgramId,
                     RegistrationCode = srp.RegistrationCode,
-                    RegisterDate = srp.RegisterDate,
+                    RegisterDate = string.IsNullOrWhiteSpace(srp.RegisterDate)
+                        ? DateTime.Now.ToString("yyyy-MM-dd")
+                        : srp.RegisterDate,
                     ProgramCode = srp.Program != null ? srp.Program.ProgramCode : null,
                     status = srp.status,
-                    ProgramAndReferenceCode=srp.ProgramAndReferenceCode
-
-
-
+                    ProgramAndReferenceCode = srp.ProgramAndReferenceCode
                 })
                 .ToListAsync();
         }
@@ -61,10 +62,21 @@ namespace zzu_university.data.Services
             };
         }
 
-        
+
         // إضافة تسجيل جديد
         public async Task<StudentRegisterProgramDto> CreateAsync(StudentRegisterProgramDto dto)
         {
+            // تعيين الحالة الافتراضية إن لم تُرسل
+            if (string.IsNullOrWhiteSpace(dto.status))
+                dto.status = "pending";
+
+            // التأكد من تنسيق التاريخ أو تعيين التاريخ الحالي
+            if (string.IsNullOrWhiteSpace(dto.RegisterDate) || !DateTime.TryParse(dto.RegisterDate, out var parsedDate))
+                parsedDate = DateTime.Now;
+
+            // تنسيق التاريخ بشكل موحد قبل التخزين
+            dto.RegisterDate = parsedDate.ToString("yyyy-MM-dd");
+
             var entity = new StudentRegisterProgram
             {
                 StudentId = dto.StudentId,
@@ -73,8 +85,7 @@ namespace zzu_university.data.Services
                 RegisterDate = dto.RegisterDate,
                 ProgramCode = dto.ProgramCode,
                 status = dto.status,
-                ProgramAndReferenceCode= dto.ProgramAndReferenceCode
-                
+                ProgramAndReferenceCode = dto.ProgramAndReferenceCode
             };
 
             _context.StudentRegisterPrograms.Add(entity);
@@ -83,6 +94,8 @@ namespace zzu_university.data.Services
             dto.Id = entity.Id;
             return dto;
         }
+
+
 
         // تحديث تسجيل موجود
         public async Task<bool> UpdateAsync(int id, StudentRegisterProgramDto dto)
@@ -101,6 +114,27 @@ namespace zzu_university.data.Services
             await _context.SaveChangesAsync();
             return true;
         }
+        public async Task<string> GenerateNextRegistrationCodeAsync(int programId)
+        {
+            var validCodes = await _context.StudentRegisterPrograms
+                .Where(x => x.ProgramId == programId && !string.IsNullOrWhiteSpace(x.RegistrationCode))
+                .Select(x => x.RegistrationCode)
+                .ToListAsync();
+
+            var numericCodes = new List<int>();
+
+            foreach (var code in validCodes)
+            {
+                if (!string.IsNullOrWhiteSpace(code) && int.TryParse(code, out var number))
+                {
+                    numericCodes.Add(number);
+                }
+            }
+
+            var nextCode = numericCodes.Any() ? numericCodes.Max() + 1 : 1;
+            return nextCode.ToString("D4");
+        }
+
 
         // حذف تسجيل
         public async Task<bool> DeleteAsync(int id)

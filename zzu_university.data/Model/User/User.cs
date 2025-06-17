@@ -17,6 +17,6 @@ namespace zzu_university.data.Model
 
         public DateTime? CreatedAt { get; set; } = DateTime.Now;
 
-        public ICollection<Managment>? Managments { get; set; } = new HashSet<Managment>();
+        public ICollection<Management>? Managments { get; set; } = new HashSet<Management>();
     }
 }

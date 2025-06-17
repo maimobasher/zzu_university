@@ -16,10 +16,14 @@ public class StudentRegisterProgramRepository : IStudentRegisterProgramRepo
     public async Task<IEnumerable<StudentRegisterProgram>> GetAllAsync()
     {
         return await _context.StudentRegisterPrograms
-            .Include(srp => srp.Student)
             .Include(srp => srp.Program)
+            .Include(srp => srp.Student)
+            .Where(srp => srp.Program != null && srp.RegistrationCode != null) // ✅ تجنب الصفوف اللي فيها null
             .ToListAsync();
     }
+
+
+
 
     public async Task<StudentRegisterProgram> GetByIdAsync(int id)
     {

@@ -33,6 +33,16 @@ using zzu_university.data.Repository.ContactRepo;
 using zzu_university.domain.Service.ContactService;
 using zzu_university.data.Repository.FacultyContactRepo;
 using zzu_university.domain.Service.FacultyContactService;
+using zzu_university.domain.Service.FaqService;
+using zzu_university.domain.Service.PrivacyService;
+using zzu_university.data.Repository.FaqRepo;
+using zzu_university.data.Repository.PrivacyRepo;
+using zzu_university.domain.Service.ProgramDetailsService;
+using zzu_university.data.Repository.ProgramDetailsRepo;
+using zzu_university.data.Repository.ManagmentRepo;
+using zzu_university.data.Repository.ManagementTypeRepo;
+using zzu_university.domain.Service.ManagementTypeService.zzu_university.domain.Service.ManagementTypeService;
+using zzu_university.domain.Service.ManagementTypeService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -89,6 +99,7 @@ builder.Services.AddScoped<IMainPageService, MainPageService>();
 builder.Services.AddScoped<IManagmentService, ManagmentService>();
 builder.Services.AddScoped<INewsService, NewsService>();
 builder.Services.AddScoped<IServicesService, ServicesService>();
+builder.Services.AddScoped<IManagmentRepo, ManagmentRepo>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IAuth, Auth>();
 builder.Services.AddScoped<IEmailService, EmailService>();
@@ -117,6 +128,14 @@ builder.Services.AddScoped<IZnuContactRepo, ZnuContactRepo>();
 builder.Services.AddScoped<IZnuContactService, ZnuContactService>();
 builder.Services.AddScoped<IFacultyContactRepo, FacultyContactRepo>();
 builder.Services.AddScoped<IFacultyContactService, FacultyContactService>();
+builder.Services.AddScoped<IFaqService, FaqService>();
+builder.Services.AddScoped<IFaqRepo, FaqRepo>();
+builder.Services.AddScoped<IPrivacyService,PrivacyService>();
+builder.Services.AddScoped<IPrivacyRepo,PrivacyRepo>();
+builder.Services.AddScoped<IProgramDetailsService, ProgramDetailsService>();
+builder.Services.AddScoped<IProgramDetailsRepo, ProgramDetailsRepo>();
+builder.Services.AddScoped<IManagementTypeRepo, ManagementTypeRepo>();
+builder.Services.AddScoped<IManagementTypeService, ManagementTypeService>();
 
 QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 // Controllers and Swagger

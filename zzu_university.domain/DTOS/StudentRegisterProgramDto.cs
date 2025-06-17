@@ -13,11 +13,11 @@ namespace zzu_university.domain.DTOS
         public int StudentId { get; set; }
 
         public int ProgramId { get; set; }
-        public String  ProgramCode { get; set; }
+        public string?  ProgramCode { get; set; }
 
-        public string RegistrationCode { get; set; }
-        public string ProgramAndReferenceCode { get; set; }//=> $"{ProgramCode}{RegistrationCode}";
+        public string? RegistrationCode { get; set; }
+        public string ?ProgramAndReferenceCode { get; set; }//=> $"{ProgramCode}{RegistrationCode}";
         public string status { get; set; } //=> "Pending" or "Accepted" or "Rejected"
-        public string RegisterDate { get; set; }
+        public string? RegisterDate { get; set; }
     }
 }

@@ -201,6 +201,9 @@ namespace zzu_university.data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentId"));
 
+                    b.Property<int?>("CertificateId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsPaymentCompleted")
                         .HasColumnType("bit");
 
@@ -291,6 +294,8 @@ namespace zzu_university.data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("StudentId");
+
+                    b.HasIndex("CertificateId");
 
                     b.HasIndex("SelectedProgramId");
 
@@ -450,6 +455,27 @@ namespace zzu_university.data.Migrations
                     b.ToTable("ZnuContacts");
                 });
 
+            modelBuilder.Entity("zzu_university.data.Model.FAQS.FAQ", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Answer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Question")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FAQs");
+                });
+
             modelBuilder.Entity("zzu_university.data.Model.Faculty.Faculty", b =>
                 {
                     b.Property<int>("FacultyId")
@@ -525,7 +551,7 @@ namespace zzu_university.data.Migrations
                     b.ToTable("MainPages");
                 });
 
-            modelBuilder.Entity("zzu_university.data.Model.Managment", b =>
+            modelBuilder.Entity("zzu_university.data.Model.Management", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -557,9 +583,29 @@ namespace zzu_university.data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Type");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Managments");
+                });
+
+            modelBuilder.Entity("zzu_university.data.Model.Managment.ManagementType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ManagementType");
                 });
 
             modelBuilder.Entity("zzu_university.data.Model.News.News", b =>
@@ -614,6 +660,71 @@ namespace zzu_university.data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("StudentPayments");
+                });
+
+            modelBuilder.Entity("zzu_university.data.Model.Privacy.Privacy", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Privacy");
+                });
+
+            modelBuilder.Entity("zzu_university.data.Model.ProgramDetails.zzu_university.data.Model.Program.ProgramDetails", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AdmissionRequirements")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Bylaw")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ContactInfo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Courses")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Files")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProgramId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TuitionFees")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProgramId")
+                        .IsUnique();
+
+                    b.ToTable("ProgramDetails");
                 });
 
             modelBuilder.Entity("zzu_university.data.Model.Sector.ZnuSector", b =>
@@ -717,22 +828,18 @@ namespace zzu_university.data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ProgramAndReferenceCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProgramCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ProgramId")
                         .HasColumnType("int");
 
                     b.Property<string>("RegisterDate")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RegistrationCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StudentId")
@@ -901,24 +1008,28 @@ namespace zzu_university.data.Migrations
 
             modelBuilder.Entity("Student", b =>
                 {
+                    b.HasOne("zzu_university.data.Model.Certificate.Certificate", "Certificate")
+                        .WithMany()
+                        .HasForeignKey("CertificateId");
+
                     b.HasOne("AcadmicProgram", "Program")
                         .WithMany("Students")
                         .HasForeignKey("SelectedProgramId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.Navigation("Certificate");
+
                     b.Navigation("Program");
                 });
 
             modelBuilder.Entity("zzu_university.data.Model.Certificate.Certificate", b =>
                 {
-                    b.HasOne("Student", "Student")
+                    b.HasOne("Student", null)
                         .WithMany("Certificates")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("zzu_university.data.Model.Complaints.Complaint", b =>
@@ -951,14 +1062,33 @@ namespace zzu_university.data.Migrations
                     b.Navigation("Program");
                 });
 
-            modelBuilder.Entity("zzu_university.data.Model.Managment", b =>
+            modelBuilder.Entity("zzu_university.data.Model.Management", b =>
                 {
+                    b.HasOne("zzu_university.data.Model.Managment.ManagementType", "ManagementType")
+                        .WithMany("Managments")
+                        .HasForeignKey("Type")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("zzu_university.data.Model.User", "Users")
                         .WithMany("Managments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.Navigation("ManagementType");
+
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("zzu_university.data.Model.ProgramDetails.zzu_university.data.Model.Program.ProgramDetails", b =>
+                {
+                    b.HasOne("AcadmicProgram", "Program")
+                        .WithOne("ProgramDetails")
+                        .HasForeignKey("zzu_university.data.Model.ProgramDetails.zzu_university.data.Model.Program.ProgramDetails", "ProgramId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Program");
                 });
 
             modelBuilder.Entity("zzu_university.data.Model.Sector.ZnuSectorDepartment", b =>
@@ -1004,6 +1134,9 @@ namespace zzu_university.data.Migrations
 
             modelBuilder.Entity("AcadmicProgram", b =>
                 {
+                    b.Navigation("ProgramDetails")
+                        .IsRequired();
+
                     b.Navigation("StudentRegistrations");
 
                     b.Navigation("Students");
@@ -1021,6 +1154,11 @@ namespace zzu_university.data.Migrations
             modelBuilder.Entity("zzu_university.data.Model.Faculty.Faculty", b =>
                 {
                     b.Navigation("AcadmicPrograms");
+                });
+
+            modelBuilder.Entity("zzu_university.data.Model.Managment.ManagementType", b =>
+                {
+                    b.Navigation("Managments");
                 });
 
             modelBuilder.Entity("zzu_university.data.Model.Sector.ZnuSector", b =>

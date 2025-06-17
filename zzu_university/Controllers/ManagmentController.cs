@@ -2,86 +2,68 @@
 using Microsoft.AspNetCore.Mvc;
 using zzu_university.data.Model;
 using zzu_university.domain.DTOS;
+using zzu_university.domain.Service.ManagmentService;
 
 namespace zzu_university.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Policy = "Admin")]
     [ApiController]
+    //[Authorize(Policy = "Admin")]
     public class ManagmentController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IManagmentService _managmentService;
 
-        public ManagmentController(IUnitOfWork unitOfWork)
+        public ManagmentController(IManagmentService managmentService)
         {
-            _unitOfWork = unitOfWork;
+            _managmentService = managmentService;
         }
+
         [HttpGet]
-        public async Task<IActionResult> GetManagment()
+        public async Task<IActionResult> GetAll()
         {
-            var managment = await _unitOfWork.Managment.GetAsync();
-            if (managment == null) return NotFound();
-            return Ok(managment);
+            var result = await _managmentService.GetAllManagmentsAsync();
+            if (result == null || !result.Any())
+                return NotFound("لا توجد بيانات.");
+
+            return Ok(result);
         }
+
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetManagment(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var managment = await _unitOfWork.Managment.GetAsyncById(id);
-            if (managment == null) return NotFound();
-            return Ok(managment);
+            var result = await _managmentService.GetManagmentAsync(id);
+            if (result == null) return NotFound();
+            return Ok(result);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateManagment([FromBody] ManagmentDto managmentDto)
+        public async Task<IActionResult> Create([FromBody] ManagmentDto dto)
         {
-            if (managmentDto == null) return BadRequest("Invalid data.");
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var managment = new Managment
-            {
-                Name = managmentDto.Name,
-                Description = managmentDto.Description,
-                ContactEmail = managmentDto.ContactEmail,
-                PhoneNumber = managmentDto.PhoneNumber,
-                Type = managmentDto.Type ,
-                ImageUrl = managmentDto.ImageUrl
-            };
-
-            await _unitOfWork.Managment.AddAsync(managment);
-            _unitOfWork.Save();
-
-            return CreatedAtAction(nameof(GetManagment), new { id = managment.Id }, managment);
+            var created = await _managmentService.AddManagmentAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateManagment(int id, [FromBody] ManagmentDto managmentDto)
+        public async Task<IActionResult> Update(int id, [FromBody] ManagmentDto dto)
         {
-            if (managmentDto == null) return BadRequest("Invalid data.");
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var existingManagment = await _unitOfWork.Managment.GetAsyncById(id);
-            if (existingManagment == null) return NotFound();
-
-            existingManagment.Name = managmentDto.Name;
-            existingManagment.Description = managmentDto.Description;
-            existingManagment.ContactEmail = managmentDto.ContactEmail;
-            existingManagment.PhoneNumber = managmentDto.PhoneNumber;
-            existingManagment.Type = managmentDto.Type;
-            existingManagment.ImageUrl = managmentDto.ImageUrl; 
-
-            await _unitOfWork.Managment.UpdateAsyncById(id, existingManagment);
-            _unitOfWork.Save();
+            var success = await _managmentService.UpdateManagmentAsync(id, dto);
+            if (!success) return NotFound();
 
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteManagment(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var existingManagment = await _unitOfWork.Managment.GetAsyncById(id);
-            if (existingManagment == null) return NotFound();
-
-            await _unitOfWork.Managment.DeleteAsyncById(id);
-            _unitOfWork.Save();
+            var success = await _managmentService.DeleteManagmentAsync(id);
+            if (!success) return NotFound();
 
             return NoContent();
         }

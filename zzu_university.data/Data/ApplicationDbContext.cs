@@ -13,6 +13,10 @@ using zzu_university.data.Model.Complaints;
 using zzu_university.data.Model.Sector;
 using zzu_university.data.Model.Contacts;
 using zzu_university.data.Model.FacultyContact;
+using zzu_university.data.Model.FAQS;
+using zzu_university.data.Model.Privacy;
+using zzu_university.data.Model.ProgramDetails.zzu_university.data.Model.Program;
+using zzu_university.data.Model.Managment;
 
 namespace zzu_university.data.Data
 {
@@ -22,7 +26,7 @@ namespace zzu_university.data.Data
 
         public DbSet<MainPage> MainPages { get; set; }
         public DbSet<Service> Services { get; set; }
-        public DbSet<Managment> Managments { get; set; }
+        public DbSet<Management> Managments { get; set; }
         public DbSet<News> News { get; set; }
         public DbSet<About> Abouts { get; set; }
         public DbSet<Student> Students { get; set; }
@@ -37,6 +41,11 @@ namespace zzu_university.data.Data
         public DbSet<ZnuSectorDetail> ZnuSectorDetails { get; set; }
         public DbSet<ZnuContact> ZnuContacts { get; set; }
         public DbSet<FacultyContact> FacultyContacts { get; set; }
+        public DbSet<FAQ> FAQs { get; set; }
+        public DbSet<Privacy> Privacy { get; set; } 
+        public DbSet<ProgramDetails> ProgramDetails { get; set; }
+        public DbSet<ManagementType> ManagementTypes { get; set; }
+
         //pubic Dbset<Complaint> Complaint { get; set; } 
         //public DbSet<User> Users { get; set; }  
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -86,7 +95,7 @@ namespace zzu_university.data.Data
                 .HasMaxLength(500);
 
             // علاقة Managment مع User
-            modelBuilder.Entity<Managment>()
+            modelBuilder.Entity<Management>()
                 .HasOne(m => m.Users)
                 .WithMany(u => u.Managments)
                 .HasForeignKey(m => m.UserId)

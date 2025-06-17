@@ -8,16 +8,24 @@ using zzu_university.data.Repository.AboutRepo;
 
 namespace zzu_university.data.Repository.ManagmentRepo
 {
-    public interface IManagmentRepo : IRepo<Managment, int>
+    public interface IManagmentRepo : IRepo<Management, int>
     {
-        Task<Managment> GetAsync(); // Get the first or default record (general)
-        Task<Managment> GetAsyncById(int id); // Get by specific ID
+        // Get all managements including their type
+        Task<IEnumerable<Management>> GetAllWithTypeAsync();
 
-        Task AddAsync(Managment managment); // Add new record
+        // Get one management with its type by ID
+        Task<Management?> GetWithTypeByIdAsync(int id);
 
-        Task UpdateAsyncById(int id, Managment managment); // Update record by ID
+        // Optional general purpose fetch
+        Task<Management?> GetDefaultAsync(); // e.g., first or most used
 
-        Task DeleteAsyncById(int id); // Delete record by ID
+        // Add new management
+        Task AddAsync(Management management);
+
+        // Update existing management by ID
+        Task UpdateAsyncById(int id, Management updatedManagement);
+
+        // Delete management by ID
+        Task DeleteAsyncById(int id);
     }
-
 }
