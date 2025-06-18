@@ -13,7 +13,7 @@ namespace zzu_university.data.Repository.CertificateRepo
         Task<Certificate> GetByIdAsync(int certificateId);
 
         // الحصول على كل الشهادات لطالب معين
-        Task<IEnumerable<Certificate>> GetByStudentIdAsync(int studentId);
+       // Task<IEnumerable<Certificate>> GetByStudentIdAsync(int studentId);
 
         // إضافة شهادة جديدة
         Task<Certificate> AddAsync(Certificate certificate);

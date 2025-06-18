@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using zzu_university.data.Data;
 using zzu_university.data.Model.Certificate;
 using zzu_university.data.Repository.CertificateRepo;
 using zzu_university.domain.DTOS.CertificateDto;
@@ -12,10 +14,12 @@ namespace zzu_university.domain.Service.CertificateService
     public class CertificateService : ICertificateService
     {
         private readonly ICertificateRepo _repository;
+        private readonly ApplicationDbContext _context;
 
-        public CertificateService(ICertificateRepo repository)
+        public CertificateService(ICertificateRepo repository, ApplicationDbContext context)
         {
             _repository = repository;
+            _context = context;
         }
 
         public async Task<IEnumerable<CertificateReadDto>> GetAllAsync()
@@ -30,11 +34,11 @@ namespace zzu_university.domain.Service.CertificateService
             return certificate == null ? null : MapToReadDto(certificate);
         }
 
-        public async Task<IEnumerable<CertificateReadDto>> GetByStudentIdAsync(int studentId)
-        {
-            var certificates = await _repository.GetByStudentIdAsync(studentId);
-            return certificates.Select(MapToReadDto);
-        }
+        //public async Task<IEnumerable<CertificateReadDto>> GetByStudentIdAsync(int studentId)
+        //{
+        //    var certificates = await _repository.GetByStudentIdAsync(studentId);
+        //    return certificates.Select(MapToReadDto);
+        //}
 
         public async Task<CertificateReadDto> CreateAsync(CertificateCreateDto dto)
         {
@@ -73,15 +77,21 @@ namespace zzu_university.domain.Service.CertificateService
         // ✅ Manual Mapper Method
         private CertificateReadDto MapToReadDto(Certificate cert)
         {
+            var student = _context.Students
+                .FirstOrDefault(s => s.CertificateId == cert.Id);
+
             return new CertificateReadDto
             {
                 Id = cert.Id,
-                //StudentId = cert.StudentId,
                 CertificateName = cert.CertificateName,
                 IssueDate = cert.IssueDate,
                 Description = cert.Description,
-               
+                StudentId = student?.StudentId,
+                StudentFullName = student != null
+                    ? $"{student.firstName} {student.middleName} {student.lastName}"
+                    : null
             };
         }
+
     }
 }

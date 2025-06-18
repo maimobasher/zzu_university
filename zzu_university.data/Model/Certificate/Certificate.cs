@@ -13,8 +13,8 @@ namespace zzu_university.data.Model.Certificate
         [Key]
         public int Id { get; set; }
 
-        [Required]
-        public int StudentId { get; set; }
+        //[Required]
+        //public int StudentId { get; set; }
 
         [Required]
         [StringLength(100)]

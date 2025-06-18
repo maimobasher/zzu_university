@@ -36,12 +36,12 @@ namespace zzu_university.Controllers
         }
 
         // GET: api/Certificate/student/{studentId}
-        [HttpGet("student/{studentId}")]
-        public async Task<ActionResult<IEnumerable<CertificateReadDto>>> GetByStudentId(int studentId)
-        {
-            var certificates = await _certificateService.GetByStudentIdAsync(studentId);
-            return Ok(certificates);
-        }
+        //[HttpGet("student/{studentId}")]
+        //public async Task<ActionResult<IEnumerable<CertificateReadDto>>> GetByStudentId(int studentId)
+        //{
+        //    var certificates = await _certificateService.GetByStudentIdAsync(studentId);
+        //    return Ok(certificates);
+        //}
 
         // POST: api/Certificate
         [HttpPost]

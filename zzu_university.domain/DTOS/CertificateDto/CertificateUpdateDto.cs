@@ -12,9 +12,7 @@ namespace zzu_university.domain.DTOS.CertificateDto
         [Required]
         public int Id { get; set; }
 
-        [Required]
-        public int StudentId { get; set; }
-
+       
         [Required]
         [StringLength(100)]
         public string CertificateName { get; set; }

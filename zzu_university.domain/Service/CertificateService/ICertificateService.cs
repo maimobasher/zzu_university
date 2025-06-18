@@ -11,7 +11,7 @@ namespace zzu_university.domain.Service.CertificateService
     {
         Task<IEnumerable<CertificateReadDto>> GetAllAsync();
         Task<CertificateReadDto> GetByIdAsync(int id);
-        Task<IEnumerable<CertificateReadDto>> GetByStudentIdAsync(int studentId);
+       // Task<IEnumerable<CertificateReadDto>> GetByStudentIdAsync(int studentId);
         Task<CertificateReadDto> CreateAsync(CertificateCreateDto dto);
         Task<CertificateReadDto> UpdateAsync(CertificateUpdateDto dto);
         Task<bool> DeleteAsync(int id);

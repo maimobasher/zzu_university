@@ -57,7 +57,7 @@ public class Student
     public AcadmicProgram Program { get; set; }
 
     public ICollection<StudentRegisterProgram> ProgramRegistrations { get; set; } = new List<StudentRegisterProgram>();
-    public ICollection<Certificate> Certificates { get; set; }
+    //public ICollection<Certificate> Certificates { get; set; }
     public ICollection<Complaint> complaints { get; set; }
     public int? CertificateId { get; set; }  // Nullable in case not every student has a certificate
 

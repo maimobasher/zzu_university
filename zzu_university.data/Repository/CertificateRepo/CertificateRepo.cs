@@ -45,12 +45,12 @@ namespace zzu_university.data.Repository.CertificateRepo
                 .FirstOrDefaultAsync(c => c.Id == certificateId); // Removed Include
         }
 
-        public async Task<IEnumerable<Certificate>> GetByStudentIdAsync(int studentId)
-        {
-            return await _context.Certificates
-                .Where(c => c.StudentId == studentId)
-                .ToListAsync();
-        }
+        //public async Task<IEnumerable<Certificate>> GetByStudentIdAsync(int studentId)
+        //{
+        //    return await _context.Certificates
+        //        .Where(c => c.StudentId == studentId)
+        //        .ToListAsync();
+        //}
 
         public async Task<Certificate> UpdateAsync(Certificate certificate)
         {
@@ -61,7 +61,7 @@ namespace zzu_university.data.Repository.CertificateRepo
             existing.CertificateName = certificate.CertificateName;
             existing.IssueDate = certificate.IssueDate;
             existing.Description = certificate.Description;
-            existing.StudentId = certificate.StudentId;
+            //existing.StudentId = certificate.StudentId;
 
             _context.Certificates.Update(existing);
             await _context.SaveChangesAsync();

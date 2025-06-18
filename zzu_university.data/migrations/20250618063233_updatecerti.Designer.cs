@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using zzu_university.data.Data;
 
@@ -11,9 +12,11 @@ using zzu_university.data.Data;
 namespace zzu_university.data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250618063233_updatecerti")]
+    partial class updatecerti
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -369,7 +372,12 @@ namespace zzu_university.data.Migrations
                     b.Property<DateTime>("IssueDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("StudentId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("StudentId");
 
                     b.ToTable("Certificates");
                 });
@@ -1018,6 +1026,13 @@ namespace zzu_university.data.Migrations
                     b.Navigation("Program");
                 });
 
+            modelBuilder.Entity("zzu_university.data.Model.Certificate.Certificate", b =>
+                {
+                    b.HasOne("Student", null)
+                        .WithMany("Certificates")
+                        .HasForeignKey("StudentId");
+                });
+
             modelBuilder.Entity("zzu_university.data.Model.Complaints.Complaint", b =>
                 {
                     b.HasOne("Student", "Student")
@@ -1130,6 +1145,8 @@ namespace zzu_university.data.Migrations
 
             modelBuilder.Entity("Student", b =>
                 {
+                    b.Navigation("Certificates");
+
                     b.Navigation("ProgramRegistrations");
 
                     b.Navigation("complaints");
