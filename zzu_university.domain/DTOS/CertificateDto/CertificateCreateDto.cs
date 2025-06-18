@@ -19,5 +19,6 @@ namespace zzu_university.domain.DTOS.CertificateDto
 
         [StringLength(255)]
         public string Description { get; set; }
+        public int StudentId { get; set; }
     }
 }

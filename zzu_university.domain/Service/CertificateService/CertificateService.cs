@@ -44,15 +44,26 @@ namespace zzu_university.domain.Service.CertificateService
         {
             var certificate = new Certificate
             {
-                //StudentId = dto.StudentId,
                 CertificateName = dto.CertificateName,
                 IssueDate = dto.IssueDate,
                 Description = dto.Description
             };
 
+            // أضف الشهادة
             var result = await _repository.AddAsync(certificate);
+
+            // ✅ بعد الإضافة، اربط الشهادة بالطالب
+            var student = await _context.Students.FindAsync(dto.StudentId);
+            if (student != null)
+            {
+                student.CertificateId = result.Id;
+                _context.Students.Update(student);
+                await _context.SaveChangesAsync();
+            }
+
             return MapToReadDto(result);
         }
+
 
         public async Task<CertificateReadDto> UpdateAsync(CertificateUpdateDto dto)
         {
