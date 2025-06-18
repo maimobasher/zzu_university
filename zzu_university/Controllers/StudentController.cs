@@ -132,7 +132,15 @@ namespace zzu_university.api.Controllers
                 student.nationalId,
                 ProgramCode = latestRegister?.ProgramCode ?? "N/A",
                 ProgramAndReferenceCode = latestRegister?.ProgramAndReferenceCode ?? "N/A",
+               // IsPaid = isPaid ?? false
+               student.phone,
+               student.email,
+               ProgramId = latestRegister?.ProgramId ?? 0,
                 IsPaid = isPaid ?? false
+                
+               
+
+
             });
         }
 

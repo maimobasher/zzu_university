@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using zzu_university.data.Data;
 using zzu_university.data.Model.Payment;
 using zzu_university.domain.DTOS.PaymentDto;
@@ -50,4 +51,32 @@ public class StudentPaymentController : ControllerBase
 
         return Ok(new { Message = "Payment updated successfully." });
     }
+    [HttpPut("UpdateIsRequest")]
+    public async Task<IActionResult> UpdateIsRequest([FromBody] UpdateIsRequestDto dto)
+    {
+        var payment = await _context.StudentPayments.FirstOrDefaultAsync(p => p.Id == dto.Id);
+        if (payment == null)
+        {
+            return NotFound("Payment not found.");
+        }
+
+        payment.IsRequest = dto.IsRequest;
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "IsRequest updated successfully." });
+    }
+    [HttpGet("GetLatestPaymentByStudentId/{studentId}")]
+    public async Task<IActionResult> GetLatestPaymentByStudentId(int studentId)
+    {
+        var latestPayment = await _context.StudentPayments
+            .Where(p => p.StudentId == studentId)
+            .OrderByDescending(p => p.Id) // أو OrderByDescending(p => p.PaymentDate)
+            .FirstOrDefaultAsync();
+
+        if (latestPayment == null)
+            return NotFound("No payment found for this student.");
+
+        return Ok(latestPayment); // يرجع جميع الأعمدة تلقائيًا
+    }
+
 }

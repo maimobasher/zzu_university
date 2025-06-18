@@ -19,6 +19,7 @@ namespace zzu_university.data.Model.Payment
         public string ReferenceCode { get; set; }
 
         public bool IsPaid { get; set; }
+        public bool? IsRequest { get; set; } = false;
 
         public DateTime PaymentDate { get; set; } = DateTime.UtcNow;
     }
