@@ -15,10 +15,10 @@ namespace zzu_university.domain.DTOS.CertificateDto
         public string CertificateName { get; set; }
 
        
-        public DateTime IssueDate { get; set; }
+        public DateTime ? IssueDate { get; set; }
 
         [StringLength(255)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public int StudentId { get; set; }
     }
 }

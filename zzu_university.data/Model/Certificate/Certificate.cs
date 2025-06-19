@@ -21,10 +21,10 @@ namespace zzu_university.data.Model.Certificate
         public string CertificateName { get; set; }
 
        
-        public DateTime IssueDate { get; set; }
+        public DateTime? IssueDate { get; set; }
 
         [StringLength(255)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
        
     }
