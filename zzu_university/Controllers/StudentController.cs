@@ -193,7 +193,42 @@ namespace zzu_university.api.Controllers
 
             return Ok(new { UsernameExists = exists });
         }
+        [HttpGet("GetStudentProgramsWithStatus")]
+        public async Task<IActionResult> GetProgramsWithStatus([FromQuery] string national_id)
+        {
+            // 1. إيجاد الطالب
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.nationalId == national_id);
 
+            if (student == null)
+                return NotFound("الطالب غير موجود");
+
+            // 2. استخراج كل البرامج المسجل بها الطالب
+            var programs = await _context.StudentRegisterPrograms
+                .Where(p => p.StudentId == student.StudentId)
+                .Select(p => new StudentProgramStatusDto
+                {
+                    ProgramId = p.ProgramId,
+                    ProgramCode = p.ProgramCode,
+                    ProgramAndReferenceCode = p.ProgramAndReferenceCode,
+                    Status = p.status,
+                    IsPaid = null  // سيتم تعبئتها لاحقاً
+                })
+                .ToListAsync();
+
+            // 3. ربط كل برنامج بآخر سجل دفع
+            foreach (var item in programs)
+            {
+                var lastPayment = await _context.StudentPayments
+                    .Where(pay => pay.StudentId == student.StudentId && pay.ProgramId == item.ProgramId)
+                    .OrderByDescending(pay => pay.PaymentDate)
+                    .FirstOrDefaultAsync();
+
+                item.IsPaid = lastPayment?.IsPaid;
+            }
+
+            return Ok(programs);
+        }
 
 
 
