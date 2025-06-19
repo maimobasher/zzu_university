@@ -28,8 +28,9 @@ public class StudentPaymentController : ControllerBase
             PaymentDate = DateTime.UtcNow,
             PaidAmount = dto.PaidAmount,
             CreatedDate = DateTime.UtcNow,
-            PaymentType = dto.PaymentType
-            
+            PaymentType = dto.PaymentType,
+            IsRequest = dto.IsRequest
+
         };
 
         _context.StudentPayments.Add(payment);

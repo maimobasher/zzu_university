@@ -30,7 +30,9 @@ namespace zzu_university.domain.Service.PaymentService
                 PaymentDate = DateTime.UtcNow,
                 PaidAmount = dto.PaidAmount,
                 CreatedDate = DateTime.UtcNow,
-                PaymentType = dto.PaymentType
+                PaymentType = dto.PaymentType,
+                IsRequest = dto.IsRequest
+
             };
 
             await _context.StudentPayments.AddAsync(payment);
@@ -54,12 +56,14 @@ namespace zzu_university.domain.Service.PaymentService
                 ProgramId = payment.ProgramId,
                 ReferenceCode = payment.ReferenceCode,
                 IsPaid = payment.IsPaid,
-                PaymentDate = payment.PaymentDate ,
-                PaidAmount= payment.PaidAmount,
+                PaymentDate = payment.PaymentDate,
+                PaidAmount = payment.PaidAmount,
                 CreatedDate = payment.CreatedDate,
-                PaymentType = payment.PaymentType
-            };
+                PaymentType = payment.PaymentType,
+                IsRequest = (bool)payment.IsRequest
+            }; 
         }
+
 
         public async Task<List<PaymentResultDto>> GetAllPaymentsForStudentAsync(int studentId)
         {
@@ -75,7 +79,8 @@ namespace zzu_university.domain.Service.PaymentService
                     PaymentDate = p.PaymentDate ,
                     PaidAmount = p.PaidAmount,
                     CreatedDate = p.CreatedDate,
-                    PaymentType = p.PaymentType
+                    PaymentType = p.PaymentType,
+                    IsRequest = (bool)p.IsRequest
                 })
                 .ToListAsync();
         }

@@ -1,12 +1,26 @@
 ﻿using QuestPDF.Fluent;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using zzu_university.data.Model.StudentRegisterProgram;
+using QuestPDF.Helpers;
+using zzu_university.data.Data;
+
 
 public class StudentPdfReportService
 {
+    private readonly ApplicationDbContext _context;
+
+    public StudentPdfReportService(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
     public byte[] GenerateStudentReport(Student student)
     {
+        // استرجاع آخر عملية دفع
+        var latestPayment = _context.StudentPayments
+            .Where(p => p.StudentId == student.StudentId)
+            .OrderByDescending(p => p.PaymentDate)
+            .FirstOrDefault();
+
         var registration = student.ProgramRegistrations?.FirstOrDefault();
 
         var document = Document.Create(container =>
@@ -14,16 +28,12 @@ public class StudentPdfReportService
             container.Page(page =>
             {
                 page.Size(PageSizes.A4);
-               
-                // 1) RTL + Arabic font
+                page.Margin(40);
                 page.DefaultTextStyle(x => x
                     .FontFamily("Arial")
                     .FontSize(12)
                     .DirectionFromRightToLeft());
 
-                page.Margin(40);
-
-                // 2) Header
                 page.Header()
                     .AlignCenter()
                     .Text("📄 تقرير الطالب")
@@ -32,19 +42,16 @@ public class StudentPdfReportService
 
                 page.Content().PaddingVertical(10).Column(col =>
                 {
-                    // Helper to draw a two‐column row
                     void DrawRow(string label, string? value)
                     {
                         col.Item().Row(r =>
                         {
-                            // Value cell
                             r.RelativeColumn()
                              .BorderBottom(1).BorderColor(Colors.Grey.Lighten2)
                              .Padding(5)
                              .Text(value ?? "—")
                              .AlignRight();
 
-                            // Label cell
                             r.ConstantColumn(120)
                              .BorderBottom(1).BorderColor(Colors.Grey.Lighten2)
                              .Padding(5)
@@ -55,13 +62,9 @@ public class StudentPdfReportService
                         });
                     }
 
-                    // ── Personal Information ──
-                    col.Item()
-                        .PaddingBottom(5)
-                        .AlignRight()
-                        .Text("👤 البيانات الشخصية")
-                        .FontSize(14)
-                        .Bold();
+                    // 👤 البيانات الشخصية
+                    col.Item().PaddingBottom(5).AlignRight()
+                        .Text("👤 البيانات الشخصية").FontSize(14).Bold();
 
                     DrawRow(":الاسم الكامل", $"{student.firstName} {student.middleName} {student.lastName}");
                     DrawRow("البريد الإلكتروني", student.email);
@@ -72,55 +75,37 @@ public class StudentPdfReportService
                     DrawRow("الجنسية", student.nationality);
                     DrawRow("العنوان", $"{student.address}, {student.city}");
 
-                    col.Item().PaddingVertical(10); // spacing
+                    col.Item().PaddingVertical(10);
 
-                    // ── Educational Details ──
-                    col.Item()
-                        .PaddingBottom(5)
-                        .AlignRight()
-                        .Text("🎓 البيانات التعليمية")
-                        .FontSize(14)
-                        .Bold();
+                    // 🎓 البيانات التعليمية
+                    col.Item().PaddingBottom(5).AlignRight()
+                        .Text("🎓 البيانات التعليمية").FontSize(14).Bold();
 
-                    //DrawRow("المدرسة الثانوية", student.highSchool);
                     DrawRow("سنة التخرج", student.graduationYear);
                     DrawRow("المعدل التراكمي", student.gpa);
                     DrawRow("النسبة المئوية", student.percent);
                     DrawRow("الكلية", student.faculty);
-                   // DrawRow("الفصل الدراسي", student.semester);
 
                     col.Item().PaddingVertical(10);
 
-                    // ── Academic Program ──
+                    // 📘 البرنامج الأكاديمي
                     if (student.Program != null)
                     {
-                        col.Item()
-                            .PaddingBottom(5)
-                            .AlignRight()
-                            .Text("📘 البرنامج الأكاديمي")
-                            .FontSize(14)
-                            .Bold();
+                        col.Item().PaddingBottom(5).AlignRight()
+                            .Text("📘 البرنامج الأكاديمي").FontSize(14).Bold();
 
                         DrawRow("اسم البرنامج", student.Program.Name);
-                        //DrawRow("كود البرنامج", student.Program.ProgramCode);
-                       // DrawRow("الوصف", student.Program.Description);
                         DrawRow("المدة", $"{student.Program.DurationInYears} سنوات");
-                        //DrawRow("الرسوم الدراسية", $"{student.Program.TuitionFees:N2} جنيه");
 
                         col.Item().PaddingVertical(10);
                     }
 
-                    // ── Registration Details ──
+                    // 📝 بيانات التسجيل
                     if (registration != null)
                     {
-                        col.Item()
-                            .PaddingBottom(5)
-                            .AlignRight()
-                            .Text("📝 بيانات التسجيل")
-                            .FontSize(14)
-                            .Bold();
+                        col.Item().PaddingBottom(5).AlignRight()
+                            .Text("📝 بيانات التسجيل").FontSize(14).Bold();
 
-                        //DrawRow("كود التسجيل", registration.RegistrationCode);
                         DrawRow("تاريخ التسجيل", registration.RegisterDate);
                         DrawRow("كود التقديم", registration.ProgramAndReferenceCode);
                         DrawRow("الحالة", registration.status);
@@ -128,21 +113,26 @@ public class StudentPdfReportService
                         col.Item().PaddingVertical(10);
                     }
 
-                    // ── System Info ──
-                    col.Item()
-                        .PaddingBottom(5)
-                        .AlignRight()
-                        .Text("🔐 معلومات النظام")
-                        .FontSize(14)
-                        .Bold();
+                    // 💳 بيانات الدفع
+                    if (latestPayment != null)
+                    {
+                        col.Item().PaddingBottom(5).AlignRight()
+                            .Text("💳 آخر عملية دفع").FontSize(14).Bold();
+
+                        DrawRow("تم الدفع", latestPayment.IsPaid ? "نعم" : "لا");
+                        DrawRow("كود المرجع", latestPayment.ReferenceCode);
+                        DrawRow("تاريخ الدفع", latestPayment.PaymentDate.ToString("yyyy-MM-dd"));
+                    }
+
+                    // 🔐 معلومات النظام
+                    col.Item().PaddingBottom(5).AlignRight()
+                        .Text("🔐 معلومات النظام").FontSize(14).Bold();
 
                     DrawRow("اسم المستخدم", student.UserName);
                     DrawRow("تم الدفع", student.IsPaymentCompleted ? "نعم" : "لا");
                 });
 
-                // 3) Footer
-                page.Footer()
-                    .AlignCenter()
+                page.Footer().AlignCenter()
                     .Text($"تم الإنشاء بتاريخ: {DateTime.Now:yyyy-MM-dd HH:mm}")
                     .FontSize(10)
                     .SemiBold();
