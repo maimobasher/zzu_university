@@ -20,7 +20,9 @@ namespace zzu_university.data.Model.Payment
 
         public bool IsPaid { get; set; }
         public bool? IsRequest { get; set; } = false;
-
+        public decimal PaidAmount { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public DateTime PaymentDate { get; set; } = DateTime.UtcNow;
+        public int PaymentType { get; set; }
     }
 }

@@ -25,7 +25,11 @@ public class StudentPaymentController : ControllerBase
             ProgramId = dto.ProgramId,
             ReferenceCode = dto.ReferenceCode,
             IsPaid = dto.IsPaid,
-            PaymentDate = DateTime.UtcNow
+            PaymentDate = DateTime.UtcNow,
+            PaidAmount = dto.PaidAmount,
+            CreatedDate = DateTime.UtcNow,
+            PaymentType = dto.PaymentType
+            
         };
 
         _context.StudentPayments.Add(payment);

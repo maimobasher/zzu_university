@@ -19,6 +19,9 @@ namespace zzu_university.domain.DTOS.PaymentDto
         public string ReferenceCode { get; set; }
 
         public bool IsPaid { get; set; } = false;
+        public decimal PaidAmount { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public int PaymentType { get; set; }
     }
 
 }

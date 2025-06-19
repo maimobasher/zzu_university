@@ -182,6 +182,17 @@ namespace zzu_university.api.Controllers
         }
 
 
+        [HttpPost("CheckUsernameExists")]
+        public async Task<IActionResult> CheckUsernameExists([FromBody] CheckUsernameDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.UserName))
+                return BadRequest("Username is required.");
+
+            var exists = await _context.Students
+                .AnyAsync(s => s.UserName.ToLower() == dto.UserName.ToLower());
+
+            return Ok(new { UsernameExists = exists });
+        }
 
 
 

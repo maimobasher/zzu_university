@@ -27,7 +27,10 @@ namespace zzu_university.domain.Service.PaymentService
                 ProgramId = dto.ProgramId,
                 ReferenceCode = dto.ReferenceCode,
                 IsPaid = dto.IsPaid,
-                PaymentDate = DateTime.UtcNow
+                PaymentDate = DateTime.UtcNow,
+                PaidAmount = dto.PaidAmount,
+                CreatedDate = DateTime.UtcNow,
+                PaymentType = dto.PaymentType
             };
 
             await _context.StudentPayments.AddAsync(payment);
@@ -51,7 +54,10 @@ namespace zzu_university.domain.Service.PaymentService
                 ProgramId = payment.ProgramId,
                 ReferenceCode = payment.ReferenceCode,
                 IsPaid = payment.IsPaid,
-                PaymentDate = payment.PaymentDate   
+                PaymentDate = payment.PaymentDate ,
+                PaidAmount= payment.PaidAmount,
+                CreatedDate = payment.CreatedDate,
+                PaymentType = payment.PaymentType
             };
         }
 
@@ -66,7 +72,10 @@ namespace zzu_university.domain.Service.PaymentService
                     ProgramId = p.ProgramId,
                     ReferenceCode = p.ReferenceCode,
                     IsPaid = p.IsPaid,
-                    PaymentDate = p.PaymentDate 
+                    PaymentDate = p.PaymentDate ,
+                    PaidAmount = p.PaidAmount,
+                    CreatedDate = p.CreatedDate,
+                    PaymentType = p.PaymentType
                 })
                 .ToListAsync();
         }
