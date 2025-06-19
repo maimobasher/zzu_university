@@ -3,7 +3,6 @@ using QuestPDF.Infrastructure;
 using QuestPDF.Helpers;
 using zzu_university.data.Data;
 
-
 public class StudentPdfReportService
 {
     private readonly ApplicationDbContext _context;
@@ -74,6 +73,8 @@ public class StudentPdfReportService
                     DrawRow("النوع", student.gender == 1 ? "ذكر" : "أنثى");
                     DrawRow("الجنسية", student.nationality);
                     DrawRow("العنوان", $"{student.address}, {student.city}");
+                    DrawRow("نوع الترخيص", student.LiscenceType);
+                    DrawRow("الديانة", student.Religion);
 
                     col.Item().PaddingVertical(10);
 
