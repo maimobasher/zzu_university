@@ -2,6 +2,7 @@
 using QuestPDF.Infrastructure;
 using QuestPDF.Helpers;
 using zzu_university.data.Data;
+using System.IO; // ضروري للمسارات
 
 public class StudentPdfReportService
 {
@@ -14,7 +15,6 @@ public class StudentPdfReportService
 
     public byte[] GenerateStudentReport(Student student)
     {
-        // استرجاع آخر عملية دفع
         var latestPayment = _context.StudentPayments
             .Where(p => p.StudentId == student.StudentId)
             .OrderByDescending(p => p.PaymentDate)
@@ -22,24 +22,36 @@ public class StudentPdfReportService
 
         var registration = student.ProgramRegistrations?.FirstOrDefault();
 
+        // ✅ الحصول على مسار اللوجو من wwwroot/images
+        var logoPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "zagazig_logo.png");
+
         var document = Document.Create(container =>
         {
             container.Page(page =>
             {
                 page.Size(PageSizes.A4);
-                page.Margin(40);
+                page.Margin(20);
                 page.DefaultTextStyle(x => x
                     .FontFamily("Arial")
-                    .FontSize(12)
+                    .FontSize(10)
                     .DirectionFromRightToLeft());
 
-                page.Header()
-                    .AlignCenter()
-                    .Text("📄 تقرير الطالب")
-                    .FontSize(20)
-                    .Bold();
+                // ✅ الهيدر مع اللوجو من مسار فعلي
+                page.Header().Row(row =>
+                {
+                    row.ConstantColumn(80).Height(50).AlignRight().AlignMiddle().Element(e =>
+                    {
+                        if (File.Exists(logoPath))
+                            e.Image(logoPath).FitArea();
+                        else
+                            e.Text("🔺").FontSize(20); // بديل لو الصورة مش موجودة
+                    });
 
-                page.Content().PaddingVertical(10).Column(col =>
+                    row.RelativeColumn().AlignCenter().AlignMiddle().Text("📄 تقرير الطالب")
+                        .FontSize(16).Bold();
+                });
+
+                page.Content().Column(col =>
                 {
                     void DrawRow(string label, string? value)
                     {
@@ -47,13 +59,13 @@ public class StudentPdfReportService
                         {
                             r.RelativeColumn()
                              .BorderBottom(1).BorderColor(Colors.Grey.Lighten2)
-                             .Padding(5)
+                             .Padding(3)
                              .Text(value ?? "—")
                              .AlignRight();
 
-                            r.ConstantColumn(120)
+                            r.ConstantColumn(100)
                              .BorderBottom(1).BorderColor(Colors.Grey.Lighten2)
-                             .Padding(5)
+                             .Padding(3)
                              .Text(label)
                              .FontColor(Colors.Green.Darken2)
                              .SemiBold()
@@ -61,9 +73,8 @@ public class StudentPdfReportService
                         });
                     }
 
-                    // 👤 البيانات الشخصية
-                    col.Item().PaddingBottom(5).AlignRight()
-                        .Text("👤 البيانات الشخصية").FontSize(14).Bold();
+                    col.Item().PaddingBottom(3).AlignRight()
+                        .Text("👤 البيانات الشخصية").FontSize(12).Bold();
 
                     DrawRow(":الاسم الكامل", $"{student.firstName} {student.middleName} {student.lastName}");
                     DrawRow("البريد الإلكتروني", student.email);
@@ -73,69 +84,56 @@ public class StudentPdfReportService
                     DrawRow("النوع", student.gender == 1 ? "ذكر" : "أنثى");
                     DrawRow("الجنسية", student.nationality);
                     DrawRow("العنوان", $"{student.address}, {student.city}");
-                    DrawRow("نوع الترخيص", student.LiscenceType);
+                    DrawRow("نوع الشهادة", student.LiscenceType);
                     DrawRow("الديانة", student.Religion);
+                    DrawRow("اسم المستخدم", student.UserName);
+                    DrawRow("تم الدفع", student.IsPaymentCompleted ? "نعم" : "لا");
+                    col.Item().PaddingVertical(5);
 
-                    col.Item().PaddingVertical(10);
-
-                    // 🎓 البيانات التعليمية
-                    col.Item().PaddingBottom(5).AlignRight()
-                        .Text("🎓 البيانات التعليمية").FontSize(14).Bold();
+                    col.Item().PaddingBottom(3).AlignRight()
+                        .Text("🎓 البيانات التعليمية").FontSize(12).Bold();
 
                     DrawRow("سنة التخرج", student.graduationYear);
                     DrawRow("المعدل التراكمي", student.gpa);
                     DrawRow("النسبة المئوية", student.percent);
                     DrawRow("الكلية", student.faculty);
+                    col.Item().PaddingVertical(5);
 
-                    col.Item().PaddingVertical(10);
-
-                    // 📘 البرنامج الأكاديمي
                     if (student.Program != null)
                     {
-                        col.Item().PaddingBottom(5).AlignRight()
-                            .Text("📘 البرنامج الأكاديمي").FontSize(14).Bold();
+                        col.Item().PaddingBottom(3).AlignRight()
+                            .Text("📘 البرنامج الأكاديمي").FontSize(12).Bold();
 
                         DrawRow("اسم البرنامج", student.Program.Name);
                         DrawRow("المدة", $"{student.Program.DurationInYears} سنوات");
-
-                        col.Item().PaddingVertical(10);
+                        col.Item().PaddingVertical(5);
                     }
 
-                    // 📝 بيانات التسجيل
                     if (registration != null)
                     {
-                        col.Item().PaddingBottom(5).AlignRight()
-                            .Text("📝 بيانات التسجيل").FontSize(14).Bold();
+                        col.Item().PaddingBottom(3).AlignRight()
+                            .Text("📝 بيانات التسجيل").FontSize(12).Bold();
 
                         DrawRow("تاريخ التسجيل", registration.RegisterDate);
                         DrawRow("كود التقديم", registration.ProgramAndReferenceCode);
                         DrawRow("الحالة", registration.status);
-
-                        col.Item().PaddingVertical(10);
+                        col.Item().PaddingVertical(5);
                     }
 
-                    // 💳 بيانات الدفع
                     if (latestPayment != null)
                     {
-                        col.Item().PaddingBottom(5).AlignRight()
-                            .Text("💳 آخر عملية دفع").FontSize(14).Bold();
+                        col.Item().PaddingBottom(3).AlignRight()
+                            .Text("💳 بيانات الدفع").FontSize(12).Bold();
 
                         DrawRow("تم الدفع", latestPayment.IsPaid ? "نعم" : "لا");
                         DrawRow("كود المرجع", latestPayment.ReferenceCode);
                         DrawRow("تاريخ الدفع", latestPayment.PaymentDate.ToString("yyyy-MM-dd"));
                     }
-
-                    // 🔐 معلومات النظام
-                    col.Item().PaddingBottom(5).AlignRight()
-                        .Text("🔐 معلومات النظام").FontSize(14).Bold();
-
-                    DrawRow("اسم المستخدم", student.UserName);
-                    DrawRow("تم الدفع", student.IsPaymentCompleted ? "نعم" : "لا");
                 });
 
                 page.Footer().AlignCenter()
                     .Text($"تم الإنشاء بتاريخ: {DateTime.Now:yyyy-MM-dd HH:mm}")
-                    .FontSize(10)
+                    .FontSize(9)
                     .SemiBold();
             });
         });

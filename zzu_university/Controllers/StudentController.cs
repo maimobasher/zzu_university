@@ -143,6 +143,57 @@ namespace zzu_university.api.Controllers
 
             });
         }
+        [HttpPost("program-status")]
+        public async Task<IActionResult> GetProgramStatus([FromBody] StudentProgramQueryDto dto)
+        {
+            // 1. البحث عن الطالب باستخدام الرقم القومي
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.nationalId == dto.NationalId);
+
+            if (student == null)
+                return NotFound("الطالب غير موجود.");
+
+            // 2. إيجاد التسجيل باستخدام StudentId و ProgramAndReferenceCode
+            var register = await _context.StudentRegisterPrograms
+                .FirstOrDefaultAsync(r =>
+                    r.StudentId == student.StudentId &&
+                    r.ProgramAndReferenceCode == dto.ProgramAndReferenceCode);
+
+            if (register == null)
+                return NotFound("لا يوجد تسجيل بهذا الكود.");
+
+            // 3. جلب البرنامج الأكاديمي المرتبط
+            var program = await _context.Programs
+                .FirstOrDefaultAsync(p => p.ProgramId == register.ProgramId);
+
+            // 4. جلب آخر عملية دفع
+            var payment = await _context.StudentPayments
+                .Where(p => p.StudentId == student.StudentId && p.ProgramId == register.ProgramId)
+                .OrderByDescending(p => p.PaymentDate)
+                .FirstOrDefaultAsync();
+
+            // 5. الاسم الكامل
+            var fullName = $"{student.firstName} {student.middleName ?? ""} {student.lastName}".Trim();
+
+            // 6. التجميع والإرجاع
+            return Ok(new
+            {
+                student.StudentId,
+                StudentName = fullName,
+                student.nationalId,
+                student.phone,
+                student.email,
+                ProgramName = program?.Name ?? "N/A",
+                FacultyName = student.faculty ?? "N/A", // من جدول الطلاب
+                ProgramCode = register.ProgramCode ?? "N/A",
+                ProgramAndReferenceCode = register.ProgramAndReferenceCode,
+                Status = register.status ?? "غير محدد",
+                IsPaid = payment?.IsPaid ?? false,
+                PaymentDate = payment != null
+                ? payment.PaymentDate.ToString("yyyy-MM-dd")
+                : "لم يتم الدفع"
+            });
+        }
 
         [HttpGet("program-info/{nationalId}")]
         public async Task<IActionResult> GetProgramPaymentInfo(string nationalId)

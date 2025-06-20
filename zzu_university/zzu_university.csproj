@@ -21,4 +21,10 @@
     <ProjectReference Include="..\zzu_university.domain\zzu_university.domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\images\zagazig_logo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
