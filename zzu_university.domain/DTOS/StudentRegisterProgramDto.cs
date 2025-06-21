@@ -19,5 +19,6 @@ namespace zzu_university.domain.DTOS
         public string ?ProgramAndReferenceCode { get; set; }//=> $"{ProgramCode}{RegistrationCode}";
         public string status { get; set; } //=> "Pending" or "Accepted" or "Rejected"
         public string? RegisterDate { get; set; }
+        public decimal TuitionFees { get; set; }
     }
 }

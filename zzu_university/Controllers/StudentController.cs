@@ -105,44 +105,42 @@ namespace zzu_university.api.Controllers
             if (student.Password != dto.Password)
                 return Unauthorized("Invalid password.");
 
-            // 3. الحصول على أحدث تسجيل للبرنامج
+            // 3. الحصول على أحدث تسجيل للبرنامج مع بيانات البرنامج نفسه
             var latestRegister = await _context.StudentRegisterPrograms
+                .Include(r => r.Program) // Include AcadmicProgram
                 .Where(r => r.StudentId == student.StudentId)
                 .OrderByDescending(r => r.Id)
                 .FirstOrDefaultAsync();
 
             // 4. محاولة الحصول على سجل الدفع بناءً على ProgramId و StudentId
-            bool? isPaid = null;
+            bool isPaid = false;
             if (latestRegister != null)
             {
                 var payment = await _context.StudentPayments
                     .FirstOrDefaultAsync(p => p.StudentId == student.StudentId && p.ProgramId == latestRegister.ProgramId);
 
-                isPaid = payment?.IsPaid;
+                isPaid = payment?.IsPaid ?? false;
             }
 
             // 5. تجميع الاسم الكامل
             var fullName = $"{student.firstName} {student.middleName ?? ""} {student.lastName}".Trim();
 
-            // 6. إرجاع البيانات
+            // 6. إرجاع البيانات مع الرسوم الدراسية من برنامج التسجيل
             return Ok(new
             {
                 student.StudentId,
                 StudentName = fullName,
                 student.nationalId,
+                student.phone,
+                student.email,
+                ProgramId = latestRegister?.ProgramId ?? 0,
                 ProgramCode = latestRegister?.ProgramCode ?? "N/A",
                 ProgramAndReferenceCode = latestRegister?.ProgramAndReferenceCode ?? "N/A",
-               // IsPaid = isPaid ?? false
-               student.phone,
-               student.email,
-               ProgramId = latestRegister?.ProgramId ?? 0,
-                IsPaid = isPaid ?? false
-                
-               
-
-
+                IsPaid = isPaid,
+                TuitionFees = latestRegister?.Program?.TuitionFees ?? 0
             });
         }
+
         [HttpPost("program-status")]
         public async Task<IActionResult> GetProgramStatus([FromBody] StudentProgramQueryDto dto)
         {

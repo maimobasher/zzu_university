@@ -33,6 +33,23 @@ namespace zzu_university.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] ComplaintCreateDto dto)
+        {
+            try
+            {
+                if (dto.StudentId == 0)
+                    return BadRequest(new { error = "StudentId is required in the request body." });
+
+                var complaint = await _complaintService.CreateAsync(dto, dto.StudentId);
+
+                return CreatedAtAction(nameof(GetById), new { id = complaint.Id }, complaint);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
 
         // ✅ استرجاع شكوى واحدة بالمعرف
         // GET: api/Complaint/5

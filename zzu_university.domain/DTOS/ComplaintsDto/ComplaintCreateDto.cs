@@ -12,7 +12,7 @@ namespace zzu_university.domain.DTOS.ComplaintsDto
         [Required]
         [StringLength(100)]
         public string Title { get; set; }
-
+        public int StudentId { get; set; }
         [Required]
         [StringLength(1000)]
         public string Message { get; set; }
