@@ -137,7 +137,9 @@ namespace zzu_university.api.Controllers
                 ProgramCode = latestRegister?.ProgramCode ?? "N/A",
                 ProgramAndReferenceCode = latestRegister?.ProgramAndReferenceCode ?? "N/A",
                 IsPaid = isPaid,
-                TuitionFees = latestRegister?.Program?.TuitionFees ?? 0
+                TuitionFees = latestRegister?.Program?.TuitionFees ?? 0,
+                Status = latestRegister?.status ?? "N/A"
+
             });
         }
 
