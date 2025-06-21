@@ -87,7 +87,7 @@ public class StudentPdfReportService
                     DrawRow("نوع الشهادة", student.LiscenceType);
                     DrawRow("الديانة", student.Religion);
                     DrawRow("اسم المستخدم", student.UserName);
-                    DrawRow("تم الدفع", student.IsPaymentCompleted ? "نعم" : "لا");
+                   // DrawRow("تم الدفع", student.IsPaymentCompleted ? "نعم" : "لا");
                     col.Item().PaddingVertical(5);
 
                     col.Item().PaddingBottom(3).AlignRight()
