@@ -56,6 +56,7 @@ namespace zzu_university.api.Controllers
         {
             var student = await _studentService.CreateStudentAsync(studentCreateDto);
 
+            // يتم إرجاع StudentReadDto كامل بما فيه CertificateId
             return CreatedAtAction(nameof(GetStudentById), new { id = student.StudentId }, student);
         }
 

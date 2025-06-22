@@ -39,29 +39,33 @@ namespace zzu_university.domain.Service.ComplaintService
             return complaints.Select(MapToReadDto);
         }
 
-        public async Task<ComplaintReadDto> CreateAsync(ComplaintCreateDto dto, int studentId)
+        public async Task<ComplaintReadDto> CreateAsync(ComplaintCreateDto dto, int? studentId)
         {
-            // ✅ تحقق من وجود الطالب
-            var studentExists = await _context.Students.AnyAsync(s => s.StudentId == studentId);
-            if (!studentExists)
-                throw new Exception("Student not found."); // أو يمكنك إرجاع null أو رسالة واضحة
+            // ✅ إذا تم تمرير studentId، تحقق من وجود الطالب
+            if (studentId != null)
+            {
+                var studentExists = await _context.Students.AnyAsync(s => s.StudentId == studentId.Value);
+                if (!studentExists)
+                    throw new Exception("Student not found.");
+            }
 
             var complaint = new Complaint
             {
-                StudentId = studentId,
+                StudentId = studentId, // يمكن أن يكون null أو رقم طالب حقيقي
                 Title = dto.Title,
                 Message = dto.Message,
                 Email = dto.Email,
                 Description = dto.Description,
                 Image = dto.Image,
                 DateSubmitted = DateTime.Now,
-                Status = "Pending"
+                Status = "Pending",
+                Phone = dto.Phone,
+                WhatsAppPhone = dto.WhatsAppPhone
             };
 
             var result = await _repository.AddAsync(complaint);
             return MapToReadDto(result);
         }
-
 
         public async Task<bool> DeleteAsync(int id)
         {
@@ -79,7 +83,9 @@ namespace zzu_university.domain.Service.ComplaintService
                 Description = complaint.Description,
                 Image = complaint.Image,
                 DateSubmitted = complaint.DateSubmitted,
-                Status = complaint.Status
+                Status = complaint.Status,
+                Phone = complaint.Phone,
+                WhatsAppPhone = complaint.WhatsAppPhone
             };
         }
     }

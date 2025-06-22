@@ -16,30 +16,32 @@ namespace zzu_university.data.Model.Complaints
         
         public int? StudentId { get; set; }
 
-        [Required]
+       
         [StringLength(100)]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
-        [Required]
+        
         [StringLength(1000)]
-        public string Message { get; set; }
+        public string? Message { get; set; }
 
-        public DateTime DateSubmitted { get; set; } = DateTime.Now;
+        public DateTime? DateSubmitted { get; set; } = DateTime.Now;
 
         [StringLength(50)]
-        public string Status { get; set; } = "Pending";
+        public string ? Status { get; set; } = "Pending";
 
         [StringLength(150)]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         [StringLength(1000)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [StringLength(255)]
-        public string Image { get; set; }
+        public string? Image { get; set; }
+        public string? Phone { get; set; }
+        public string? WhatsAppPhone { get; set; }
 
         [ForeignKey("StudentId")]
-        public Student Student { get; set; }
+        public Student? Student { get; set; }
     }
 
 }

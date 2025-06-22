@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using zzu_university.data.Data;
 using zzu_university.domain.DTOS.ComplaintsDto;
 using zzu_university.domain.Service.ComplaintService;
 
@@ -11,8 +13,11 @@ namespace zzu_university.Controllers
     {
         private readonly IComplaintService _complaintService;
 
-        public ComplaintController(IComplaintService complaintService)
+        private readonly ApplicationDbContext _context;
+
+        public ComplaintController(ApplicationDbContext context, IComplaintService complaintService)
         {
+            _context = context;
             _complaintService = complaintService;
         }
 
@@ -38,9 +43,20 @@ namespace zzu_university.Controllers
         {
             try
             {
-                if (dto.StudentId == 0)
-                    return BadRequest(new { error = "StudentId is required in the request body." });
+                // ✅ إذا تم إرسال StudentId، تحقق من صحته ووجود الطالب
+                if (dto.StudentId != null)
+                {
+                    if (dto.StudentId <= 0)
+                        return BadRequest(new { error = "StudentId must be greater than 0 if provided." });
 
+                    var studentExists = await _context.Students
+                        .AnyAsync(s => s.StudentId == dto.StudentId.Value);
+
+                    if (!studentExists)
+                        return NotFound(new { error = $"No student found with ID {dto.StudentId}." });
+                }
+
+                // ✅ إنشاء الشكوى مع studentId = null أو رقم فعلي
                 var complaint = await _complaintService.CreateAsync(dto, dto.StudentId);
 
                 return CreatedAtAction(nameof(GetById), new { id = complaint.Id }, complaint);
@@ -50,6 +66,7 @@ namespace zzu_university.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
+
 
         // ✅ استرجاع شكوى واحدة بالمعرف
         // GET: api/Complaint/5
