@@ -143,6 +143,64 @@ namespace zzu_university.api.Controllers
 
             });
         }
+        [HttpPost("login-multi")]
+        public async Task<IActionResult> LoginWithPrograms([FromBody] StudentLoginDto dto)
+        {
+            // 1. التأكد من وجود اسم المستخدم
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.UserName == dto.Username);
+
+            if (student == null)
+                return NotFound("Username not found.");
+
+            // 2. التحقق من كلمة المرور
+            if (student.Password != dto.Password)
+                return Unauthorized("Invalid password.");
+
+            // 3. جلب جميع البرامج اللي الطالب مسجل فيها مع بيانات البرنامج
+            var registrations = await _context.StudentRegisterPrograms
+                .Include(r => r.Program)
+                .Where(r => r.StudentId == student.StudentId)
+                .OrderByDescending(r => r.Id)
+                .ToListAsync();
+
+            // 4. الاسم الكامل
+            var fullName = $"{student.firstName} {student.middleName ?? ""} {student.lastName}".Trim();
+
+            // 5. إنشاء القائمة
+            var programList = new List<object>();
+
+            foreach (var reg in registrations)
+            {
+                var latestPayment = await _context.StudentPayments
+                    .Where(p => p.StudentId == student.StudentId && p.ProgramId == reg.ProgramId)
+                    .OrderByDescending(p => p.PaymentDate)
+                    .FirstOrDefaultAsync();
+
+                programList.Add(new
+                {
+                    reg.ProgramId,
+                    reg.ProgramCode,
+                    reg.ProgramAndReferenceCode,
+                    TuitionFees = reg.Program?.TuitionFees ?? 0,
+                    Status = reg.status ?? "N/A",
+                    IsPaid = latestPayment?.IsPaid ?? false,
+                    PaymentDate = latestPayment?.PaymentDate.ToString("yyyy-MM-dd") ?? "لم يتم الدفع"
+                });
+            }
+
+            // 6. إرجاع بيانات الطالب وقائمة البرامج
+            return Ok(new
+            {
+                student.StudentId,
+                StudentName = fullName,
+                student.nationalId,
+                student.phone,
+                student.email,
+                Programs = programList
+            });
+        }
+
         [HttpPost("login-program-ids")]
         public async Task<IActionResult> LoginWithAllPrograms([FromBody] StudentLoginDto dto)
         {
