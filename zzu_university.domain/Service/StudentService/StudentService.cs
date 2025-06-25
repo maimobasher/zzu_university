@@ -31,7 +31,7 @@ namespace zzu_university.domain.Service.StudentService
                 city = s.city,
                 //postalCode = s.postalCode,
                 LiscenceType = s.LiscenceType,
-                Religion = s.Religion,
+                guardianPhone = s.guardianPhone ,
                 gpa = s.gpa,
                 // highSchool = s.highSchool,
                 percent = s.percent,
@@ -71,7 +71,7 @@ namespace zzu_university.domain.Service.StudentService
                percent = student.percent,
                 faculty = student.faculty,
                 //semester = student.semester,
-                Religion =student.Religion,
+                guardianPhone = student.guardianPhone,
                 LiscenceType = student.LiscenceType,
                 phone = student.phone,
                 email = student.email,
@@ -96,7 +96,7 @@ namespace zzu_university.domain.Service.StudentService
                 city = studentCreateDto.city,
                 //postalCode = studentCreateDto.postalCode,
                 LiscenceType = studentCreateDto.LiscenceType,
-                Religion = studentCreateDto.Religion,
+                guardianPhone = studentCreateDto.guardianPhone,
                 program = studentCreateDto.program,
                 gender = studentCreateDto.gender,
                 graduationYear = studentCreateDto.graduationYear,
@@ -129,7 +129,7 @@ namespace zzu_university.domain.Service.StudentService
                 city = student.city,
                 // postalCode = student.postalCode,
                 LiscenceType = student.LiscenceType,
-                Religion = student.Religion,
+                guardianPhone = student.guardianPhone,
                 gender =student.gender,
                 gpa = student.gpa,
                 // highSchool = student.highSchool,
@@ -163,7 +163,7 @@ namespace zzu_university.domain.Service.StudentService
             student.city = studentUpdateDto.city;
             // student.postalCode = studentUpdateDto.postalCode;
             student.LiscenceType = studentUpdateDto.LiscenceType;
-            student.Religion = studentUpdateDto.Religion;
+            student.guardianPhone = studentUpdateDto.guardianPhone;
             //student.highSchool = studentUpdateDto.highSchool;
             student.percent = studentUpdateDto.percent;
             student.graduationYear = studentUpdateDto.graduationYear;
@@ -194,7 +194,7 @@ namespace zzu_university.domain.Service.StudentService
                 city = student.city,
                 // postalCode = student.postalCode,
                 LiscenceType = student.LiscenceType,
-                Religion = student.Religion,
+                guardianPhone = student.guardianPhone,
                 gender = student.gender,
                 gpa = student.gpa,
                 //  highSchool = student.highSchool,

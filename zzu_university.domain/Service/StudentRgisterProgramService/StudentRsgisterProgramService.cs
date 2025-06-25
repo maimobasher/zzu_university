@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using zzu_university.data.Data;
@@ -39,6 +40,10 @@ namespace zzu_university.data.Services
                 })
                 .ToListAsync();
         }
+        //public async Task<bool> AnyAsync(Expression<Func<StudentRegisterProgram, bool>> predicate)
+        //{
+        //    return await _context.StudentRegisterPrograms.AnyAsync(predicate);
+        //}
 
         // جلب تسجيل حسب Id
         public async Task<StudentRegisterProgramDto> GetByIdAsync(int id)

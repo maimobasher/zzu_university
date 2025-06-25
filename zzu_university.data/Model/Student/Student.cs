@@ -41,7 +41,7 @@ public class Student
     public string city { get; set; }
     //public string postalCode { get; set; }
     public   string LiscenceType { get; set; }
-    public string  Religion { get; set; }
+    public string guardianPhone { get; set; }
     //public string highSchool { get; set; }
     public string percent { get; set; }
     public string graduationYear { get; set; }

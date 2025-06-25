@@ -27,4 +27,24 @@ public class StudentReportController : ControllerBase
         return File(pdfBytes, "application/pdf", $"Student_{id}_Report_{DateTime.Now.Ticks}.pdf", enableRangeProcessing: false);
 
     }
+    [HttpGet("student-program-info/{id}")]
+    public async Task<IActionResult> GetStudentProgramInfo(int id)
+    {
+        // جلب الطالب مع تسجيلاته
+        var student = await _studentRepo.GetStudentWithProgramAndRegistrationsAsync(id);
+        if (student == null)
+            return NotFound("Student not found.");
+
+        // استخراج كل التسجيلات الخاصة به
+        var programIds = student.ProgramRegistrations
+            .Select(r => new
+            {
+                StudentId = student.StudentId,
+                StudentProgramRegisterId = r.Id
+            })
+            .ToList();
+
+        return Ok(programIds);
+    }
+
 }

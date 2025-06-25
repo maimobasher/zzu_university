@@ -76,6 +76,13 @@ public class StudentRegisterProgramsController : ControllerBase
         if (!studentExists)
             return BadRequest($"Student with Id {dto.StudentId} does not exist.");
 
+        // ✅ التحقق من وجود تسجيل مسبق لنفس الطالب على نفس البرنامج
+        var isAlreadyRegistered = await _unitOfWork.StudentRegister 
+            .AnyAsync(r => r.StudentId == dto.StudentId && r.ProgramId == dto.ProgramId);
+
+        if (isAlreadyRegistered)
+            return Conflict("الطالب مسجل بالفعل في هذا البرنامج.");
+
         // تعيين الكود تلقائيًا
         dto.RegistrationCode = await _studentRegisterProgramService.GenerateNextRegistrationCodeAsync(dto.ProgramId);
 

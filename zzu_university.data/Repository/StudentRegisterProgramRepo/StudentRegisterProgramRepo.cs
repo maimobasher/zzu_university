@@ -3,6 +3,7 @@ using zzu_university.data.Data;
 using zzu_university.data.Model.StudentRegisterProgram;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 
 public class StudentRegisterProgramRepository : IStudentRegisterProgramRepo
 {
@@ -23,6 +24,10 @@ public class StudentRegisterProgramRepository : IStudentRegisterProgramRepo
     }
 
 
+    public async Task<bool> AnyAsync(Expression<Func<StudentRegisterProgram, bool>> predicate)
+    {
+        return await _context.StudentRegisterPrograms.AnyAsync(predicate);
+    }
 
 
     public async Task<StudentRegisterProgram> GetByIdAsync(int id)

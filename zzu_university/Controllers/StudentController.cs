@@ -143,40 +143,49 @@ namespace zzu_university.api.Controllers
 
             });
         }
-
-        [HttpPost("program-status")]
-        public async Task<IActionResult> GetProgramStatus([FromBody] StudentProgramQueryDto dto)
+        [HttpPost("login-program-ids")]
+        public async Task<IActionResult> LoginWithAllPrograms([FromBody] StudentLoginDto dto)
         {
-            // 1. البحث عن الطالب باستخدام الرقم القومي
+            // 1. التأكد من وجود اسم المستخدم
             var student = await _context.Students
-                .FirstOrDefaultAsync(s => s.nationalId == dto.NationalId);
+                .FirstOrDefaultAsync(s => s.UserName == dto.Username);
 
             if (student == null)
-                return NotFound("الطالب غير موجود.");
+                return NotFound("Username not found.");
 
-            // 2. إيجاد التسجيل باستخدام StudentId و ProgramAndReferenceCode
-            var register = await _context.StudentRegisterPrograms
-                .FirstOrDefaultAsync(r =>
-                    r.StudentId == student.StudentId &&
-                    r.ProgramAndReferenceCode == dto.ProgramAndReferenceCode);
+            // 2. التحقق من كلمة المرور
+            if (student.Password != dto.Password)
+                return Unauthorized("Invalid password.");
 
-            if (register == null)
-                return NotFound("لا يوجد تسجيل بهذا الكود.");
+            // 3. الحصول على كل التسجيلات للطالب مع بيانات البرنامج
+            var registrations = await _context.StudentRegisterPrograms
+                .Include(r => r.Program)
+                .Where(r => r.StudentId == student.StudentId)
+                .ToListAsync();
 
-            // 3. جلب البرنامج الأكاديمي المرتبط
-            var program = await _context.Programs
-                .FirstOrDefaultAsync(p => p.ProgramId == register.ProgramId);
-
-            // 4. جلب آخر عملية دفع
-            var payment = await _context.StudentPayments
-                .Where(p => p.StudentId == student.StudentId && p.ProgramId == register.ProgramId)
-                .OrderByDescending(p => p.PaymentDate)
-                .FirstOrDefaultAsync();
-
-            // 5. الاسم الكامل
+            // 4. تجميع الاسم الكامل
             var fullName = $"{student.firstName} {student.middleName ?? ""} {student.lastName}".Trim();
 
-            // 6. التجميع والإرجاع
+            // 5. بناء القائمة بالـ IDs والتفاصيل
+            var programDetails = new List<object>();
+
+            foreach (var reg in registrations)
+            {
+                var payment = await _context.StudentPayments
+                    .FirstOrDefaultAsync(p => p.StudentId == student.StudentId && p.ProgramId == reg.ProgramId);
+
+                programDetails.Add(new
+                {
+                    reg.ProgramId,
+                    reg.ProgramCode,
+                    reg.ProgramAndReferenceCode,
+                    Status = reg.status ?? "N/A",
+                    IsPaid = payment?.IsPaid ?? false,
+                    TuitionFees = reg.Program?.TuitionFees ?? 0
+                });
+            }
+
+            // 6. إرجاع البيانات
             return Ok(new
             {
                 student.StudentId,
@@ -184,17 +193,58 @@ namespace zzu_university.api.Controllers
                 student.nationalId,
                 student.phone,
                 student.email,
+                Programs = programDetails
+            });
+        }
+
+        [HttpPost("program-status")]
+        public async Task<IActionResult> GetProgramStatus([FromBody] StudentProgramQueryDto dto)
+        {
+            // 1. البحث عن التسجيل المرتبط بالرقم القومي ورقم الطلب
+            var register = await _context.StudentRegisterPrograms
+                .Include(r => r.Student)
+                .FirstOrDefaultAsync(r =>
+                    r.ProgramAndReferenceCode == dto.ProgramAndReferenceCode &&
+                    r.Student.nationalId == dto.NationalId);
+
+            if (register == null)
+                return NotFound("لا يوجد تسجيل مطابق لهذا الرقم القومي ورقم الطلب.");
+
+            var student = register.Student;
+
+            // 2. جلب بيانات البرنامج
+            var program = await _context.Programs
+                .FirstOrDefaultAsync(p => p.ProgramId == register.ProgramId);
+
+            // 3. جلب أحدث دفعة
+            var payment = await _context.StudentPayments
+                .Where(p => p.StudentId == student.StudentId && p.ProgramId == register.ProgramId)
+                .OrderByDescending(p => p.PaymentDate)
+                .FirstOrDefaultAsync();
+
+            var fullName = $"{student.firstName} {student.middleName ?? ""} {student.lastName}".Trim();
+
+            var result = new
+            {
+                student.StudentId,
+                StudentName = fullName,
+                student.nationalId,
+                student.phone,
+                student.email,
                 ProgramName = program?.Name ?? "N/A",
-                FacultyName = student.faculty ?? "N/A", // من جدول الطلاب
+                FacultyName = student.faculty ?? "N/A",
                 ProgramCode = register.ProgramCode ?? "N/A",
                 ProgramAndReferenceCode = register.ProgramAndReferenceCode,
                 Status = register.status ?? "غير محدد",
                 IsPaid = payment?.IsPaid ?? false,
                 PaymentDate = payment != null
-                ? payment.PaymentDate.ToString("yyyy-MM-dd")
-                : "لم يتم الدفع"
-            });
+                    ? payment.PaymentDate.ToString("yyyy-MM-dd")
+                    : "لم يتم الدفع"
+            };
+
+            return Ok(result);
         }
+
 
         [HttpGet("program-info/{nationalId}")]
         public async Task<IActionResult> GetProgramPaymentInfo(string nationalId)

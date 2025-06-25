@@ -85,7 +85,7 @@ public class StudentPdfReportService
                     DrawRow("الجنسية", student.nationality);
                     DrawRow("العنوان", $"{student.address}, {student.city}");
                     DrawRow("نوع الشهادة", student.LiscenceType);
-                    DrawRow("الديانة", student.Religion);
+                    DrawRow("رقم تليفون ولى الامر", student.guardianPhone);
                     DrawRow("اسم المستخدم", student.UserName);
                    // DrawRow("تم الدفع", student.IsPaymentCompleted ? "نعم" : "لا");
                     col.Item().PaddingVertical(5);
@@ -105,7 +105,7 @@ public class StudentPdfReportService
                             .Text("📘 البرنامج الأكاديمي").FontSize(12).Bold();
 
                         DrawRow("اسم البرنامج", student.Program.Name);
-                        DrawRow("المدة", $"{student.Program.DurationInYears} سنوات");
+                       // DrawRow("المدة", $"{student.Program.DurationInYears} سنوات");
                         col.Item().PaddingVertical(5);
                     }
 
@@ -123,7 +123,7 @@ public class StudentPdfReportService
                     if (latestPayment != null)
                     {
                         col.Item().PaddingBottom(3).AlignRight()
-                            .Text("💳 بيانات الدفع").FontSize(12).Bold();
+                            .Text("💳 بيانات رسوم التقديم للبرنامج").FontSize(12).Bold();
 
                         DrawRow("تم الدفع", latestPayment.IsPaid ? "نعم" : "لا");
                         DrawRow("كود المرجع", latestPayment.ReferenceCode);

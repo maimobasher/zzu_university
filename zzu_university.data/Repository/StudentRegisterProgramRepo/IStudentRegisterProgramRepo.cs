@@ -1,4 +1,5 @@
-﻿using zzu_university.data.Model.StudentRegisterProgram;
+﻿using System.Linq.Expressions;
+using zzu_university.data.Model.StudentRegisterProgram;
 
 public interface IStudentRegisterProgramRepo
 {
@@ -7,5 +8,6 @@ public interface IStudentRegisterProgramRepo
     Task AddAsync(StudentRegisterProgram entity);
     void Update(StudentRegisterProgram entity);
     void Delete(StudentRegisterProgram entity);
+    Task<bool> AnyAsync(Expression<Func<StudentRegisterProgram, bool>> predicate);
     //Task<bool> SaveChangesAsync();
 }
