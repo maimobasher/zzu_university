@@ -1,8 +1,12 @@
-﻿using QuestPDF.Fluent;
+﻿using System.IO;
+using System.Linq;
+using zzu_university.data.Data;
+using zzu_university.data.Model.Payment;
+using zzu_university.data.Model.StudentRegisterProgram;
 using QuestPDF.Infrastructure;
 using QuestPDF.Helpers;
-using zzu_university.data.Data;
-using System.IO; // ضروري للمسارات
+using QuestPDF.Fluent;
+using PdfDocument = QuestPDF.Fluent.Document;
 
 public class StudentPdfReportService
 {
@@ -13,19 +17,43 @@ public class StudentPdfReportService
         _context = context;
     }
 
+    // 🟩 بدون programId – يعتمد آخر تسجيل
     public byte[] GenerateStudentReport(Student student)
     {
+        var registration = student.ProgramRegistrations?
+            .OrderByDescending(r => r.Id)
+            .FirstOrDefault();
+
+        var latestPayment = registration != null
+            ? _context.StudentPayments
+                .Where(p => p.StudentId == student.StudentId && p.ProgramId == registration.ProgramId)
+                .OrderByDescending(p => p.PaymentDate)
+                .FirstOrDefault()
+            : null;
+
+        return GenerateReportDocument(student, registration, latestPayment);
+    }
+
+    // 🟦 باستخدام programId
+    public byte[] GenerateStudentReport(Student student, int programId)
+    {
+        var registration = student.ProgramRegistrations?
+            .FirstOrDefault(r => r.ProgramId == programId);
+
         var latestPayment = _context.StudentPayments
-            .Where(p => p.StudentId == student.StudentId)
+            .Where(p => p.StudentId == student.StudentId && p.ProgramId == programId)
             .OrderByDescending(p => p.PaymentDate)
             .FirstOrDefault();
 
-        var registration = student.ProgramRegistrations?.FirstOrDefault();
+        return GenerateReportDocument(student, registration, latestPayment);
+    }
 
-        // ✅ الحصول على مسار اللوجو من wwwroot/images
+    // 🟨 الدالة المشتركة لإنشاء PDF
+    private byte[] GenerateReportDocument(Student student, StudentRegisterProgram? registration, StudentPayment? latestPayment)
+    {
         var logoPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "zagazig_logo.png");
 
-        var document = Document.Create(container =>
+        var document = PdfDocument.Create(container =>
         {
             container.Page(page =>
             {
@@ -36,7 +64,7 @@ public class StudentPdfReportService
                     .FontSize(10)
                     .DirectionFromRightToLeft());
 
-                // ✅ الهيدر مع اللوجو من مسار فعلي
+                // Header
                 page.Header().Row(row =>
                 {
                     row.ConstantColumn(80).Height(50).AlignRight().AlignMiddle().Element(e =>
@@ -44,13 +72,14 @@ public class StudentPdfReportService
                         if (File.Exists(logoPath))
                             e.Image(logoPath).FitArea();
                         else
-                            e.Text("🔺").FontSize(20); // بديل لو الصورة مش موجودة
+                            e.Text("🔺").FontSize(20);
                     });
 
-                    row.RelativeColumn().AlignCenter().AlignMiddle().Text("📄 تقرير الطالب")
-                        .FontSize(16).Bold();
+                    row.RelativeColumn().AlignCenter().AlignMiddle()
+                        .Text("📄 تقرير الطالب").FontSize(16).Bold();
                 });
 
+                // Content
                 page.Content().Column(col =>
                 {
                     void DrawRow(string label, string? value)
@@ -73,10 +102,11 @@ public class StudentPdfReportService
                         });
                     }
 
+                    // 👤 البيانات الشخصية
                     col.Item().PaddingBottom(3).AlignRight()
                         .Text("👤 البيانات الشخصية").FontSize(12).Bold();
 
-                    DrawRow(":الاسم الكامل", $"{student.firstName} {student.middleName} {student.lastName}");
+                    DrawRow(":الاسم الكامل", $"{student.firstName} {student.middleName ?? ""} {student.lastName}");
                     DrawRow("البريد الإلكتروني", student.email);
                     DrawRow("رقم الهاتف", student.phone);
                     DrawRow("الرقم القومي", student.nationalId);
@@ -87,9 +117,9 @@ public class StudentPdfReportService
                     DrawRow("نوع الشهادة", student.LiscenceType);
                     DrawRow("رقم تليفون ولى الامر", student.guardianPhone);
                     DrawRow("اسم المستخدم", student.UserName);
-                   // DrawRow("تم الدفع", student.IsPaymentCompleted ? "نعم" : "لا");
                     col.Item().PaddingVertical(5);
 
+                    // 🎓 البيانات التعليمية
                     col.Item().PaddingBottom(3).AlignRight()
                         .Text("🎓 البيانات التعليمية").FontSize(12).Bold();
 
@@ -99,16 +129,17 @@ public class StudentPdfReportService
                     DrawRow("الكلية", student.faculty);
                     col.Item().PaddingVertical(5);
 
-                    if (student.Program != null)
+                    // 📘 بيانات البرنامج
+                    if (registration?.Program != null)
                     {
                         col.Item().PaddingBottom(3).AlignRight()
                             .Text("📘 البرنامج الأكاديمي").FontSize(12).Bold();
 
-                        DrawRow("اسم البرنامج", student.Program.Name);
-                       // DrawRow("المدة", $"{student.Program.DurationInYears} سنوات");
+                        DrawRow("اسم البرنامج", registration.Program.Name);
                         col.Item().PaddingVertical(5);
                     }
 
+                    // 📝 بيانات التسجيل
                     if (registration != null)
                     {
                         col.Item().PaddingBottom(3).AlignRight()
@@ -120,10 +151,11 @@ public class StudentPdfReportService
                         col.Item().PaddingVertical(5);
                     }
 
+                    // 💳 بيانات الدفع
                     if (latestPayment != null)
                     {
                         col.Item().PaddingBottom(3).AlignRight()
-                            .Text("💳 بيانات رسوم التقديم للبرنامج").FontSize(12).Bold();
+                            .Text("💳 بيانات رسوم التقديم").FontSize(12).Bold();
 
                         DrawRow("تم الدفع", latestPayment.IsPaid ? "نعم" : "لا");
                         DrawRow("كود المرجع", latestPayment.ReferenceCode);
@@ -131,6 +163,7 @@ public class StudentPdfReportService
                     }
                 });
 
+                // Footer
                 page.Footer().AlignCenter()
                     .Text($"تم الإنشاء بتاريخ: {DateTime.Now:yyyy-MM-dd HH:mm}")
                     .FontSize(9)

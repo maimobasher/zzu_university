@@ -157,7 +157,7 @@ namespace zzu_university.api.Controllers
             if (student.Password != dto.Password)
                 return Unauthorized("Invalid password.");
 
-            // 3. جلب جميع البرامج اللي الطالب مسجل فيها مع بيانات البرنامج
+            // 3. جلب جميع التسجيلات مع البرنامج
             var registrations = await _context.StudentRegisterPrograms
                 .Include(r => r.Program)
                 .Where(r => r.StudentId == student.StudentId)
@@ -167,7 +167,7 @@ namespace zzu_university.api.Controllers
             // 4. الاسم الكامل
             var fullName = $"{student.firstName} {student.middleName ?? ""} {student.lastName}".Trim();
 
-            // 5. إنشاء القائمة
+            // 5. بناء القائمة
             var programList = new List<object>();
 
             foreach (var reg in registrations)
@@ -180,18 +180,24 @@ namespace zzu_university.api.Controllers
                 programList.Add(new
                 {
                     reg.ProgramId,
-                    ProgramName = reg.Program?.Name ?? "N/A",           // ✅ اسم البرنامج
-                    FacultyName = student.faculty ?? "N/A",             // ✅ اسم الكلية
+                    ProgramName = reg.Program?.Name ?? "N/A",
+                    FacultyName = student.faculty ?? "N/A",
                     reg.ProgramCode,
                     reg.ProgramAndReferenceCode,
                     TuitionFees = reg.Program?.TuitionFees ?? 0,
                     Status = reg.status ?? "N/A",
                     IsPaid = latestPayment?.IsPaid ?? false,
-                    PaymentDate = latestPayment?.PaymentDate.ToString("yyyy-MM-dd") ?? "لم يتم الدفع"
+                    PaymentDate = latestPayment?.PaymentDate.ToString("yyyy-MM-dd") ?? "لم يتم الدفع",
+
+                    // 🟦 الإضافات المطلوبة:
+                    PaymentId = latestPayment?.Id ?? 0,
+                    RegistrationId = reg.Id,
+                    reg.RegisterDate,
+                    IsRequest = latestPayment?.IsRequest ?? false
                 });
             }
 
-            // 6. إرجاع بيانات الطالب وقائمة البرامج
+            // 6. النتيجة النهائية
             return Ok(new
             {
                 student.StudentId,

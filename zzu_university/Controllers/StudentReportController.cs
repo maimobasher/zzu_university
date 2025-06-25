@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using zzu_university.data.Repository.StudentRepo;
 
 [ApiController]
@@ -20,13 +21,17 @@ public class StudentReportController : ControllerBase
         var student = await _studentRepo.GetStudentWithProgramAndRegistrationsAsync(id);
         if (student == null)
             return NotFound("Student not found.");
+
         Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
         Response.Headers["Pragma"] = "no-cache";
         Response.Headers["Expires"] = "0";
-        var pdfBytes = _pdfService.GenerateStudentReport(student);
-        return File(pdfBytes, "application/pdf", $"Student_{id}_Report_{DateTime.Now.Ticks}.pdf", enableRangeProcessing: false);
 
+        // حذف programId من هنا
+        var pdfBytes = _pdfService.GenerateStudentReport(student);
+
+        return File(pdfBytes, "application/pdf", $"Student_{id}_Report_{DateTime.Now.Ticks}.pdf", enableRangeProcessing: false);
     }
+
     [HttpGet("student-program-info/{id}")]
     public async Task<IActionResult> GetStudentProgramInfo(int id)
     {
@@ -46,5 +51,46 @@ public class StudentReportController : ControllerBase
 
         return Ok(programIds);
     }
+    [HttpGet("pdf-by-program")]
+    public async Task<IActionResult> GeneratePdfByProgram([FromQuery] int studentId, [FromQuery] int programId)
+    {
+        var student = await _studentRepo.GetStudentWithSpecificProgramAsync(studentId, programId);
+        if (student == null)
+            return NotFound("Student not found or not registered in this program.");
+
+        var registration = student.ProgramRegistrations.FirstOrDefault();
+        if (registration == null)
+            return NotFound("Program registration not found.");
+
+        var payment = registration.ProgramId != 0
+            ? await _studentRepo.GetPaymentAsync(studentId, registration.ProgramId)
+            : null;
+
+        var reportData = new
+        {
+            student.StudentId,
+            FullName = $"{student.firstName} {student.middleName ?? ""} {student.lastName}".Trim(),
+            student.nationalId,
+            student.phone,
+            student.email,
+            ProgramName = registration.Program?.Name ?? "N/A",
+            ProgramCode = registration.ProgramCode,
+            ProgramAndReferenceCode = registration.ProgramAndReferenceCode,
+            TuitionFees = registration.Program?.TuitionFees ?? 0,
+            Status = registration.status ?? "N/A",
+            IsPaid = payment?.IsPaid ?? false,
+            PaymentDate = payment?.PaymentDate.ToString("yyyy-MM-dd") ?? "لم يتم الدفع"
+        };
+
+        var pdfBytes = _pdfService.GenerateStudentReport(student, programId);
+
+
+        Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+        Response.Headers["Pragma"] = "no-cache";
+        Response.Headers["Expires"] = "0";
+
+        return File(pdfBytes, "application/pdf", $"Student_{studentId}_Program_{programId}_Report.pdf");
+    }
+
 
 }

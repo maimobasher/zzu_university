@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using zzu_university.data.Data;
+using zzu_university.data.Model.Payment;
 
 namespace zzu_university.data.Repository.StudentRepo
 {
@@ -53,6 +54,21 @@ namespace zzu_university.data.Repository.StudentRepo
                 .Include(s => s.ProgramRegistrations)
                     .ThenInclude(pr => pr.Program)
                 .FirstOrDefaultAsync(s => s.StudentId == id);
+        }
+        public async Task<Student> GetStudentWithSpecificProgramAsync(int studentId, int programId)
+        {
+            return await _context.Students
+                .Include(s => s.ProgramRegistrations.Where(r => r.ProgramId == programId))
+                .ThenInclude(r => r.Program)
+                .FirstOrDefaultAsync(s => s.StudentId == studentId);
+        }
+
+        public async Task<StudentPayment> GetPaymentAsync(int studentId, int programId)
+        {
+            return await _context.StudentPayments
+                .Where(p => p.StudentId == studentId && p.ProgramId == programId)
+                .OrderByDescending(p => p.PaymentDate)
+                .FirstOrDefaultAsync();
         }
 
     }
