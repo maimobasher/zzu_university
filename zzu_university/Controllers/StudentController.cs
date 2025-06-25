@@ -180,6 +180,8 @@ namespace zzu_university.api.Controllers
                 programList.Add(new
                 {
                     reg.ProgramId,
+                    ProgramName = reg.Program?.Name ?? "N/A",           // ✅ اسم البرنامج
+                    FacultyName = student.faculty ?? "N/A",             // ✅ اسم الكلية
                     reg.ProgramCode,
                     reg.ProgramAndReferenceCode,
                     TuitionFees = reg.Program?.TuitionFees ?? 0,
