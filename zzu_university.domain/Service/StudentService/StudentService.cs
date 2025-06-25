@@ -42,7 +42,7 @@ namespace zzu_university.domain.Service.StudentService
                 IsPaymentCompleted = s.IsPaymentCompleted,
                 UserName = s.UserName,
                 Password = s.Password,
-               // CertificateId = s.Certificate?.CertificateId ?? 0
+               //CertificateId = s.Certificate?.CertificateId ?? 0
 
 
             });
@@ -111,7 +111,8 @@ namespace zzu_university.domain.Service.StudentService
                 SelectedProgramId = studentCreateDto.SelectedProgramId,
                 IsPaymentCompleted = false,
                 UserName = studentCreateDto.UserName,
-                Password = studentCreateDto.Password
+                Password = studentCreateDto.Password,
+                CertificateId = studentCreateDto.CertificateId
             };
 
             await _unitOfWork.Student.AddStudentAsync(student);
