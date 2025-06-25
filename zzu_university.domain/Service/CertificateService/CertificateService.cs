@@ -88,21 +88,16 @@ namespace zzu_university.domain.Service.CertificateService
         // ✅ Manual Mapper Method
         private CertificateReadDto MapToReadDto(Certificate cert)
         {
-            var student = _context.Students
-                .FirstOrDefault(s => s.CertificateId == cert.Id);
-
             return new CertificateReadDto
             {
                 Id = cert.Id,
                 CertificateName = cert.CertificateName,
                 IssueDate = cert.IssueDate,
-                Description = cert.Description,
-                StudentId = student?.StudentId,
-                StudentFullName = student != null
-                    ? $"{student.firstName} {student.middleName} {student.lastName}"
-                    : null
+                Description = cert.Description
+                // StudentId و StudentFullName مش ضروريين هنا
             };
         }
+
 
     }
 }
