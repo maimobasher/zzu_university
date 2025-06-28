@@ -284,8 +284,9 @@ namespace zzu_university.api.Controllers
 
             var student = register.Student;
 
-            // 2. جلب بيانات البرنامج
+            // 2. جلب بيانات البرنامج مع الكلية
             var program = await _context.Programs
+                .Include(p => p.Faculty) // ✅ تضمين الكلية من العلاقة
                 .FirstOrDefaultAsync(p => p.ProgramId == register.ProgramId);
 
             // 3. جلب أحدث دفعة
@@ -303,9 +304,9 @@ namespace zzu_university.api.Controllers
                 student.nationalId,
                 student.phone,
                 student.email,
-                ProgramId = register.ProgramId, // ✅ تمت الإضافة هنا
+                ProgramId = register.ProgramId,
                 ProgramName = program?.Name ?? "N/A",
-                FacultyName = student.faculty ?? "N/A",
+                FacultyName = program?.Faculty?.Name ?? "N/A", // ✅ اسم الكلية من جدول Faculties
                 ProgramCode = register.ProgramCode ?? "N/A",
                 ProgramAndReferenceCode = register.ProgramAndReferenceCode,
                 Status = register.status ?? "غير محدد",
