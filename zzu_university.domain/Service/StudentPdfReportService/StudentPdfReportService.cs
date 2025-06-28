@@ -147,7 +147,17 @@ public class StudentPdfReportService
 
                         DrawRow("تاريخ التسجيل", registration.RegisterDate);
                         DrawRow("كود التقديم", registration.ProgramAndReferenceCode);
-                        DrawRow("الحالة", registration.status);
+
+                        // ✅ تحويل الحالة إلى رسالة
+                        string statusMessage = registration.status?.ToLower() switch
+                        {
+                            "pending" => "الطلب تحت الدراسة",
+                            "accepted" => "تم القبول مبدئيًا لحين تقديم الأوراق المطلوبة وسداد المصروفات الدراسية",
+                            _ => registration.status ?? "—"
+                        };
+
+                        DrawRow("الحالة", statusMessage);
+
                         col.Item().PaddingVertical(5);
                     }
 

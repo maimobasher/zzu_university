@@ -177,11 +177,17 @@ namespace zzu_university.api.Controllers
                     .OrderByDescending(p => p.PaymentDate)
                     .FirstOrDefaultAsync();
 
+                // ✅ جلب اسم الكلية بناءً على FacultyId في البرنامج
+                var facultyName = await _context.Faculties
+                    .Where(f => f.FacultyId == reg.Program.FacultyId)
+                    .Select(f => f.Name)
+                    .FirstOrDefaultAsync() ?? "N/A";
+
                 programList.Add(new
                 {
                     reg.ProgramId,
                     ProgramName = reg.Program?.Name ?? "N/A",
-                    FacultyName = student.faculty ?? "N/A",
+                    FacultyName = facultyName, // ✅ من جدول الكليات
                     reg.ProgramCode,
                     reg.ProgramAndReferenceCode,
                     TuitionFees = reg.Program?.TuitionFees ?? 0,
@@ -208,6 +214,7 @@ namespace zzu_university.api.Controllers
                 Programs = programList
             });
         }
+
 
         [HttpPost("login-program-ids")]
         public async Task<IActionResult> LoginWithAllPrograms([FromBody] StudentLoginDto dto)
@@ -262,7 +269,6 @@ namespace zzu_university.api.Controllers
                 Programs = programDetails
             });
         }
-
         [HttpPost("program-status")]
         public async Task<IActionResult> GetProgramStatus([FromBody] StudentProgramQueryDto dto)
         {
@@ -297,6 +303,7 @@ namespace zzu_university.api.Controllers
                 student.nationalId,
                 student.phone,
                 student.email,
+                ProgramId = register.ProgramId, // ✅ تمت الإضافة هنا
                 ProgramName = program?.Name ?? "N/A",
                 FacultyName = student.faculty ?? "N/A",
                 ProgramCode = register.ProgramCode ?? "N/A",
@@ -310,6 +317,7 @@ namespace zzu_university.api.Controllers
 
             return Ok(result);
         }
+
 
 
         [HttpGet("program-info/{nationalId}")]
