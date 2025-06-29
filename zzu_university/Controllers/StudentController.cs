@@ -296,13 +296,15 @@ namespace zzu_university.api.Controllers
                 .FirstOrDefaultAsync();
 
             // 4. تحديد رسالة الحالة
+            // 4. تحديد رسالة الحالة
             var statusMessage = register.status?.ToLower() switch
             {
                 "pending" => "الطلب تحت الدراسة",
                 "accepted" => "تم القبول مبدئيًا لحين تقديم الأوراق المطلوبة وسداد المصروفات الدراسية",
-                "rejected" => "تم رفض الطلب",
+                "rejected" => "تم رفض طلبك", // ✅ تعديل الرسالة هنا
                 _ => "غير محدد"
             };
+
 
             // 5. إنشاء النتيجة
             var result = new
