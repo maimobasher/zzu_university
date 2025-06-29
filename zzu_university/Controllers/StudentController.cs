@@ -286,7 +286,7 @@ namespace zzu_university.api.Controllers
 
             // 2. جلب بيانات البرنامج مع الكلية
             var program = await _context.Programs
-                .Include(p => p.Faculty) // ✅ تضمين الكلية من العلاقة
+                .Include(p => p.Faculty)
                 .FirstOrDefaultAsync(p => p.ProgramId == register.ProgramId);
 
             // 3. جلب أحدث دفعة
@@ -295,29 +295,39 @@ namespace zzu_university.api.Controllers
                 .OrderByDescending(p => p.PaymentDate)
                 .FirstOrDefaultAsync();
 
-            var fullName = $"{student.firstName} {student.middleName ?? ""} {student.lastName}".Trim();
+            // 4. تحديد رسالة الحالة
+            var statusMessage = register.status?.ToLower() switch
+            {
+                "pending" => "الطلب تحت الدراسة",
+                "accepted" => "تم القبول مبدئيًا لحين تقديم الأوراق المطلوبة وسداد المصروفات الدراسية",
+                "rejected" => "تم رفض الطلب",
+                _ => "غير محدد"
+            };
 
+            // 5. إنشاء النتيجة
             var result = new
             {
                 student.StudentId,
-                StudentName = fullName,
+                StudentName = $"{student.firstName} {student.middleName ?? ""} {student.lastName}".Trim(),
                 student.nationalId,
                 student.phone,
                 student.email,
                 ProgramId = register.ProgramId,
                 ProgramName = program?.Name ?? "N/A",
-                FacultyName = program?.Faculty?.Name ?? "N/A", // ✅ اسم الكلية من جدول Faculties
+                FacultyName = program?.Faculty?.Name ?? "N/A",
                 ProgramCode = register.ProgramCode ?? "N/A",
                 ProgramAndReferenceCode = register.ProgramAndReferenceCode,
+                RegisterDate = register.RegisterDate ?? "غير متوفر", // 🟡 نوعها string
                 Status = register.status ?? "غير محدد",
+                StatusMessage = statusMessage, // ✅ رسالة مفهومة
                 IsPaid = payment?.IsPaid ?? false,
-                PaymentDate = payment != null
-                    ? payment.PaymentDate.ToString("yyyy-MM-dd")
-                    : "لم يتم الدفع"
+                PaymentDate = payment?.PaymentDate.ToString("yyyy-MM-dd") ?? "لم يتم الدفع",
+                ReferenceCode = payment?.ReferenceCode ?? "غير متوفر"
             };
 
             return Ok(result);
         }
+
 
 
 

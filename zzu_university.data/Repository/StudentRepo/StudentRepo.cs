@@ -59,9 +59,11 @@ namespace zzu_university.data.Repository.StudentRepo
         {
             return await _context.Students
                 .Include(s => s.ProgramRegistrations.Where(r => r.ProgramId == programId))
-                .ThenInclude(r => r.Program)
+                    .ThenInclude(r => r.Program)
+                        .ThenInclude(p => p.Faculty) // ✅ تحميل الكلية
                 .FirstOrDefaultAsync(s => s.StudentId == studentId);
         }
+
 
         public async Task<StudentPayment> GetPaymentAsync(int studentId, int programId)
         {

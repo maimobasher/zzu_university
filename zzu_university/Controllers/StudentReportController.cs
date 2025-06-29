@@ -66,6 +66,9 @@ public class StudentReportController : ControllerBase
             ? await _studentRepo.GetPaymentAsync(studentId, registration.ProgramId)
             : null;
 
+        // ✅ جلب اسم الكلية من جدول الكليات
+        var facultyName = registration.Program?.Faculty?.Name ?? "N/A";
+
         var reportData = new
         {
             student.StudentId,
@@ -74,6 +77,7 @@ public class StudentReportController : ControllerBase
             student.phone,
             student.email,
             ProgramName = registration.Program?.Name ?? "N/A",
+            FacultyName = facultyName, // ✅ تمت الإضافة هنا
             ProgramCode = registration.ProgramCode,
             ProgramAndReferenceCode = registration.ProgramAndReferenceCode,
             TuitionFees = registration.Program?.TuitionFees ?? 0,
@@ -83,7 +87,6 @@ public class StudentReportController : ControllerBase
         };
 
         var pdfBytes = _pdfService.GenerateStudentReport(student, programId);
-
 
         Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
         Response.Headers["Pragma"] = "no-cache";
