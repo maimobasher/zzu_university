@@ -41,6 +41,7 @@ namespace zzu_university.domain.StudentDto
         public string guardianPhone { get; set; }
         // public string highSchool { get; set; }
         public string percent { get; set; }
+        public string doc_url { get; set; }
         public string graduationYear { get; set; }
         public string gpa { get; set; }
         public string faculty { get; set; }

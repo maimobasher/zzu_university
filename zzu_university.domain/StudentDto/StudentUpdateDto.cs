@@ -38,6 +38,7 @@ namespace zzu_university.domain.StudentDto
         public string address { get; set; }
         public string city { get; set; }
         //public string postalCode { get; set; }
+        public string doc_url { get; set; } // URL to the student's document (e.g., national ID, passport, etc.)
         public string LiscenceType { get; set; }
         public string guardianPhone { get; set; }
         // public string highSchool { get; set; }

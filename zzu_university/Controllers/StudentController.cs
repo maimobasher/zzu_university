@@ -382,6 +382,18 @@ namespace zzu_university.api.Controllers
 
             return Ok(new { UsernameExists = exists });
         }
+        [HttpPost("CheckEmailExists")]
+        public async Task<IActionResult> CheckEmailExists([FromBody] CheckEmailDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Email))
+                return BadRequest("Email is required.");
+
+            var exists = await _context.Students
+                .AnyAsync(s => s.email.ToLower() == dto.Email.ToLower());
+
+            return Ok(new { EmailExists = exists });
+        }
+
         [HttpGet("GetStudentProgramsWithStatus")]
         public async Task<IActionResult> GetProgramsWithStatus([FromQuery] string national_id)
         {
@@ -417,6 +429,28 @@ namespace zzu_university.api.Controllers
             }
 
             return Ok(programs);
+        }
+        [HttpPost("recover-latest")]
+        public async Task<IActionResult> RecoverLatestStudentByEmailAndNationalId([FromBody] StudentRecoveryRequestDto dto)
+        {
+            var student = await _context.Students
+                .Where(s => s.nationalId == dto.NationalId && s.email == dto.Email)
+                .OrderByDescending(s => s.StudentId) // آخر تسجيل
+                .FirstOrDefaultAsync();
+
+            if (student == null)
+                return NotFound("لم يتم العثور على حساب مطابق.");
+
+            var result = new StudentRecoveryResultDto
+            {
+                FullName = $"{student.firstName} {student.middleName ?? ""} {student.lastName}".Trim(),
+                UserName = student.UserName,
+                Email = student.email,
+                NationalId = student.nationalId,
+                Password = student.Password
+            };
+
+            return Ok(result);
         }
 
 

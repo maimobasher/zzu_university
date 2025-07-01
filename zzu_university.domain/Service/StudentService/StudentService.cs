@@ -42,7 +42,8 @@ namespace zzu_university.domain.Service.StudentService
                 IsPaymentCompleted = s.IsPaymentCompleted,
                 UserName = s.UserName,
                 Password = s.Password,
-               //CertificateId = s.Certificate?.CertificateId ?? 0
+                doc_url = s.doc_url
+                //CertificateId = s.Certificate?.CertificateId ?? 0
 
 
             });
@@ -79,7 +80,8 @@ namespace zzu_university.domain.Service.StudentService
                 program = student.Program?.Name,
                 IsPaymentCompleted = student.IsPaymentCompleted,
                 UserName = student.UserName,
-                Password = student.Password
+                Password = student.Password,
+                doc_url = student.doc_url
             };
         }
 
@@ -112,7 +114,8 @@ namespace zzu_university.domain.Service.StudentService
                 IsPaymentCompleted = false,
                 UserName = studentCreateDto.UserName,
                 Password = studentCreateDto.Password,
-                CertificateId = studentCreateDto.CertificateId
+                CertificateId = studentCreateDto.CertificateId,
+                doc_url = studentCreateDto.doc_url // URL to the student's document (e.g., national ID, passport, etc.)
             };
 
             await _unitOfWork.Student.AddStudentAsync(student);
@@ -144,7 +147,8 @@ namespace zzu_university.domain.Service.StudentService
                 program = "", // تقدر تجيب اسم البرنامج لو احتجت
                 IsPaymentCompleted = student.IsPaymentCompleted,
                 UserName=student.UserName,  
-                Password = student.Password
+                Password = student.Password,
+                doc_url = student.doc_url
             };
         }
 
@@ -177,7 +181,8 @@ namespace zzu_university.domain.Service.StudentService
             student.SelectedProgramId = studentUpdateDto.SelectedProgramId;
             student.IsPaymentCompleted = studentUpdateDto.IsPaymentCompleted;
             student.UserName = studentUpdateDto.UserName;
-            student.Password = studentUpdateDto.Password;   
+            student.Password = studentUpdateDto.Password;
+            student.doc_url = studentUpdateDto.doc_url; // URL to the student's document (e.g., national ID, passport, etc.)
             await _unitOfWork.Student.UpdateStudentAsync(student);
             await _unitOfWork.SaveAsync();
 
@@ -207,7 +212,8 @@ namespace zzu_university.domain.Service.StudentService
                 program= "", // تقدر تجيب اسم البرنامج لو احتجت
                 IsPaymentCompleted = student.IsPaymentCompleted,
                 UserName = student.UserName,
-                Password = student.Password
+                Password = student.Password,
+                doc_url = student.doc_url // URL to the student's document (e.g., national ID, passport, etc.)
             };
         }
 
