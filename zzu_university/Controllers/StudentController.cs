@@ -393,6 +393,28 @@ namespace zzu_university.api.Controllers
 
             return Ok(new { EmailExists = exists });
         }
+        [HttpPut("update-doc-url")]
+        public async Task<IActionResult> UpdateStudentDocUrl([FromBody] UpdateDocUrlDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var student = await _context.Students.FindAsync(dto.StudentId);
+            if (student == null)
+                return NotFound("الطالب غير موجود.");
+
+            student.doc_url = dto.DocUrl;
+
+            _context.Students.Update(student);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "تم تحديث رابط المستند بنجاح.",
+                student.StudentId,
+                student.doc_url
+            });
+        }
 
         [HttpGet("GetStudentProgramsWithStatus")]
         public async Task<IActionResult> GetProgramsWithStatus([FromQuery] string national_id)
