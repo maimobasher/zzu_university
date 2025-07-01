@@ -58,15 +58,14 @@ public class StudentReportController : ControllerBase
         if (student == null)
             return NotFound("Student not found or not registered in this program.");
 
-        var registration = student.ProgramRegistrations.FirstOrDefault();
+        var registration = student.ProgramRegistrations
+            .FirstOrDefault(r => r.ProgramId == programId); // ✅ تم التعديل هنا
+
         if (registration == null)
             return NotFound("Program registration not found.");
 
-        var payment = registration.ProgramId != 0
-            ? await _studentRepo.GetPaymentAsync(studentId, registration.ProgramId)
-            : null;
+        var payment = await _studentRepo.GetPaymentAsync(studentId, registration.ProgramId);
 
-        // ✅ جلب اسم الكلية من جدول الكليات
         var facultyName = registration.Program?.Faculty?.Name ?? "N/A";
 
         var reportData = new
@@ -77,7 +76,7 @@ public class StudentReportController : ControllerBase
             student.phone,
             student.email,
             ProgramName = registration.Program?.Name ?? "N/A",
-            FacultyName = facultyName, // ✅ تمت الإضافة هنا
+            FacultyName = facultyName,
             ProgramCode = registration.ProgramCode,
             ProgramAndReferenceCode = registration.ProgramAndReferenceCode,
             TuitionFees = registration.Program?.TuitionFees ?? 0,
