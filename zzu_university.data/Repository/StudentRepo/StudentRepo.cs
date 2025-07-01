@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using zzu_university.data.Data;
 using zzu_university.data.Model.Payment;
+using zzu_university.data.Model.StudentRegisterProgram;
 
 namespace zzu_university.data.Repository.StudentRepo
 {
@@ -58,10 +59,26 @@ namespace zzu_university.data.Repository.StudentRepo
         public async Task<Student> GetStudentWithSpecificProgramAsync(int studentId, int programId)
         {
             return await _context.Students
-                .Include(s => s.ProgramRegistrations.Where(r => r.ProgramId == programId))
+                .Include(s => s.ProgramRegistrations)
                     .ThenInclude(r => r.Program)
-                        .ThenInclude(p => p.Faculty) // ✅ تحميل الكلية
+                        .ThenInclude(p => p.Faculty)
                 .FirstOrDefaultAsync(s => s.StudentId == studentId);
+        }
+
+        public async Task<StudentRegisterProgram> GetStudentRegistrationWithProgramAndFacultyAsync(int studentId, int programId)
+        {
+            return await _context.StudentRegisterPrograms
+                .Include(r => r.Program)
+                    .ThenInclude(p => p.Faculty)
+                .FirstOrDefaultAsync(r => r.StudentId == studentId && r.ProgramId == programId);
+        }
+
+        public async Task<StudentRegisterProgram> GetStudentRegistrationWithFacultyAsync(int studentId, int programId)
+        {
+            return await _context.StudentRegisterPrograms
+                .Include(r => r.Program)
+                    .ThenInclude(p => p.Faculty)
+                .FirstOrDefaultAsync(r => r.StudentId == studentId && r.ProgramId == programId);
         }
 
 

@@ -43,6 +43,7 @@ using zzu_university.data.Repository.ManagmentRepo;
 using zzu_university.data.Repository.ManagementTypeRepo;
 using zzu_university.domain.Service.ManagementTypeService.zzu_university.domain.Service.ManagementTypeService;
 using zzu_university.domain.Service.ManagementTypeService;
+using zzu_university.data.Repository.ProgramRepo;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -136,7 +137,7 @@ builder.Services.AddScoped<IProgramDetailsService, ProgramDetailsService>();
 builder.Services.AddScoped<IProgramDetailsRepo, ProgramDetailsRepo>();
 builder.Services.AddScoped<IManagementTypeRepo, ManagementTypeRepo>();
 builder.Services.AddScoped<IManagementTypeService, ManagementTypeService>();
-
+builder.Services.AddScoped<IProgramRepo, ProgramRepo>();
 QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 // Controllers and Swagger
 //builder.Services.AddCors(options =>

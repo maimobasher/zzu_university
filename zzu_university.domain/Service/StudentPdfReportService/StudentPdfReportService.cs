@@ -48,6 +48,12 @@ public class StudentPdfReportService
         return GenerateReportDocument(student, registration, latestPayment);
     }
 
+    // ✅ جديدة لاستخدامها مباشرة عند توفر البيانات
+    public byte[] GenerateStudentProgramReport(Student student, StudentRegisterProgram registration, StudentPayment payment)
+    {
+        return GenerateReportDocument(student, registration, payment);
+    }
+
     // 🟨 الدالة المشتركة لإنشاء PDF
     private byte[] GenerateReportDocument(Student student, StudentRegisterProgram? registration, StudentPayment? latestPayment)
     {
@@ -126,7 +132,10 @@ public class StudentPdfReportService
                     DrawRow("سنة التخرج", student.graduationYear);
                     DrawRow("المعدل التراكمي", student.gpa);
                     DrawRow("النسبة المئوية", student.percent);
-                    DrawRow("الكلية", student.faculty);
+
+                    // ✅ الكلية من البرنامج وليس من student.faculty
+                    var facultyName = registration?.Program?.Faculty?.Name ?? "N/A";
+                    DrawRow("الكلية", facultyName);
                     col.Item().PaddingVertical(5);
 
                     // 📘 بيانات البرنامج
@@ -148,7 +157,6 @@ public class StudentPdfReportService
                         DrawRow("تاريخ التسجيل", registration.RegisterDate);
                         DrawRow("كود التقديم", registration.ProgramAndReferenceCode);
 
-                        // ✅ تحويل الحالة إلى رسالة
                         string statusMessage = registration.status?.ToLower() switch
                         {
                             "pending" => "الطلب تحت الدراسة",
@@ -157,7 +165,6 @@ public class StudentPdfReportService
                         };
 
                         DrawRow("الحالة", statusMessage);
-
                         col.Item().PaddingVertical(5);
                     }
 

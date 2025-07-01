@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using zzu_university.data.Repository.ProgramRepo;
 using zzu_university.data.Repository.StudentRepo;
 
 [ApiController]
@@ -7,11 +8,13 @@ using zzu_university.data.Repository.StudentRepo;
 public class StudentReportController : ControllerBase
 {
     private readonly IStudentRepo _studentRepo;
+    private readonly IProgramRepo _programRepo;
     private readonly StudentPdfReportService _pdfService;
 
-    public StudentReportController(IStudentRepo studentRepo, StudentPdfReportService pdfService)
+    public StudentReportController(IStudentRepo studentRepo, IProgramRepo programRepo, StudentPdfReportService pdfService)
     {
         _studentRepo = studentRepo;
+        _programRepo = programRepo; // ✅ تم حقن الريبو الخاص بالبرامج
         _pdfService = pdfService;
     }
 
@@ -54,19 +57,21 @@ public class StudentReportController : ControllerBase
     [HttpGet("pdf-by-program")]
     public async Task<IActionResult> GeneratePdfByProgram([FromQuery] int studentId, [FromQuery] int programId)
     {
-        var student = await _studentRepo.GetStudentWithSpecificProgramAsync(studentId, programId);
-        if (student == null)
-            return NotFound("Student not found or not registered in this program.");
-
-        var registration = student.ProgramRegistrations
-            .FirstOrDefault(r => r.ProgramId == programId); // ✅ تم التعديل هنا
-
+        // ✅ التسجيل بالبرنامج المطلوب
+        var registration = await _studentRepo.GetStudentRegistrationWithProgramAndFacultyAsync(studentId, programId);
         if (registration == null)
-            return NotFound("Program registration not found.");
+            return NotFound("لم يتم العثور على تسجيل للبرنامج.");
 
-        var payment = await _studentRepo.GetPaymentAsync(studentId, registration.ProgramId);
+        // ✅ تحميل بيانات الطالب
+        var student = await _studentRepo.GetStudentByIdAsync(studentId);
+        if (student == null)
+            return NotFound("الطالب غير موجود.");
 
+        // ✅ اسم الكلية من البرنامج نفسه
         var facultyName = registration.Program?.Faculty?.Name ?? "N/A";
+
+        // ✅ الدفع
+        var payment = await _studentRepo.GetPaymentAsync(studentId, programId);
 
         var reportData = new
         {
@@ -76,7 +81,7 @@ public class StudentReportController : ControllerBase
             student.phone,
             student.email,
             ProgramName = registration.Program?.Name ?? "N/A",
-            FacultyName = facultyName,
+            FacultyName = facultyName, // ← هي دي الصح
             ProgramCode = registration.ProgramCode,
             ProgramAndReferenceCode = registration.ProgramAndReferenceCode,
             TuitionFees = registration.Program?.TuitionFees ?? 0,
@@ -85,11 +90,7 @@ public class StudentReportController : ControllerBase
             PaymentDate = payment?.PaymentDate.ToString("yyyy-MM-dd") ?? "لم يتم الدفع"
         };
 
-        var pdfBytes = _pdfService.GenerateStudentReport(student, programId);
-
-        Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
-        Response.Headers["Pragma"] = "no-cache";
-        Response.Headers["Expires"] = "0";
+        var pdfBytes = _pdfService.GenerateStudentProgramReport(student, registration, payment);
 
         return File(pdfBytes, "application/pdf", $"Student_{studentId}_Program_{programId}_Report.pdf");
     }

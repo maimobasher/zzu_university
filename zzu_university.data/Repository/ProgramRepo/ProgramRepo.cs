@@ -11,7 +11,14 @@ namespace zzu_university.data.Repository.ProgramRepo
         {
             _context = context;
         }
-
+        public async Task<string> GetFacultyNameByProgramIdAsync(int programId)
+        {
+            return await _context.Programs
+                .Where(p => p.ProgramId == programId)
+                .Include(p => p.Faculty)
+                .Select(p => p.Faculty.Name)
+                .FirstOrDefaultAsync();
+        }
         public async Task<IEnumerable<AcadmicProgram>> GetAllProgramsAsync()
         {
             return await _context.Programs.ToListAsync();
