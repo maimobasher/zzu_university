@@ -122,6 +122,7 @@ builder.Services.AddScoped<IZnuSectorDetailService, ZnuSectorDetailService>();
 builder.Services.AddScoped<IZnuContactRepo, ZnuContactRepo>();
 builder.Services.AddScoped<IZnuContactService, ZnuContactService>();
 builder.Services.AddScoped<IFacultyContactRepo, FacultyContactRepo>();
+builder.Services.AddScoped<IFacultyService, FacultyService>();
 builder.Services.AddScoped<IFacultyContactService, FacultyContactService>();
 builder.Services.AddScoped<IFaqService, FaqService>();
 builder.Services.AddScoped<IFaqRepo, FaqRepo>();
