@@ -33,7 +33,7 @@ public class Student
     [Required]
     [EmailAddress]
     public string email { get; set; }
-    public string doc_url { get; set; } // URL to the student's document (e.g., national ID, passport, etc.)    
+    public string? doc_url { get; set; } // URL to the student's document (e.g., national ID, passport, etc.)    
     public string dateOfBirth { get; set; }
     public int gender { get; set; }
     public string nationality { get; set; }

@@ -475,6 +475,41 @@ namespace zzu_university.api.Controllers
             return Ok(result);
         }
 
+        [HttpPost("upload-doc")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadStudentDocument([FromForm] FileUploadDto dto)
+        {
+            if (dto.File == null || dto.File.Length == 0)
+                return BadRequest("⚠️ لم يتم إرسال أي ملف.");
+
+            var student = await _context.Students.FindAsync(dto.StudentId);
+            if (student == null)
+                return NotFound("⚠️ الطالب غير موجود.");
+
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            var extension = Path.GetExtension(dto.File.FileName);
+            var fileName = $"{dto.StudentId}{extension}";
+            var path = Path.Combine(uploadsFolder, fileName);
+
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await dto.File.CopyToAsync(stream);
+            }
+
+            student.doc_url = $"/uploads/{fileName}";
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                FilePath = student.doc_url,
+                Message = "✅ تم رفع الملف بنجاح."
+            });
+        }
+
 
 
         // ✅ POST: api/student/5/generate-fawry-code
