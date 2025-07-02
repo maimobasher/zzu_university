@@ -492,7 +492,12 @@ namespace zzu_university.api.Controllers
                 Directory.CreateDirectory(uploadsFolder);
 
             var extension = Path.GetExtension(dto.File.FileName);
-            var fileName = $"{dto.StudentId}{extension}";
+
+            // ✅ توليد رقم عشوائي مكون من 4 أرقام
+            var randomNumber = new Random().Next(1000, 9999);
+
+            // ✅ اسم الملف = random + studentId
+            var fileName = $"{randomNumber}_{dto.StudentId}{extension}";
             var path = Path.Combine(uploadsFolder, fileName);
 
             using (var stream = new FileStream(path, FileMode.Create))
@@ -509,6 +514,7 @@ namespace zzu_university.api.Controllers
                 Message = "✅ تم رفع الملف بنجاح."
             });
         }
+
 
 
 
