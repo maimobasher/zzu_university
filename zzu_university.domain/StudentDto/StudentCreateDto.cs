@@ -37,6 +37,11 @@ namespace zzu_university.domain.StudentDto
         public string address { get; set; }
          public string doc_url { get; set; } // URL to the student's document (e.g., national ID, passport, etc.)
         public string city { get; set; }
+        public bool is_review { get; set; }
+        public string user_review { get; set; }
+        public string date_review { get; set; }
+        public string gpa_equivalent { get; set; }
+        public string percent_equivalent { get; set; }
         // public string postalCode { get; set; }
         public string LiscenceType { get; set; }
         public string guardianPhone { get; set; }

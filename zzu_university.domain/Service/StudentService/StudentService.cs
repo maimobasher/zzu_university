@@ -42,7 +42,12 @@ namespace zzu_university.domain.Service.StudentService
                 IsPaymentCompleted = s.IsPaymentCompleted,
                 UserName = s.UserName,
                 Password = s.Password,
-                doc_url = s.doc_url
+                doc_url = s.doc_url,
+                user_review = s.user_review,
+                is_review   =s.is_review,
+                date_review = s.date_review,
+                gpa_equivalent = s.gpa_equivalent,
+                percent_equivalent = s.percent_equivalent
                 //CertificateId = s.Certificate?.CertificateId ?? 0
 
 
@@ -81,7 +86,12 @@ namespace zzu_university.domain.Service.StudentService
                 IsPaymentCompleted = student.IsPaymentCompleted,
                 UserName = student.UserName,
                 Password = student.Password,
-                doc_url = student.doc_url
+                doc_url = student.doc_url,
+                gpa_equivalent = student.gpa_equivalent,
+                percent_equivalent  = student.percent_equivalent,
+                is_review = student.is_review,
+                user_review = student.user_review,
+                date_review = student.date_review
             };
         }
 
@@ -115,6 +125,11 @@ namespace zzu_university.domain.Service.StudentService
                 UserName = studentCreateDto.UserName,
                 Password = studentCreateDto.Password,
                 CertificateId = studentCreateDto.CertificateId,
+                user_review = studentCreateDto.user_review,
+                is_review = studentCreateDto.is_review,
+                date_review = studentCreateDto.date_review,
+                gpa_equivalent = studentCreateDto.gpa_equivalent,
+                percent_equivalent = studentCreateDto.percent_equivalent,
                 doc_url = studentCreateDto.doc_url // URL to the student's document (e.g., national ID, passport, etc.)
             };
 
@@ -148,7 +163,12 @@ namespace zzu_university.domain.Service.StudentService
                 IsPaymentCompleted = student.IsPaymentCompleted,
                 UserName=student.UserName,  
                 Password = student.Password,
-                doc_url = student.doc_url
+                doc_url = student.doc_url,
+                percent_equivalent = student.percent_equivalent,
+                gpa_equivalent = student.gpa_equivalent,
+                user_review = student.user_review,
+                is_review=student.is_review,
+                date_review = student.date_review
             };
         }
 
@@ -182,6 +202,11 @@ namespace zzu_university.domain.Service.StudentService
             student.IsPaymentCompleted = studentUpdateDto.IsPaymentCompleted;
             student.UserName = studentUpdateDto.UserName;
             student.Password = studentUpdateDto.Password;
+            student.is_review = studentUpdateDto.is_review; 
+            student.user_review = studentUpdateDto.user_review;
+            student.date_review = studentUpdateDto.date_review;
+            student.gpa_equivalent  = studentUpdateDto.gpa_equivalent;
+            student.percent_equivalent = studentUpdateDto.percent_equivalent;
             student.doc_url = studentUpdateDto.doc_url; // URL to the student's document (e.g., national ID, passport, etc.)
             await _unitOfWork.Student.UpdateStudentAsync(student);
             await _unitOfWork.SaveAsync();
@@ -209,7 +234,12 @@ namespace zzu_university.domain.Service.StudentService
                 faculty = student.faculty,
                // semester = student.semester,
                 email = student.email,
-                program= "", // تقدر تجيب اسم البرنامج لو احتجت
+                gpa_equivalent = student.gpa_equivalent,
+                percent_equivalent = student.percent_equivalent,
+                user_review = student.user_review,
+                date_review = student.date_review,
+                is_review=student.is_review,
+                program = "", // تقدر تجيب اسم البرنامج لو احتجت
                 IsPaymentCompleted = student.IsPaymentCompleted,
                 UserName = student.UserName,
                 Password = student.Password,

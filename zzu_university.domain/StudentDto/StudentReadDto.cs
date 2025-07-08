@@ -44,6 +44,11 @@ namespace zzu_university.domain.StudentDto
         public string doc_url { get; set; }
         public string graduationYear { get; set; }
         public string gpa { get; set; }
+        public bool is_review { get; set; }
+        public string user_review { get; set; }
+        public string date_review { get; set; }
+        public string gpa_equivalent { get; set; }
+        public string percent_equivalent { get; set; }
         public string faculty { get; set; }
         /// <summary>
         /// public string semester { get; set; }
