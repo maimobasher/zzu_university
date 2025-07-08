@@ -1,103 +1,105 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using zzu_university.data.Data;
-using zzu_university.data.Model.Certificate;
-using zzu_university.data.Repository.CertificateRepo;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using zzu_university.domain.DTOS.CertificateDto;
+using zzu_university.domain.Service.CertificateService;
 
-namespace zzu_university.domain.Service.CertificateService
+namespace zzu_university.Controllers
 {
-    public class CertificateService : ICertificateService
+    [Route("api/[controller]")]
+    [ApiController]
+    public class CertificateController : ControllerBase
     {
-        private readonly ICertificateRepo _repository;
-        private readonly ApplicationDbContext _context;
+        private readonly ICertificateService _certificateService;
 
-        public CertificateService(ICertificateRepo repository, ApplicationDbContext context)
+        public CertificateController(ICertificateService certificateService)
         {
-            _repository = repository;
-            _context = context;
+            _certificateService = certificateService;
         }
 
-        public async Task<IEnumerable<CertificateReadDto>> GetAllAsync()
+        // GET: api/Certificate
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<CertificateReadDto>>> GetAll()
         {
-            var certificates = await _repository.GetAllAsync();
-            return certificates.Select(MapToReadDto);
+            var certificates = await _certificateService.GetAllAsync(includeDeleted: false);
+            return Ok(certificates);
         }
 
-        public async Task<CertificateReadDto> GetByIdAsync(int id)
+        // GET: api/Certificate/deleted
+        [HttpGet("deleted")]
+        public async Task<ActionResult<IEnumerable<CertificateReadDto>>> GetDeleted()
         {
-            var certificate = await _repository.GetByIdAsync(id);
-            return certificate == null ? null : MapToReadDto(certificate);
+            var deletedCertificates = await _certificateService.GetAllAsync(includeDeleted: true, onlyDeleted: true);
+            return Ok(deletedCertificates);
         }
 
-        //public async Task<IEnumerable<CertificateReadDto>> GetByStudentIdAsync(int studentId)
-        //{
-        //    var certificates = await _repository.GetByStudentIdAsync(studentId);
-        //    return certificates.Select(MapToReadDto);
-        //}
-
-        public async Task<CertificateReadDto> CreateAsync(CertificateCreateDto dto)
+        // GET: api/Certificate/{id}
+        [HttpGet("{id}")]
+        public async Task<ActionResult<CertificateReadDto>> GetById(int id)
         {
-            var certificate = new Certificate
-            {
-                CertificateName = dto.CertificateName,
-                IssueDate = dto.IssueDate,
-                Description = dto.Description
-            };
+            var certificate = await _certificateService.GetByIdAsync(id);
+            if (certificate == null || certificate.is_deleted)
+                return NotFound();
 
-            // أضف الشهادة
-            var result = await _repository.AddAsync(certificate);
-
-            // ✅ بعد الإضافة، اربط الشهادة بالطالب
-            var student = await _context.Students.FindAsync(dto.StudentId);
-            if (student != null)
-            {
-                student.CertificateId = result.Id;
-                _context.Students.Update(student);
-                await _context.SaveChangesAsync();
-            }
-
-            return MapToReadDto(result);
+            return Ok(certificate);
         }
 
-
-        public async Task<CertificateReadDto> UpdateAsync(CertificateUpdateDto dto)
+        // POST: api/Certificate
+        [HttpPost]
+        public async Task<ActionResult<CertificateReadDto>> Create([FromBody] CertificateCreateDto dto)
         {
-            var certificate = new Certificate
-            {
-                Id = dto.Id,
-                //StudentId = dto.StudentId,
-                CertificateName = dto.CertificateName,
-                IssueDate = dto.IssueDate,
-                Description = dto.Description
-            };
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var result = await _repository.UpdateAsync(certificate);
-            return MapToReadDto(result);
+            dto.is_deleted = false; // Ensure it's created as not deleted
+            var createdCertificate = await _certificateService.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { id = createdCertificate.Id }, createdCertificate);
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        // PUT: api/Certificate/{id}
+        [HttpPut("{id}")]
+        public async Task<ActionResult<CertificateReadDto>> Update(int id, [FromBody] CertificateUpdateDto dto)
         {
-            return await _repository.DeleteAsync(id);
+            if (id != dto.Id)
+                return BadRequest("ID mismatch");
+
+            var updatedCertificate = await _certificateService.UpdateAsync(dto);
+            if (updatedCertificate == null || updatedCertificate.is_deleted)
+                return NotFound();
+
+            return Ok(updatedCertificate);
         }
 
-        // ✅ Manual Mapper Method
-        private CertificateReadDto MapToReadDto(Certificate cert)
+        // DELETE: api/Certificate/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
         {
-            return new CertificateReadDto
-            {
-                Id = cert.Id,
-                CertificateName = cert.CertificateName,
-                IssueDate = cert.IssueDate,
-                Description = cert.Description
-                // StudentId و StudentFullName مش ضروريين هنا
-            };
+            var success = await _certificateService.SoftDeleteAsync(id);
+            if (!success)
+                return NotFound();
+
+            return NoContent();
         }
 
+        // PUT: api/Certificate/restore/{id}
+        [HttpPut("restore/{id}")]
+        public async Task<IActionResult> Restore(int id)
+        {
+            var result = await _certificateService.RestoreAsync(id);
+            if (!result)
+                return NotFound();
 
+            return Ok("✅ تم استرجاع الشهادة بنجاح");
+        }
+
+        // DELETE: api/Certificate/hard-delete/{id}
+        [HttpDelete("hard-delete/{id}")]
+        public async Task<IActionResult> HardDelete(int id)
+        {
+            var result = await _certificateService.HardDeleteAsync(id);
+            if (!result)
+                return NotFound();
+
+            return Ok("🗑️ تم حذف الشهادة نهائيًا.");
+        }
     }
 }

@@ -31,7 +31,8 @@ namespace zzu_university.domain.Service.PaymentService
                 PaidAmount = dto.PaidAmount,
                 CreatedDate = DateTime.UtcNow,
                 PaymentType = dto.PaymentType,
-                IsRequest = dto.IsRequest
+                IsRequest = dto.IsRequest,
+                price = dto.price
 
             };
 
@@ -60,7 +61,8 @@ namespace zzu_university.domain.Service.PaymentService
                 PaidAmount = payment.PaidAmount,
                 CreatedDate = payment.CreatedDate,
                 PaymentType = payment.PaymentType,
-                IsRequest = (bool)payment.IsRequest
+                IsRequest = (bool)payment.IsRequest,
+                price = payment.price
             }; 
         }
 
@@ -80,7 +82,8 @@ namespace zzu_university.domain.Service.PaymentService
                     PaidAmount = p.PaidAmount,
                     CreatedDate = p.CreatedDate,
                     PaymentType = p.PaymentType,
-                    IsRequest = (bool)p.IsRequest
+                    IsRequest = (bool)p.IsRequest,
+                    price = p.price 
                 })
                 .ToListAsync();
         }

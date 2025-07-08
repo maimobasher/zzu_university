@@ -20,6 +20,7 @@ namespace zzu_university.domain.DTOS.PaymentDto
 
         public bool IsPaid { get; set; } = false;
         public decimal PaidAmount { get; set; }
+        public decimal price { get; set; }
         public DateTime CreatedDate { get; set; }
         public int PaymentType { get; set; }
         public bool IsRequest { get; set; }

@@ -61,6 +61,7 @@ namespace zzu_university.data.Repository.CertificateRepo
             existing.CertificateName = certificate.CertificateName;
             existing.IssueDate = certificate.IssueDate;
             existing.Description = certificate.Description;
+            existing.is_deleted = certificate.is_deleted;
             //existing.StudentId = certificate.StudentId;
 
             _context.Certificates.Update(existing);
