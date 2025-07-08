@@ -17,7 +17,7 @@ namespace zzu_university.domain.DTOS.PaymentDto
 
         [Required]
         public string ReferenceCode { get; set; }
-
+        public bool is_deleted { get; set; } = false;
         public bool IsPaid { get; set; } = false;
         public decimal PaidAmount { get; set; }
         public decimal price { get; set; }

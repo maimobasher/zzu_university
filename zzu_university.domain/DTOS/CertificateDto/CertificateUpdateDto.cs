@@ -16,7 +16,7 @@ namespace zzu_university.domain.DTOS.CertificateDto
         [Required]
         [StringLength(100)]
         public string CertificateName { get; set; }
-        public bool is_deleted { get; set; }
+        public bool is_deleted { get; set; } = false;
         public DateTime? IssueDate { get; set; }
 
         [StringLength(255)]

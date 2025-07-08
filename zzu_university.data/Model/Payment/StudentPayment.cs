@@ -17,7 +17,7 @@ namespace zzu_university.data.Model.Payment
 
         [Required]
         public string ReferenceCode { get; set; }
-
+        public bool is_deleted { get; set; } = false;
         public bool IsPaid { get; set; }
         public bool? IsRequest { get; set; } = false;
         public decimal PaidAmount { get; set; }

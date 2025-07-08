@@ -20,7 +20,7 @@ namespace zzu_university.data.Model.Certificate
         [StringLength(100)]
         public string CertificateName { get; set; }
 
-        public bool is_deleted { get; set; }
+        public bool is_deleted { get; set; } = false;
         public DateTime? IssueDate { get; set; }
 
         [StringLength(255)]

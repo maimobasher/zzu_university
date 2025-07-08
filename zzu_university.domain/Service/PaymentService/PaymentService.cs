@@ -32,7 +32,8 @@ namespace zzu_university.domain.Service.PaymentService
                 CreatedDate = DateTime.UtcNow,
                 PaymentType = dto.PaymentType,
                 IsRequest = dto.IsRequest,
-                price = dto.price
+                price = dto.price,
+                is_deleted = dto.is_deleted
 
             };
 
@@ -62,10 +63,47 @@ namespace zzu_university.domain.Service.PaymentService
                 CreatedDate = payment.CreatedDate,
                 PaymentType = payment.PaymentType,
                 IsRequest = (bool)payment.IsRequest,
-                price = payment.price
+                price = payment.price,
+                is_deleted = payment.is_deleted
             }; 
         }
 
+        public async Task<string> SoftDeletePaymentAsync(int paymentId)
+        {
+            var payment = await _context.StudentPayments.FindAsync(paymentId);
+
+            if (payment == null)
+                return "not_found";
+
+            if (payment.is_deleted)
+            {
+                // ✅ إنشاء نسخة جديدة
+                var newPayment = new StudentPayment
+                {
+                    StudentId = payment.StudentId,
+                    ProgramId = payment.ProgramId,
+                    ReferenceCode = payment.ReferenceCode,
+                    IsPaid = payment.IsPaid,
+                    PaymentDate = DateTime.UtcNow,
+                    PaidAmount = payment.PaidAmount,
+                    CreatedDate = DateTime.UtcNow,
+                    PaymentType = payment.PaymentType,
+                    IsRequest = payment.IsRequest,
+                    price = payment.price,
+                    is_deleted = false
+                };
+
+                await _context.StudentPayments.AddAsync(newPayment);
+                await _context.SaveChangesAsync();
+                return "restored";
+            }
+
+            // ✅ Soft Delete
+            payment.is_deleted = true;
+            _context.StudentPayments.Update(payment);
+            await _context.SaveChangesAsync();
+            return "deleted";
+        }
 
         public async Task<List<PaymentResultDto>> GetAllPaymentsForStudentAsync(int studentId)
         {
@@ -83,7 +121,8 @@ namespace zzu_university.domain.Service.PaymentService
                     CreatedDate = p.CreatedDate,
                     PaymentType = p.PaymentType,
                     IsRequest = (bool)p.IsRequest,
-                    price = p.price 
+                    price = p.price ,
+                    is_deleted = p.is_deleted
                 })
                 .ToListAsync();
         }

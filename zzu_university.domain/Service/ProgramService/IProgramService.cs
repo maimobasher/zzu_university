@@ -16,7 +16,7 @@ namespace zzu_university.domain.Service.ProgramService
         Task DeleteProgramAsync(int id);
         Task<IEnumerable<ProgramReadDto>> GetProgramsByFacultyIdAsync(int facultyId);
 
-       
+        Task<string> SoftDeleteProgramAsync(int id);
 
     }
 }

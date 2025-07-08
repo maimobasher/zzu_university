@@ -12,6 +12,7 @@ namespace zzu_university.domain.Service.PaymentService
         Task CreatePaymentAsync(PaymentCreateDto dto);
         Task<PaymentResultDto?> GetPaymentStatusAsync(int studentId, int programId);
         Task<List<PaymentResultDto>> GetAllPaymentsForStudentAsync(int studentId);
+        Task<string> SoftDeletePaymentAsync(int paymentId);
     }
 
 }

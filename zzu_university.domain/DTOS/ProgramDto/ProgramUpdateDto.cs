@@ -21,7 +21,7 @@ namespace zzu_university.domain.DTOS.ProgramDto
 
         [Required]
         public decimal TuitionFees { get; set; }
-
+        public bool is_deleted { get; set; } = false;
         [Required]
         public int DurationInYears { get; set; }
         public int FacultyId { get; set; }

@@ -25,7 +25,8 @@ namespace zzu_university.domain.Service.ProgramService
                 TuitionFees = p.TuitionFees,
                 DurationInYears = p.DurationInYears,
                 ProgramCode = p.ProgramCode,
-                FacultyId = p.FacultyId
+                FacultyId = p.FacultyId,
+                is_deleted=p.is_deleted
             });
 
             return programDtos;
@@ -41,7 +42,8 @@ namespace zzu_university.domain.Service.ProgramService
                 TuitionFees = p.TuitionFees,
                 DurationInYears = p.DurationInYears,
                 FacultyId = p.FacultyId,
-                ProgramCode = p.ProgramCode 
+                ProgramCode = p.ProgramCode ,
+                is_deleted = p.is_deleted   
             });
         }
 
@@ -60,7 +62,8 @@ namespace zzu_university.domain.Service.ProgramService
                 TuitionFees = program.TuitionFees,
                 DurationInYears = program.DurationInYears,
                 ProgramCode = program.ProgramCode,
-                FacultyId = program.FacultyId
+                FacultyId = program.FacultyId,
+                is_deleted= program.is_deleted  
             };
 
             return programDto;
@@ -76,7 +79,8 @@ namespace zzu_university.domain.Service.ProgramService
                 TuitionFees = programCreateDto.TuitionFees,
                 DurationInYears = programCreateDto.DurationInYears,
                 ProgramCode = programCreateDto.ProgramCode,
-                FacultyId = programCreateDto.FacultyId
+                FacultyId = programCreateDto.FacultyId,
+                is_deleted = programCreateDto.is_deleted    
             };
 
             await _unitOfWork.Program.AddProgramAsync(program);
@@ -94,12 +98,45 @@ namespace zzu_university.domain.Service.ProgramService
                 TuitionFees = programUpdateDto.TuitionFees,
                 DurationInYears = programUpdateDto.DurationInYears,
                 ProgramCode = programUpdateDto.ProgramCode,
-                FacultyId = programUpdateDto.FacultyId
+                FacultyId = programUpdateDto.FacultyId,
+                is_deleted = programUpdateDto.is_deleted    
 
             };
 
             await _unitOfWork.Program.UpdateProgramAsync(program);
             await _unitOfWork.CompleteAsync(); // حفظ التغييرات باستخدام CompleteAsync
+        }
+        public async Task<string> SoftDeleteProgramAsync(int id)
+        {
+            var program = await _unitOfWork.Program.GetProgramByIdAsync(id);
+
+            if (program == null)
+                return "not_found";
+
+            if (program.is_deleted)
+            {
+                // ✅ البرنامج محذوف مسبقًا → أضيفي نسخة جديدة بنفس البيانات
+                var newProgram = new AcadmicProgram
+                {
+                    Name = program.Name,
+                    Description = program.Description,
+                    TuitionFees = program.TuitionFees,
+                    DurationInYears = program.DurationInYears,
+                    ProgramCode = program.ProgramCode + "_COPY", // إضافة شيء بسيط لتمييز النسخة
+                    FacultyId = program.FacultyId,
+                    is_deleted = false
+                };
+
+                await _unitOfWork.Program.AddProgramAsync(newProgram);
+                await _unitOfWork.CompleteAsync();
+                return "restored";
+            }
+
+            // ✅ Soft Delete
+            program.is_deleted = true;
+            await _unitOfWork.Program.UpdateProgramAsync(program);
+            await _unitOfWork.CompleteAsync();
+            return "deleted";
         }
 
         public async Task DeleteProgramAsync(int id)

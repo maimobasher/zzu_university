@@ -15,7 +15,7 @@ public class StudentPaymentController : ControllerBase
         _context = context;
     }
 
-    // POST: api/StudentPayment
+    // ✅ POST: api/StudentPayment
     [HttpPost]
     public async Task<IActionResult> CreatePayment([FromBody] PaymentCreateDto dto)
     {
@@ -30,8 +30,8 @@ public class StudentPaymentController : ControllerBase
             CreatedDate = DateTime.UtcNow,
             PaymentType = dto.PaymentType,
             IsRequest = dto.IsRequest,
-            price = dto.price
-
+            price = dto.price,
+            is_deleted = false
         };
 
         _context.StudentPayments.Add(payment);
@@ -40,14 +40,14 @@ public class StudentPaymentController : ControllerBase
         return Ok(new { Id = payment.Id });
     }
 
-    // PUT: api/StudentPayment/{id}
+    // ✅ PUT: api/StudentPayment/{id}
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdatePayment(int id, [FromBody] PaymentUpdateDto dto)
     {
         var payment = await _context.StudentPayments.FindAsync(id);
 
-        if (payment == null)
-            return NotFound("Payment not found.");
+        if (payment == null || payment.is_deleted)
+            return NotFound("Payment not found or already deleted.");
 
         payment.ReferenceCode = dto.ReferenceCode;
         payment.IsPaid = dto.IsPaid;
@@ -57,13 +57,15 @@ public class StudentPaymentController : ControllerBase
 
         return Ok(new { Message = "Payment updated successfully." });
     }
+
+    // ✅ تحديث IsRequest فقط
     [HttpPut("UpdateIsRequest")]
     public async Task<IActionResult> UpdateIsRequest([FromBody] UpdateIsRequestDto dto)
     {
-        var payment = await _context.StudentPayments.FirstOrDefaultAsync(p => p.Id == dto.Id);
+        var payment = await _context.StudentPayments.FirstOrDefaultAsync(p => p.Id == dto.Id && !p.is_deleted);
         if (payment == null)
         {
-            return NotFound("Payment not found.");
+            return NotFound("Payment not found or deleted.");
         }
 
         payment.IsRequest = dto.IsRequest;
@@ -71,18 +73,58 @@ public class StudentPaymentController : ControllerBase
 
         return Ok(new { message = "IsRequest updated successfully." });
     }
+
+    // ✅ GET: آخر دفعة للطالب بدون المحذوفة
     [HttpGet("GetLatestPaymentByStudentId/{studentId}")]
     public async Task<IActionResult> GetLatestPaymentByStudentId(int studentId)
     {
         var latestPayment = await _context.StudentPayments
-            .Where(p => p.StudentId == studentId)
-            .OrderByDescending(p => p.Id) // أو OrderByDescending(p => p.PaymentDate)
+            .Where(p => p.StudentId == studentId && !p.is_deleted)
+            .OrderByDescending(p => p.Id)
             .FirstOrDefaultAsync();
 
         if (latestPayment == null)
             return NotFound("No payment found for this student.");
 
-        return Ok(latestPayment); // يرجع جميع الأعمدة تلقائيًا
+        return Ok(latestPayment);
     }
 
+    // ✅ Soft Delete
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> SoftDeletePayment(int id)
+    {
+        var payment = await _context.StudentPayments.FindAsync(id);
+
+        if (payment == null)
+            return NotFound("Payment not found.");
+
+        if (payment.is_deleted)
+        {
+            // ✅ إنشاء نسخة جديدة إذا كان محذوف
+            var newPayment = new StudentPayment
+            {
+                StudentId = payment.StudentId,
+                ProgramId = payment.ProgramId,
+                ReferenceCode = payment.ReferenceCode,
+                IsPaid = payment.IsPaid,
+                PaymentDate = DateTime.UtcNow,
+                PaidAmount = payment.PaidAmount,
+                CreatedDate = DateTime.UtcNow,
+                PaymentType = payment.PaymentType,
+                IsRequest = payment.IsRequest,
+                price = payment.price,
+                is_deleted = false
+            };
+
+            _context.StudentPayments.Add(newPayment);
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "🔁 Payment was previously deleted. A new copy was added.", NewPaymentId = newPayment.Id });
+        }
+
+        // ✅ تعديل is_deleted = true
+        payment.is_deleted = true;
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "✅ Payment soft-deleted successfully." });
+    }
 }

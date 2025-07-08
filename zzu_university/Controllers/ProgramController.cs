@@ -61,12 +61,33 @@ namespace zzu_university.api.Controllers
         }
 
         // DELETE: api/program/5
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> DeleteProgram(int id)
+        //{
+        //    var result = await _programService.SoftDeleteProgramAsync(id);
+
+        //    return result switch
+        //    {
+        //        "deleted" => Ok(new { message = "✅ Program soft-deleted successfully." }),
+        //        "restored" => Ok(new { message = "🔁 Program was previously deleted. A new copy was added." }),
+        //        _ => NotFound(new { message = "⛔ Program not found." })
+        //    };
+        //}
+
+        // DELETE: api/program/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProgram(int id)
+        public async Task<IActionResult> SoftDeleteProgram(int id)
         {
-            await _programService.DeleteProgramAsync(id);
-            return Ok(new { message = "Program deleted successfully." });
+            var result = await _programService.SoftDeleteProgramAsync(id);
+
+            if (result == "restored")
+                return Ok(new { message = "Program was deleted previously. A new copy was added." });
+            else if (result == "deleted")
+                return Ok(new { message = "Program soft-deleted successfully." });
+            else
+                return NotFound(new { message = "Program not found." });
         }
+
         // GET: api/program/faculty/5
         [HttpGet("faculty/{facultyId}")]
         public async Task<ActionResult<IEnumerable<ProgramReadDto>>> GetProgramsByFacultyId(int facultyId)
