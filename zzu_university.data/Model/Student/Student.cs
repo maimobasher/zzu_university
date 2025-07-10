@@ -39,8 +39,8 @@ public class Student
     public bool is_review { get; set; }
     public string user_review { get; set; }
     public string date_review { get; set; }
-    public string  gpa_equivalent { get; set; }
-    public string percent_equivalent { get; set; }
+    public string  gpa_equivalant { get; set; }
+    public string percent_equivalant { get; set; }
     public string nationality { get; set; }
     public string address { get; set; }
     public string city { get; set; }

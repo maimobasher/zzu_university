@@ -497,7 +497,7 @@ namespace zzu_university.api.Controllers
             var randomNumber = new Random().Next(1000, 9999);
 
             // ✅ اسم الملف = random + studentId
-            var fileName = $"{randomNumber}_{dto.StudentId}{extension}";
+            var fileName = $"شهادة {randomNumber}{dto.StudentId}{student.nationalId}{extension}";
             var path = Path.Combine(uploadsFolder, fileName);
 
             using (var stream = new FileStream(path, FileMode.Create))
